@@ -1,0 +1,46 @@
+CAPI=2:
+
+name: xinting:playground:pure_ibex_uart:0.1
+description: Pure Ibex + TL-UL SRAM + UART top (Verilator)
+
+filesets:
+  rtl:
+    files:
+      # - top_pkg.sv
+      - ibex_to_tlul_host.sv
+      - tlul_sram_if.sv
+      - tlul_xbar_1to2.sv
+      - pure_ibex_uart_top.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:prim_generic:all
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+
+  tb_sv:
+    files:
+      - pure_ibex_uart_top_tb.sv
+    file_type: systemVerilogSource
+
+  tb_cpp:
+    files:
+      - sim_main.cpp
+    file_type: cppSource
+
+parameters: {}
+
+targets:
+  sim:
+    default_tool: verilator
+    filesets: [rtl, tb_sv, tb_cpp]
+    toplevel: tb_pure_ibex_uart_top
+    tools:
+      verilator:
+        verilator_options:
+          - "--trace-fst"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"

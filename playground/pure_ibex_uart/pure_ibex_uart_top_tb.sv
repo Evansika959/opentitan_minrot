@@ -1,4 +1,5 @@
 // tb_pure_ibex_uart_top.sv
+`define RVFI
 
 module tb_pure_ibex_uart_top(
   input  logic clk,
@@ -73,6 +74,45 @@ module tb_pure_ibex_uart_top(
   logic [top_pkg::TL_DW-1:0]  uart_d_data;
   logic        uart_d_error;
 
+`ifdef RVFI
+  // Retire interface signals
+  logic        rvfi_valid;
+  logic [63:0] rvfi_order;
+  logic [31:0] rvfi_insn;
+  logic        rvfi_trap;
+  logic        rvfi_halt;
+  logic        rvfi_intr;
+  logic [1:0]  rvfi_mode;
+  logic [1:0]  rvfi_ixl;
+  logic [4:0]  rvfi_rs1_addr;
+  logic [4:0]  rvfi_rs2_addr;
+  logic [4:0]  rvfi_rs3_addr;
+  logic [31:0] rvfi_rs1_rdata;
+  logic [31:0] rvfi_rs2_rdata;
+  logic [31:0] rvfi_rs3_rdata;
+  logic [4:0]  rvfi_rd_addr;
+  logic [31:0] rvfi_rd_wdata;
+  logic [31:0] rvfi_pc_rdata;
+  logic [31:0] rvfi_pc_wdata;
+  logic [31:0] rvfi_mem_addr;
+  logic [3:0]  rvfi_mem_rmask;
+  logic [3:0]  rvfi_mem_wmask;
+  logic [31:0] rvfi_mem_rdata;
+  logic [31:0] rvfi_mem_wdata;
+  logic [31:0] rvfi_ext_pre_mip;
+  logic [31:0] rvfi_ext_post_mip;
+  logic        rvfi_ext_nmi;
+  logic        rvfi_ext_nmi_int;
+  logic        rvfi_ext_debug_req;
+  logic        rvfi_ext_debug_mode;
+  logic        rvfi_ext_rf_wr_suppress;
+  logic [63:0] rvfi_ext_mcycle;
+  logic [31:0] rvfi_ext_mhpmcounters [10];
+  logic [31:0] rvfi_ext_mhpmcountersh [10];
+  logic        rvfi_ext_ic_scr_key_valid;
+  logic        rvfi_ext_irq_valid;
+`endif
+
   // clock
   // initial clk = 1'b0;
   /* verilator lint_off STMTDLY */
@@ -98,6 +138,30 @@ module tb_pure_ibex_uart_top(
     .uart_rx_i(uart_rx),
     .uart_tx_o(uart_tx),
     .uart_tx_en_o(uart_tx_en)
+
+`ifdef RVFI
+    , .rvfi_valid(rvfi_valid), .rvfi_order(rvfi_order), .rvfi_insn(rvfi_insn),
+      .rvfi_trap(rvfi_trap), .rvfi_halt(rvfi_halt), .rvfi_intr(rvfi_intr),
+      .rvfi_mode(rvfi_mode), .rvfi_ixl(rvfi_ixl),
+      .rvfi_rs1_addr(rvfi_rs1_addr), .rvfi_rs2_addr(rvfi_rs2_addr),
+      .rvfi_rs3_addr(rvfi_rs3_addr), .rvfi_rs1_rdata(rvfi_rs1_rdata),
+      .rvfi_rs2_rdata(rvfi_rs2_rdata), .rvfi_rs3_rdata(rvfi_rs3_rdata),
+      .rvfi_rd_addr(rvfi_rd_addr), .rvfi_rd_wdata(rvfi_rd_wdata),
+      .rvfi_pc_rdata(rvfi_pc_rdata), .rvfi_pc_wdata(rvfi_pc_wdata),
+      .rvfi_mem_addr(rvfi_mem_addr), .rvfi_mem_rmask(rvfi_mem_rmask),
+      .rvfi_mem_wmask(rvfi_mem_wmask), .rvfi_mem_rdata(rvfi_mem_rdata),
+      .rvfi_mem_wdata(rvfi_mem_wdata),
+      .rvfi_ext_pre_mip(rvfi_ext_pre_mip), .rvfi_ext_post_mip(rvfi_ext_post_mip),
+      .rvfi_ext_nmi(rvfi_ext_nmi), .rvfi_ext_nmi_int(rvfi_ext_nmi_int),
+      .rvfi_ext_debug_req(rvfi_ext_debug_req),
+      .rvfi_ext_debug_mode(rvfi_ext_debug_mode),
+      .rvfi_ext_rf_wr_suppress(rvfi_ext_rf_wr_suppress),
+      .rvfi_ext_mcycle(rvfi_ext_mcycle),
+      .rvfi_ext_mhpmcounters(rvfi_ext_mhpmcounters),
+      .rvfi_ext_mhpmcountersh(rvfi_ext_mhpmcountersh),
+      .rvfi_ext_ic_scr_key_valid(rvfi_ext_ic_scr_key_valid),
+      .rvfi_ext_irq_valid(rvfi_ext_irq_valid)
+`endif
   );
 
   // Bind wave-friendly aliases to DUT internals (for GTKWave browsing)
@@ -169,20 +233,37 @@ module tb_pure_ibex_uart_top(
 
   // Monitor Ibex instruction request (instr_req_o inside ibex_top)
   // Accessible via adapter input: u_instr2tl.req_i
-  int instr_req_cnt;
+  // int instr_req_cnt;
+  // always_ff @(posedge clk) begin
+  //   if (!rst_n) begin
+  //     instr_req_cnt <= 0;
+  //   end else if (dut.instr_rvalid) begin
+  //     instr_req_cnt <= instr_req_cnt + 1;
+  //     // Print the first few requests to avoid log spam
+  //     if (instr_req_cnt < 100) begin
+  //       $display("[TB] ibex instr_req_o #%0d @time %0t addr=0x%08x instr=0x%08x",
+  //                instr_req_cnt, $time, dut.instr_addr,
+  //                dut.instr_rdata);
+  //     end
+  //   end
+  // end
+
+`ifdef RVFI
+  // Monitor retired instructions via RVFI
+  int rvfi_cnt;
   always_ff @(posedge clk) begin
     if (!rst_n) begin
-      instr_req_cnt <= 0;
-    end else if (dut.u_instr2tl.req_i & dut.u_instr2tl.gnt_o) begin
-      instr_req_cnt <= instr_req_cnt + 1;
-      // Print the first few requests to avoid log spam
-      if (instr_req_cnt < 1000) begin
-        $display("[TB] ibex instr_req_o #%0d @time %0t addr=0x%08x gnt=%0b tl_a_valid=%0b tl_a_ready=%0b",
-                 instr_req_cnt, $time, dut.u_instr2tl.addr_i,
-                 dut.u_instr2tl.gnt_o, dut.tl_imem_h2d.a_valid, dut.tl_imem_d2h.a_ready);
+      rvfi_cnt <= 0;
+    end else if (rvfi_valid) begin
+      rvfi_cnt <= rvfi_cnt + 1;
+      if (rvfi_cnt < 50) begin
+        $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
+                 rvfi_cnt, $time, rvfi_pc_rdata, rvfi_pc_wdata,
+                 rvfi_insn, rvfi_rd_addr, rvfi_rd_wdata, rvfi_trap, rvfi_intr);
       end
     end
   end
+`endif
 
   // Monitor UART TL host requests
   int uart_req_cnt;

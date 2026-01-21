@@ -1,4 +1,6 @@
 // Pure Ibex + TL-UL SRAM + UART top
+`define RVFI
+
 module pure_ibex_uart_top #(
   parameter int unsigned IMEM_AW = 14,
   parameter int unsigned DMEM_AW = 14,
@@ -18,6 +20,44 @@ module pure_ibex_uart_top #(
   input  logic uart_rx_i,
   output logic uart_tx_o,
   output logic uart_tx_en_o
+
+`ifdef RVFI
+  ,output logic        rvfi_valid
+  ,output logic [63:0] rvfi_order
+  ,output logic [31:0] rvfi_insn
+  ,output logic        rvfi_trap
+  ,output logic        rvfi_halt
+  ,output logic        rvfi_intr
+  ,output logic [1:0]  rvfi_mode
+  ,output logic [1:0]  rvfi_ixl
+  ,output logic [4:0]  rvfi_rs1_addr
+  ,output logic [4:0]  rvfi_rs2_addr
+  ,output logic [4:0]  rvfi_rs3_addr
+  ,output logic [31:0] rvfi_rs1_rdata
+  ,output logic [31:0] rvfi_rs2_rdata
+  ,output logic [31:0] rvfi_rs3_rdata
+  ,output logic [4:0]  rvfi_rd_addr
+  ,output logic [31:0] rvfi_rd_wdata
+  ,output logic [31:0] rvfi_pc_rdata
+  ,output logic [31:0] rvfi_pc_wdata
+  ,output logic [31:0] rvfi_mem_addr
+  ,output logic [3:0]  rvfi_mem_rmask
+  ,output logic [3:0]  rvfi_mem_wmask
+  ,output logic [31:0] rvfi_mem_rdata
+  ,output logic [31:0] rvfi_mem_wdata
+  ,output logic [31:0] rvfi_ext_pre_mip
+  ,output logic [31:0] rvfi_ext_post_mip
+  ,output logic        rvfi_ext_nmi
+  ,output logic        rvfi_ext_nmi_int
+  ,output logic        rvfi_ext_debug_req
+  ,output logic        rvfi_ext_debug_mode
+  ,output logic        rvfi_ext_rf_wr_suppress
+  ,output logic [63:0] rvfi_ext_mcycle
+  ,output logic [31:0] rvfi_ext_mhpmcounters [10]
+  ,output logic [31:0] rvfi_ext_mhpmcountersh [10]
+  ,output logic        rvfi_ext_ic_scr_key_valid
+  ,output logic        rvfi_ext_irq_valid
+`endif
 );
   import top_pkg::*;
   import tlul_pkg::*;
@@ -111,14 +151,28 @@ module pure_ibex_uart_top #(
     .crash_dump_o(),
     .double_fault_seen_o()
 
-//     // RVFI (unused)
-// `ifdef RVFI
-//     .rvfi_valid(), .rvfi_order(), .rvfi_insn(), .rvfi_trap(), .rvfi_halt(),
-//     .rvfi_intr(), .rvfi_mode(), .rvfi_ixl(), .rvfi_rs1_addr(), .rvfi_rs2_addr(),
-//     .rvfi_rs1_rdata(), .rvfi_rs2_rdata(), .rvfi_rd_addr(), .rvfi_rd_wdata(),
-//     .rvfi_pc_rdata(), .rvfi_pc_wdata(), .rvfi_mem_addr(), .rvfi_mem_rmask(),
-//     .rvfi_mem_wmask(), .rvfi_mem_rdata(), .rvfi_mem_wdata()
-// `endif
+`ifdef RVFI
+    , .rvfi_valid(rvfi_valid), .rvfi_order(rvfi_order), .rvfi_insn(rvfi_insn),
+      .rvfi_trap(rvfi_trap), .rvfi_halt(rvfi_halt), .rvfi_intr(rvfi_intr),
+      .rvfi_mode(rvfi_mode), .rvfi_ixl(rvfi_ixl), .rvfi_rs1_addr(rvfi_rs1_addr),
+      .rvfi_rs2_addr(rvfi_rs2_addr), .rvfi_rs3_addr(rvfi_rs3_addr),
+      .rvfi_rs1_rdata(rvfi_rs1_rdata), .rvfi_rs2_rdata(rvfi_rs2_rdata),
+      .rvfi_rs3_rdata(rvfi_rs3_rdata), .rvfi_rd_addr(rvfi_rd_addr),
+      .rvfi_rd_wdata(rvfi_rd_wdata), .rvfi_pc_rdata(rvfi_pc_rdata),
+      .rvfi_pc_wdata(rvfi_pc_wdata), .rvfi_mem_addr(rvfi_mem_addr),
+      .rvfi_mem_rmask(rvfi_mem_rmask), .rvfi_mem_wmask(rvfi_mem_wmask),
+      .rvfi_mem_rdata(rvfi_mem_rdata), .rvfi_mem_wdata(rvfi_mem_wdata),
+      .rvfi_ext_pre_mip(rvfi_ext_pre_mip), .rvfi_ext_post_mip(rvfi_ext_post_mip),
+      .rvfi_ext_nmi(rvfi_ext_nmi), .rvfi_ext_nmi_int(rvfi_ext_nmi_int),
+      .rvfi_ext_debug_req(rvfi_ext_debug_req),
+      .rvfi_ext_debug_mode(rvfi_ext_debug_mode),
+      .rvfi_ext_rf_wr_suppress(rvfi_ext_rf_wr_suppress),
+      .rvfi_ext_mcycle(rvfi_ext_mcycle),
+      .rvfi_ext_mhpmcounters(rvfi_ext_mhpmcounters),
+      .rvfi_ext_mhpmcountersh(rvfi_ext_mhpmcountersh),
+      .rvfi_ext_ic_scr_key_valid(rvfi_ext_ic_scr_key_valid),
+      .rvfi_ext_irq_valid(rvfi_ext_irq_valid)
+`endif
   );
 
   // Adapters: Ibex mem -> TL-UL

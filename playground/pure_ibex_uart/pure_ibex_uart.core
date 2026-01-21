@@ -40,6 +40,7 @@ targets:
       verilator:
         verilator_options:
           - "--trace-fst"
+          - "-DRVFI"
           - "-Wno-fatal"
           - "-Wno-PINMISSING"
           - "-Wno-UNOPTTHREADS"

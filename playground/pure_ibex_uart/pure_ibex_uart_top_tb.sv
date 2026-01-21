@@ -111,6 +111,85 @@ module tb_pure_ibex_uart_top(
   logic [31:0] rvfi_ext_mhpmcountersh [10];
   logic        rvfi_ext_ic_scr_key_valid;
   logic        rvfi_ext_irq_valid;
+
+  // Simple RV32I/M decoder for printing mnemonics in the TB
+  function automatic string rv32_decode(input logic [31:0] insn);
+    logic [6:0] opc; logic [2:0] f3; logic [6:0] f7; logic [4:0] rd, rs1, rs2;
+    opc = insn[6:0]; f3 = insn[14:12]; f7 = insn[31:25];
+    rd = insn[11:7]; rs1 = insn[19:15]; rs2 = insn[24:20];
+    case (opc)
+      7'h37: rv32_decode = $sformatf("lui x%0d,0x%05x", rd, insn[31:12]);
+      7'h17: rv32_decode = $sformatf("auipc x%0d,0x%05x", rd, insn[31:12]);
+      7'h6f: rv32_decode = $sformatf("jal x%0d,%0d", rd, $signed({insn[31],insn[19:12],insn[20],insn[30:21],1'b0}));
+      7'h67: rv32_decode = $sformatf("jalr x%0d,%0d(x%0d)", rd, $signed(insn[31:20]), rs1);
+      7'h63: begin
+        string bname; case (f3)
+          3'b000: bname = "beq"; 3'b001: bname = "bne";
+          3'b100: bname = "blt"; 3'b101: bname = "bge";
+          3'b110: bname = "bltu";3'b111: bname = "bgeu";
+          default: bname = "b?"; endcase
+        rv32_decode = $sformatf("%s x%0d,x%0d,%0d", bname, rs1, rs2,
+          $signed({insn[31],insn[7],insn[30:25],insn[11:8],1'b0}));
+      end
+      7'h03: begin
+        string lname; case (f3)
+          3'b000: lname = "lb"; 3'b001: lname = "lh"; 3'b010: lname = "lw";
+          3'b100: lname = "lbu";3'b101: lname = "lhu"; default: lname = "l?"; endcase
+        rv32_decode = $sformatf("%s x%0d,%0d(x%0d)", lname, rd, $signed(insn[31:20]), rs1);
+      end
+      7'h23: begin
+        string sname; case (f3)
+          3'b000: sname = "sb"; 3'b001: sname = "sh"; 3'b010: sname = "sw";
+          default: sname = "s?"; endcase
+        rv32_decode = $sformatf("%s x%0d,%0d(x%0d)", sname, rs2,
+          $signed({insn[31:25],insn[11:7]}), rs1);
+      end
+      7'h13: begin
+        string iname; case (f3)
+          3'b000: iname = "addi"; 3'b010: iname = "slti"; 3'b011: iname = "sltiu";
+          3'b100: iname = "xori"; 3'b110: iname = "ori"; 3'b111: iname = "andi";
+          3'b001: iname = (f7==7'h00) ? "slli" : "sll?";
+          3'b101: iname = (f7==7'h20) ? "srai" : "srli";
+          default: iname = "i?"; endcase
+        if (f3 inside {3'b001,3'b101})
+          rv32_decode = $sformatf("%s x%0d,x%0d,%0d", iname, rd, rs1, insn[24:20]);
+        else
+          rv32_decode = $sformatf("%s x%0d,x%0d,%0d", iname, rd, rs1, $signed(insn[31:20]));
+      end
+      7'h33: begin
+        string rname; case ({f7,f3})
+          {7'h00,3'b000}: rname="add";   {7'h20,3'b000}: rname="sub";
+          {7'h00,3'b001}: rname="sll";   {7'h00,3'b010}: rname="slt";
+          {7'h00,3'b011}: rname="sltu";  {7'h00,3'b100}: rname="xor";
+          {7'h00,3'b101}: rname="srl";   {7'h20,3'b101}: rname="sra";
+          {7'h00,3'b110}: rname="or";    {7'h00,3'b111}: rname="and";
+          {7'h01,3'b000}: rname="mul";   {7'h01,3'b001}: rname="mulh";
+          {7'h01,3'b010}: rname="mulhsu";{7'h01,3'b011}: rname="mulhu";
+          {7'h01,3'b100}: rname="div";   {7'h01,3'b101}: rname="divu";
+          {7'h01,3'b110}: rname="rem";   {7'h01,3'b111}: rname="remu";
+          default: rname="r?"; endcase
+        rv32_decode = $sformatf("%s x%0d,x%0d,x%0d", rname, rd, rs1, rs2);
+      end
+      7'h0f: rv32_decode = (f3==3'b001) ? "fence.i" : "fence";
+      7'h73: begin
+        if (f3==3'b000) begin
+          if (insn[31:20]==12'h000) rv32_decode = "ecall";
+          else if (insn[31:20]==12'h001) rv32_decode = "ebreak";
+          else rv32_decode = "system";
+        end else begin
+          string cname; case (f3)
+            3'b001: cname="csrrw"; 3'b010: cname="csrrs"; 3'b011: cname="csrrc";
+            3'b101: cname="csrrwi";3'b110: cname="csrrsi";3'b111: cname="csrrci";
+            default: cname="csr?"; endcase
+          if (f3>=3'b101)
+            rv32_decode = $sformatf("%s x%0d,0x%03x,%0d", cname, rd, insn[31:20], rs1);
+          else
+            rv32_decode = $sformatf("%s x%0d,0x%03x,x%0d", cname, rd, insn[31:20], rs1);
+        end
+      end
+      default: rv32_decode = $sformatf("unknown 0x%08x", insn);
+    endcase
+  endfunction
 `endif
 
   // clock
@@ -257,9 +336,10 @@ module tb_pure_ibex_uart_top(
     end else if (rvfi_valid) begin
       rvfi_cnt <= rvfi_cnt + 1;
       if (rvfi_cnt < 50) begin
-        $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
+        $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x (%s) rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
                  rvfi_cnt, $time, rvfi_pc_rdata, rvfi_pc_wdata,
-                 rvfi_insn, rvfi_rd_addr, rvfi_rd_wdata, rvfi_trap, rvfi_intr);
+                 rvfi_insn, rv32_decode(rvfi_insn),
+                 rvfi_rd_addr, rvfi_rd_wdata, rvfi_trap, rvfi_intr);
       end
     end
   end

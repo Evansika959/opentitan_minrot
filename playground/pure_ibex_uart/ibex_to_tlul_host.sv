@@ -21,6 +21,7 @@ module ibex_to_tlul_host #(
   input  tlul_pkg::tl_d2h_t tl_i
 );
   import tlul_pkg::*;
+  import prim_mubi_pkg::*;
 
   logic outstanding_q;
 
@@ -36,7 +37,12 @@ module ibex_to_tlul_host #(
     tl_d.a_address = addr_i;
     tl_d.a_mask    = (READ_ONLY || !we_i) ? 4'hF : be_i;
     tl_d.a_data    = wdata_i;
-    tl_d.d_ready   = 1'b1; // always ready to accept response
+    tl_d.a_mask    = (READ_ONLY || !we_i) ? 4'hF : be_i;
+
+    // Tag as data access and generate TL-UL integrity (ECC) bits
+    tl_d.a_user.instr_type = MuBi4False;
+    tl_d.a_user.cmd_intg   = tlul_pkg::get_cmd_intg(tl_d);
+    tl_d.a_user.data_intg  = tlul_pkg::get_data_intg(tl_d.a_data);
   end
   assign tl_o = tl_d;
 

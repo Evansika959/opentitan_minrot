@@ -359,6 +359,19 @@ module tb_pure_ibex_uart_top(
     end
   end
 
+  // Flag TL-UL errors coming back from UART
+  int uart_err_cnt;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      uart_err_cnt <= 0;
+    end else if (uart_d_valid && uart_d_error) begin
+      uart_err_cnt <= uart_err_cnt + 1;
+    end
+    if (rst_n && uart_d_valid && uart_d_error && uart_err_cnt < 5) begin
+      $display("[TB][UART][ERR] @time %0t opcode=%0d sink=%0d data=0x%08x", $time, uart_d_opcode, uart_d_sink, uart_d_data);
+    end
+  end
+
   // ------------------------------------------------------------
   // “Cheat” console: print chars when SW writes UART.WDATA
   // UART.WDATA offset = 0x1c (from OT UART regs doc). :contentReference[oaicite:1]{index=1}

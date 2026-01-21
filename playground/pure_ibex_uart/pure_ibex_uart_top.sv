@@ -4,8 +4,8 @@
 module pure_ibex_uart_top #(
   parameter int unsigned IMEM_AW = 14,
   parameter int unsigned DMEM_AW = 14,
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan/playground/pure_ibex_uart/imem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan/playground/pure_ibex_uart/dmem.hex",
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/pure_ibex_uart/imem.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/pure_ibex_uart/dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int DMEM_BASE = 32'h1000_0000,
   parameter int UART_BASE = 32'h2000_0000

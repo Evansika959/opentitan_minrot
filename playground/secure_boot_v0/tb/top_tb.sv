@@ -7,6 +7,7 @@ module top_tb(
   import tlul_pkg::*;
   import top_pkg::*;
 
+  parameter int UART_BASE = 32'h0003_0000;
   localparam logic [31:0] UART_CTRL_OFF  = 32'h10;
   localparam logic [31:0] UART_WDATA_OFF = 32'h1c;
 

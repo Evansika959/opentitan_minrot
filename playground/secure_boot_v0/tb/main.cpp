@@ -1,4 +1,4 @@
-#include "Vtb_pure_ibex_uart_top.h"
+#include "Vtop_tb.h"
 #include "verilated.h"
 #include "verilated_fst_c.h"
 
@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   Verilated::commandArgs(argc, argv);
   Verilated::traceEverOn(true);
 
-  Vtb_pure_ibex_uart_top top;
+  Vtop_tb top;
   VerilatedFstC tfp;
   top.trace(&tfp, 99);
   tfp.open("secure_boot_v0.fst");
@@ -40,8 +40,8 @@ int main(int argc, char **argv) {
     top.eval();
     tfp.dump(main_time);
 
-    // stop after ~200k cycles (moved from SV tb)
-    if (cycle >= 200000) {
+    // stop after ~5k cycles (moved from SV tb)
+    if (cycle >= 5000) {
       VL_PRINTF("\n[CPP] Timeout after %llu cycles\n", cycle);
       break;
     }

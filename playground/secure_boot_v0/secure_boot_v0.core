@@ -10,7 +10,8 @@ filesets:
       - rtl/ibex_to_tlul_host.sv
       - rtl/tlul_sram_if.sv
       - rtl/tlul_rom_if.sv
-      - rtl/tlul_xbar_2x4.sv
+      - rtl/autogen/rtl/autogen/tl_tlul_2to4_pkg.sv
+      - rtl/autogen/rtl/autogen/xbar_tlul_2to4.sv
     file_type: systemVerilogSource
     depend:
       - lowrisc:prim_generic:all
@@ -35,7 +36,7 @@ targets:
   sim:
     default_tool: verilator
     filesets: [rtl, tb_sv, tb_cpp]
-    toplevel: top
+    toplevel: top_tb
     tools:
       verilator:
         verilator_options:

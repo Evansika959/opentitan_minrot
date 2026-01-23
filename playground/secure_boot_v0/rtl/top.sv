@@ -2,9 +2,10 @@
 module top #(
   parameter int unsigned IMEM_AW = 16,
   parameter int unsigned DMEM_AW = 16,
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/pure_ibex_uart/imem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/pure_ibex_uart/dmem.hex",
-  parameter int IMEM_BASE = 32'h0000_0000
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/uart.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/dmem.hex",
+  parameter int IMEM_BASE = 32'h0000_0000,
+  parameter int UART_BASE = 32'h0000_3000
 ) (
   input  logic clk_i,
   input  logic rst_ni,
@@ -223,28 +224,34 @@ module top #(
   );
 
   // xbar instantiation
-  tlul_xbar_2x4 u_xbar (
+  xbar_tlul_2to4 u_xbar (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
 
     // Hosts
-    .h_d_i(tl_dmem_h2d),
-    .h_d_o(tl_dmem_d2h),
-    .h_i_i(tl_imem_h2d),
-    .h_i_o(tl_imem_d2h),
+    // h_i: instruction bus
+    .tl_h_i_i(tl_imem_h2d),
+    .tl_h_i_o(tl_imem_d2h),
+    // h_d: data bus
+    .tl_h_d_i(tl_dmem_h2d),
+    .tl_h_d_o(tl_dmem_d2h),
 
     // Devices
-    .dev0_o(tl_to_rom),
-    .dev0_i(tl_from_rom),
+    .tl_d_rom_o(tl_to_rom),
+    .tl_d_rom_i(tl_from_rom),
 
-    .dev1_o(tl_to_dmem_sram),
-    .dev1_i(tl_from_dmem_sram),
+    // Exec SRAM mapped at 0x1000
+    .tl_d_esram_o(tl_to_esram),
+    .tl_d_esram_i(tl_from_esram),
 
-    .dev2_o(tl_to_esram),
-    .dev2_i(tl_from_esram),
+    // Data SRAM mapped at 0x2000
+    .tl_d_dmem_o(tl_to_dmem_sram),
+    .tl_d_dmem_i(tl_from_dmem_sram),
 
-    .dev3_o(tl_to_uart),
-    .dev3_i(tl_from_uart)
+    .tl_d_uart_o(tl_to_uart),
+    .tl_d_uart_i(tl_from_uart),
+
+    .scanmode_i(prim_mubi_pkg::MuBi4False)
   );
 
 

@@ -1,0 +1,82 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "tlul_2to4",
+  clock: "clk_i",
+  clock_connections: {
+    clk_i:   "main"
+  }
+  reset: "rst_ni",
+  reset_connections: {
+    rst_ni:   "sys"
+  }
+  nodes: [
+    { name: "h_i",
+      type: "host",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_space: "hart",
+      xbar: false
+    },
+    { name: "h_d",
+      type: "host",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_space: "hart",
+      xbar: false
+    },
+    { name: "d_rom",
+      type: "device",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_range: [{
+        base_addrs: {
+          hart: 0x0000
+        },
+        size_byte: "0x1000"
+      }]
+      xbar: false
+    },
+    { name: "d_esram",
+      type: "device",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_range: [{
+        base_addrs: {
+          hart: 0x1000
+        },
+        size_byte: "0x1000"
+      }]
+      xbar: false
+    },
+    { name: "d_dmem",
+      type: "device",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_range: [{
+        base_addrs: {
+          hart: 0x2000
+        },
+        size_byte: "0x1000"
+      }]
+      xbar: false
+    },
+    { name: "d_uart",
+      type: "device",
+      clock: "clk_i",
+      reset: "rst_ni",
+      addr_range: [{
+        base_addrs: {
+          hart: 0x3000
+        },
+        size_byte: "0x1000"
+      }]
+      xbar: false
+    }
+  ],
+  connections: {
+    h_i: ["d_rom", "d_esram"],
+    h_d: ["d_esram", "d_dmem", "d_uart"]
+  }
+}

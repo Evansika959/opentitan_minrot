@@ -15,6 +15,9 @@ run:
 # waves: identical to run; keep target for compatibility
 waves: run
 
+xbar_gen:
+	python ../../util/tlgen.py -t ./hjson/tlul_2to4.hjson --o ./rtl/autogen/
+
 # Copy generated waveform to current dir
 copy:
 	cp build/xinting_playground_secure_boot_v0_0.1/sim-verilator/secure_boot_v0.fst ./

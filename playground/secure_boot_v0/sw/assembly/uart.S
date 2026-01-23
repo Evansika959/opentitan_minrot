@@ -1,8 +1,8 @@
     .section .text.start
     .globl _start
-_start:
+    _start:
     # ---- UART base and regs ----
-    li   t0, 0x20000000        # UART_BASE
+    li   t0, 0x3000        # UART_BASE
     li   t1, 0x00000010
     add  t2, t0, t1            # t2 = UART_CTRL addr
     li   t1, 0x00000014

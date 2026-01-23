@@ -93,3 +93,4 @@ book
 .ruff.toml
 
 .venv/
+tmp/

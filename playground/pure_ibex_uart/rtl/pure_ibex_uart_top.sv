@@ -62,6 +62,7 @@ module pure_ibex_uart_top #(
   import top_pkg::*;
   import tlul_pkg::*;
   import ibex_pkg::*;
+  import prim_mubi_pkg::*;
 
   // TL wires
   tl_h2d_t tl_imem_h2d;
@@ -201,14 +202,22 @@ module pure_ibex_uart_top #(
   );
 
   // DMEM fabric
-  tlul_xbar_1to2 #(
-    .DEV0_BASE(DMEM_BASE), .DEV0_MASK(32'hFFFF_0000),
-    .DEV1_BASE(UART_BASE), .DEV1_MASK(32'hFFFF_F000)
-  ) u_xbar (
+  // tlul_xbar_1to2 #(
+  //   .DEV0_BASE(DMEM_BASE), .DEV0_MASK(32'hFFFF_0000),
+  //   .DEV1_BASE(UART_BASE), .DEV1_MASK(32'hFFFF_F000)
+  // ) u_xbar (
+  //   .clk_i(clk_i), .rst_ni(rst_ni),
+  //   .h2d_i(tl_dmem_h2d), .d2h_o(tl_dmem_d2h),
+  //   .h2d_dev0_o(tl_to_dmem_sram), .d2h_dev0_i(tl_from_dmem_sram),
+  //   .h2d_dev1_o(tl_to_uart), .d2h_dev1_i(tl_from_uart)
+  // );
+
+  xbar_tlul_1to2 u_xbar (
     .clk_i(clk_i), .rst_ni(rst_ni),
-    .h2d_i(tl_dmem_h2d), .d2h_o(tl_dmem_d2h),
-    .h2d_dev0_o(tl_to_dmem_sram), .d2h_dev0_i(tl_from_dmem_sram),
-    .h2d_dev1_o(tl_to_uart), .d2h_dev1_i(tl_from_uart)
+    .tl_h0_i(tl_dmem_h2d), .tl_h0_o(tl_dmem_d2h),
+    .tl_d0_o(tl_to_dmem_sram), .tl_d0_i(tl_from_dmem_sram),
+    .tl_d1_o(tl_to_uart), .tl_d1_i(tl_from_uart),
+    .scanmode_i(prim_mubi_pkg::MuBi4False)
   );
 
   tlul_sram_if #(

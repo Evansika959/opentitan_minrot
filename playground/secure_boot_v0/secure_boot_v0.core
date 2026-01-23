@@ -1,18 +1,16 @@
 CAPI=2:
 
-name: xinting:playground:pure_ibex_uart:0.1
-description: Pure Ibex + TL-UL SRAM + UART top (Verilator)
+name: xinting:playground:secure_boot_v0:0.1
+description: secure boot minimal top with Ibex + TL-UL SRAM + TL-UL ROM + UART (Verilator)
 
 filesets:
   rtl:
     files:
-      # - top_pkg.sv
+      - rtl/top.sv
       - rtl/ibex_to_tlul_host.sv
       - rtl/tlul_sram_if.sv
-      # - rtl/tlul_xbar_1to2.sv # handwritten version
-      - rtl/pure_ibex_uart_top.sv
-      - rtl/autogen/rtl/autogen/tl_tlul_1to2_pkg.sv
-      - rtl/autogen/rtl/autogen/xbar_tlul_1to2.sv
+      - rtl/tlul_rom_if.sv
+      - rtl/tlul_xbar_2x4.sv
     file_type: systemVerilogSource
     depend:
       - lowrisc:prim_generic:all
@@ -23,12 +21,12 @@ filesets:
 
   tb_sv:
     files:
-      - tb/pure_ibex_uart_top_tb.sv
+      - tb/top_tb.sv
     file_type: systemVerilogSource
 
   tb_cpp:
     files:
-      - tb/sim_main.cpp
+      - tb/main.cpp
     file_type: cppSource
 
 parameters: {}
@@ -37,7 +35,7 @@ targets:
   sim:
     default_tool: verilator
     filesets: [rtl, tb_sv, tb_cpp]
-    toplevel: tb_pure_ibex_uart_top
+    toplevel: top
     tools:
       verilator:
         verilator_options:

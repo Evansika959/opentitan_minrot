@@ -32,9 +32,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x0000
+          hart: 0x00000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     },
@@ -44,9 +44,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x1000
+          hart: 0x10000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     },
@@ -56,9 +56,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x2000
+          hart: 0x20000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     },
@@ -68,9 +68,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x3000
+          hart: 0x30000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     }

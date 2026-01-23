@@ -7,14 +7,14 @@
 package tl_tlul_2to4_pkg;
 
   localparam logic [31:0] ADDR_SPACE_D_ROM   = 32'h 00000000;
-  localparam logic [31:0] ADDR_SPACE_D_ESRAM = 32'h 00001000;
-  localparam logic [31:0] ADDR_SPACE_D_DMEM  = 32'h 00002000;
-  localparam logic [31:0] ADDR_SPACE_D_UART  = 32'h 00003000;
+  localparam logic [31:0] ADDR_SPACE_D_ESRAM = 32'h 00010000;
+  localparam logic [31:0] ADDR_SPACE_D_DMEM  = 32'h 00020000;
+  localparam logic [31:0] ADDR_SPACE_D_UART  = 32'h 00030000;
 
-  localparam logic [31:0] ADDR_MASK_D_ROM   = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_D_ESRAM = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_D_DMEM  = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_D_UART  = 32'h 00000fff;
+  localparam logic [31:0] ADDR_MASK_D_ROM   = 32'h 0000ffff;
+  localparam logic [31:0] ADDR_MASK_D_ESRAM = 32'h 0000ffff;
+  localparam logic [31:0] ADDR_MASK_D_DMEM  = 32'h 0000ffff;
+  localparam logic [31:0] ADDR_MASK_D_UART  = 32'h 0000ffff;
 
   localparam int N_HOST   = 2;
   localparam int N_DEVICE = 4;

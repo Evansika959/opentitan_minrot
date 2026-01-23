@@ -8,16 +8,16 @@
 // List of Xbar device memory map
 tl_device_t xbar_devices[$] = '{
     '{"d_rom", '{
-        '{32'h00000000, 32'h00000fff}
+        '{32'h00000000, 32'h0000ffff}
     }},
     '{"d_esram", '{
-        '{32'h00001000, 32'h00001fff}
+        '{32'h00010000, 32'h0001ffff}
     }},
     '{"d_dmem", '{
-        '{32'h00002000, 32'h00002fff}
+        '{32'h00020000, 32'h0002ffff}
     }},
     '{"d_uart", '{
-        '{32'h00003000, 32'h00003fff}
+        '{32'h00030000, 32'h0003ffff}
 }}};
 
   // List of Xbar hosts

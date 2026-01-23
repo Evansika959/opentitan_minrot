@@ -5,7 +5,7 @@ module top #(
   parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/uart.hex",
   parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
-  parameter int UART_BASE = 32'h0000_3000
+  parameter int UART_BASE = 32'h0003_0000
 ) (
   input  logic clk_i,
   input  logic rst_ni,

@@ -2,7 +2,8 @@
     .globl _start
     _start:
     # ---- UART base and regs ----
-    li   t0, 0x3000        # UART_BASE
+    lui  t0, 0x30          # UART_BASE high (0x0003_0000)
+    addi t0, t0, 0         # full base = 0x0003_0000
     li   t1, 0x00000010
     add  t2, t0, t1            # t2 = UART_CTRL addr
     li   t1, 0x00000014

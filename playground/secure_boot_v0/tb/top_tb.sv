@@ -192,8 +192,8 @@ module top_tb(
     .clk_i(clk),
     .rst_ni(rst_n),
 
-  .tl_to_uart_o(tl_to_uart),
-  .tl_from_uart_o(tl_from_uart),
+    .tl_to_uart_o(tl_to_uart),
+    .tl_from_uart_o(tl_from_uart),
 
     .uart_rx_i(uart_rx),
     .uart_tx_o(uart_tx),
@@ -279,10 +279,65 @@ module top_tb(
   assign uart_d_data    = dut.tl_from_uart.d_data;
   assign uart_d_error   = dut.tl_from_uart.d_error;
 
-  // waveform
-  initial begin
-    $dumpfile("mini.fst");
-    $dumpvars(0, tb_pure_ibex_uart_top);
+  // UART line listener: decode uart_tx into bytes using system clock (~10MHz) and expected baud (~115200).
+  // Assumes UART NCO set to 0x2F30, giving ~87 clk cycles per bit.
+  localparam int UART_BIT_TICKS = 87;
+  typedef enum logic [1:0] {UART_IDLE, UART_START, UART_DATA, UART_STOP} uart_rx_state_e;
+  uart_rx_state_e uart_rx_state;
+  int uart_tick_cnt;
+  int uart_bit_idx;
+  byte uart_shift;
+
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      uart_rx_state <= UART_IDLE;
+      uart_tick_cnt <= 0;
+      uart_bit_idx  <= 0;
+      uart_shift    <= 8'h00;
+    end else begin
+      case (uart_rx_state)
+        UART_IDLE: begin
+          uart_tick_cnt <= 0;
+          uart_bit_idx  <= 0;
+          if (uart_tx_en && uart_tx == 1'b0) begin
+            uart_rx_state <= UART_START; // detect start bit
+            uart_tick_cnt <= 1;
+          end
+        end
+        UART_START: begin
+          uart_tick_cnt <= uart_tick_cnt + 1;
+          if (uart_tick_cnt >= (UART_BIT_TICKS/2)) begin
+            if (uart_tx == 1'b0) begin
+              uart_rx_state <= UART_DATA;
+              uart_tick_cnt <= 0;
+              uart_bit_idx  <= 0;
+            end else begin
+              uart_rx_state <= UART_IDLE; // false start
+            end
+          end
+        end
+        UART_DATA: begin
+          uart_tick_cnt <= uart_tick_cnt + 1;
+          if (uart_tick_cnt >= UART_BIT_TICKS) begin
+            uart_tick_cnt <= 0;
+            uart_shift[uart_bit_idx] <= uart_tx;
+            uart_bit_idx <= uart_bit_idx + 1;
+            if (uart_bit_idx == 7) uart_rx_state <= UART_STOP;
+          end
+        end
+        UART_STOP: begin
+          uart_tick_cnt <= uart_tick_cnt + 1;
+          if (uart_tick_cnt >= UART_BIT_TICKS) begin
+            uart_rx_state <= UART_IDLE;
+            uart_tick_cnt <= 0;
+            $display("[TB][UART_RX] byte=0x%02x ('%s') @%0t",
+                     uart_shift,
+                     (uart_shift >= 8'h20 && uart_shift <= 8'h7e) ? {uart_shift} : "?",
+                     $time);
+          end
+        end
+      endcase
+    end
   end
 
   int fetch_cnt;
@@ -326,19 +381,19 @@ module top_tb(
   end
 `endif
 
-  // Monitor UART TL host requests
-  int uart_req_cnt;
-  always_ff @(posedge clk) begin
-    if (!rst_n) begin
-      uart_req_cnt <= 0;
-    end else if (uart_a_valid && tl_from_uart.a_ready) begin
-      uart_req_cnt <= uart_req_cnt + 1;
-      if (uart_req_cnt < 50) begin
-        $display("[TB] UART TL req #%0d @time %0t opcode=%0d addr=0x%08x data=0x%08x mask=0x%x size=%0d", 
-          uart_req_cnt, $time, uart_a_opcode, uart_a_address, uart_a_data, uart_a_mask, uart_a_size);
-      end
-    end
-  end
+//   // Monitor UART TL host requests
+//   int uart_req_cnt;
+//   always_ff @(posedge clk) begin
+//     if (!rst_n) begin
+//       uart_req_cnt <= 0;
+//     end else if (uart_a_valid && tl_from_uart.a_ready) begin
+//       uart_req_cnt <= uart_req_cnt + 1;
+//       if (uart_req_cnt < 50) begin
+//         $display("[TB] UART TL req #%0d @time %0t opcode=%0d addr=0x%08x data=0x%08x mask=0x%x size=%0d", 
+//           uart_req_cnt, $time, uart_a_opcode, uart_a_address, uart_a_data, uart_a_mask, uart_a_size);
+//       end
+//     end
+//   end
 
   // Flag TL-UL errors coming back from UART
   int uart_err_cnt;

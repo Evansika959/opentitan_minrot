@@ -3,8 +3,8 @@ module top #(
   parameter int unsigned IMEM_AW = 16,
   parameter int unsigned DMEM_AW = 16,
   // Default program image for instruction memory
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/smoke.imem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/smoke.dmem.hex",
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/uart_test.imem.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/hex/uart_test.dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (
@@ -207,7 +207,8 @@ module top #(
   // IMEM SRAM (Exec SRAM) 
   tlul_sram_if #(
     .SramAw(IMEM_AW),
-    .INIT_HEX("")
+    .INIT_HEX(""),
+    .BASE_ADDR(32'h0001_0000)
   ) u_esram (
     .clk_i(clk_i), .rst_ni(rst_ni),
     .tl_i(tl_to_esram), .tl_o(tl_from_esram),
@@ -217,7 +218,8 @@ module top #(
   // DMEM SRAM
   tlul_sram_if #(
     .SramAw(DMEM_AW),
-    .INIT_HEX(DMEM_INIT_HEX)
+    .INIT_HEX(DMEM_INIT_HEX),
+    .BASE_ADDR(32'h0002_0000)
   ) u_dmem (
     .clk_i(clk_i), .rst_ni(rst_ni),
     .tl_i(tl_to_dmem_sram), .tl_o(tl_from_dmem_sram),

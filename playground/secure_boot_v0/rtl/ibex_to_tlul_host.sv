@@ -37,7 +37,8 @@ module ibex_to_tlul_host #(
       tl_d.a_opcode = (be_i == 4'hF) ? tlul_pkg::PutFullData : tlul_pkg::PutPartialData;
     end
     tl_d.a_param   = 3'b000;
-    tl_d.a_size    = 3'd2; // 4 bytes
+    tl_d.a_size    = 2'b10;
+    // tl_d.a_size    = (be_i == 4'hF) ? 3'd2 : (be_i == 4'h3 || be_i == 4'hC || be_i == 4'h5 || be_i == 4'hA) ? 3'd1 : 3'd0; // 4/2/1 bytes 
     tl_d.a_source  = '0;
     tl_d.a_address = addr_i;
     tl_d.a_mask    = (READ_ONLY || !we_i) ? 4'hF : be_i;

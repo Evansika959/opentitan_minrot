@@ -25,11 +25,12 @@ static inline void uart_putc(char c) {
   }
 
   // Write byte
-  *wdata = (uint8_t)c;
+  uint32_t byte = (uint8_t)c;  // keeps it in a register
+  *wdata = byte;
 }
 
 int main(void) {
-  const char *msg = "helloworld\n";
+  const char *msg = "helloworld";
   for (const char *p = msg; *p; ++p) {
     uart_putc(*p);
   }

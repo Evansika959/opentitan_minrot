@@ -1,7 +1,9 @@
 // TL-UL SRAM interface: adapter + simple 1-cycle SRAM model
 module tlul_sram_if #(
   parameter int unsigned SramAw = 14,
-  parameter string INIT_HEX = ""
+  parameter string INIT_HEX = "",
+  // Base address of this SRAM window in the system address space
+  parameter logic [31:0] BASE_ADDR = 32'h0
 ) (
   input  logic              clk_i,
   input  logic              rst_ni,
@@ -42,7 +44,7 @@ module tlul_sram_if #(
     .we_o(we),
     .addr_o(addr),
     .wdata_o(wdata),
-    .wmask_o(wmask),
+    .wmask_o(_),    // debug
 
     .intg_error_o(),
 
@@ -51,12 +53,17 @@ module tlul_sram_if #(
     .rerror_i(rerror)
   );
 
+  // assign the wmask from the incoming tlul packet
+  assign wmask = tl_i.a_mask;
+
   // 1-cycle read SRAM model
   logic [31:0] mem [0:(1<<SramAw)-1];
   initial if (INIT_HEX != "") $readmemh(INIT_HEX, mem);
 
   logic [SramAw-1:0] rd_addr_q;
   logic rd_pending_q;
+  logic [SramAw-1:0] local_addr;
+
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -67,15 +74,19 @@ module tlul_sram_if #(
     end else begin
       rvalid <= 1'b0;
 
-      if (req && we) begin
-        for (int b = 0; b < 4; b++) begin
-          if (wmask[b]) mem[addr][8*b +: 8] <= wdata[8*b +: 8];
-        end
-      end
+      // Incoming addr_o is the full system byte address >> 2 truncated to SramAw.
+      // Subtract BASE_ADDR (word-aligned) so hex init at address 0 lines up with BASE_ADDR.
+      if (req) begin
+        local_addr = addr - (BASE_ADDR[31:2]);
 
-      if (req && !we) begin
-        rd_addr_q    <= addr;
-        rd_pending_q <= 1'b1;
+        if (we) begin
+          for (int b = 0; b < 4; b++) begin
+            if (wmask[b]) mem[local_addr][8*b +: 8] <= wdata[8*b +: 8];
+          end
+        end else begin
+          rd_addr_q    <= local_addr;
+          rd_pending_q <= 1'b1;
+        end
       end
 
       if (rd_pending_q) begin

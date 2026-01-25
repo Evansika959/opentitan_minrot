@@ -42,6 +42,7 @@ module top_tb(
   logic        dmem_a_valid;
   logic [2:0]  dmem_a_opcode;
   logic [top_pkg::TL_AW-1:0]  dmem_a_address;
+  logic [top_pkg::TL_SZW-1:0] dmem_a_size;
   logic [top_pkg::TL_DBW-1:0] dmem_a_mask;
   logic [top_pkg::TL_DW-1:0]  dmem_a_data;
   logic        dmem_d_ready;
@@ -68,6 +69,20 @@ module top_tb(
   logic [top_pkg::TL_DIW-1:0] uart_d_sink;
   logic [top_pkg::TL_DW-1:0]  uart_d_data;
   logic        uart_d_error;
+
+  logic        dsram_a_valid;
+  logic [2:0]  dsram_a_opcode;
+  logic [2:0]  dsram_a_param;
+  logic [top_pkg::TL_SZW-1:0] dsram_a_size;
+  logic [top_pkg::TL_AIW-1:0] dsram_a_source;
+  logic [top_pkg::TL_AW-1:0]  dsram_a_address;
+  logic [top_pkg::TL_DBW-1:0] dsram_a_mask;
+  logic [top_pkg::TL_DW-1:0]  dsram_a_data;
+  logic        dsram_d_ready;
+
+  logic       dsram_d_valid;
+  logic [top_pkg::TL_DW-1:0] dsram_d_data;
+  logic       dsram_d_error;
 
 `ifdef RVFI
   // Retire interface signals
@@ -251,6 +266,7 @@ module top_tb(
   assign dmem_a_opcode  = dut.tl_dmem_h2d.a_opcode;
   assign dmem_a_address = dut.tl_dmem_h2d.a_address;
   assign dmem_a_mask    = dut.tl_dmem_h2d.a_mask;
+  assign dmem_a_size    = dut.tl_dmem_h2d.a_size;
   assign dmem_a_data    = dut.tl_dmem_h2d.a_data;
   assign dmem_d_ready   = dut.tl_dmem_h2d.d_ready;
   // DMEM device->host
@@ -278,6 +294,21 @@ module top_tb(
   assign uart_d_sink    = dut.tl_from_uart.d_sink;
   assign uart_d_data    = dut.tl_from_uart.d_data;
   assign uart_d_error   = dut.tl_from_uart.d_error;
+
+  // D-SRAM host to device signals
+  assign dsram_a_valid   = dut.tl_to_dmem_sram.a_valid;
+  assign dsram_a_opcode  = dut.tl_to_dmem_sram.a_opcode;
+  assign dsram_a_param   = dut.tl_to_dmem_sram.a_param;
+  assign dsram_a_size    = dut.tl_to_dmem_sram.a_size;
+  assign dsram_a_source  = dut.tl_to_dmem_sram.a_source;
+  assign dsram_a_address = dut.tl_to_dmem_sram.a_address;
+  assign dsram_a_mask    = dut.tl_to_dmem_sram.a_mask;
+  assign dsram_a_data    = dut.tl_to_dmem_sram.a_data;
+  assign dsram_d_ready   = dut.tl_to_dmem_sram.d_ready;
+  // D-SRAM device->host
+  assign dsram_d_valid   = dut.tl_from_dmem_sram.d_valid;
+  assign dsram_d_data    = dut.tl_from_dmem_sram.d_data;
+  assign dsram_d_error   = dut.tl_from_dmem_sram.d_error;
 
   // UART line listener: decode uart_tx into bytes using system clock (~10MHz) and expected baud (~115200).
   // Assumes UART NCO set to 0x2F30, giving ~87 clk cycles per bit.
@@ -371,7 +402,7 @@ module top_tb(
       rvfi_cnt <= 0;
     end else if (rvfi_valid) begin
       rvfi_cnt <= rvfi_cnt + 1;
-      if (rvfi_cnt < 50) begin
+      if (rvfi_cnt < 100) begin
         $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x (%s) rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
                  rvfi_cnt, $time, rvfi_pc_rdata, rvfi_pc_wdata,
                  rvfi_insn, rv32_decode(rvfi_insn),
@@ -382,18 +413,18 @@ module top_tb(
 `endif
 
 //   // Monitor UART TL host requests
-//   int uart_req_cnt;
-//   always_ff @(posedge clk) begin
-//     if (!rst_n) begin
-//       uart_req_cnt <= 0;
-//     end else if (uart_a_valid && tl_from_uart.a_ready) begin
-//       uart_req_cnt <= uart_req_cnt + 1;
-//       if (uart_req_cnt < 50) begin
-//         $display("[TB] UART TL req #%0d @time %0t opcode=%0d addr=0x%08x data=0x%08x mask=0x%x size=%0d", 
-//           uart_req_cnt, $time, uart_a_opcode, uart_a_address, uart_a_data, uart_a_mask, uart_a_size);
-//       end
-//     end
-//   end
+  int uart_req_cnt;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      uart_req_cnt <= 0;
+    end else if (uart_a_valid && tl_from_uart.a_ready) begin
+      uart_req_cnt <= uart_req_cnt + 1;
+      if (uart_req_cnt < 50) begin
+        $display("[TB] UART TL req #%0d @time %0t opcode=%0d addr=0x%08x data=0x%08x mask=0x%x size=%0d", 
+          uart_req_cnt, $time, uart_a_opcode, uart_a_address, uart_a_data, uart_a_mask, uart_a_size);
+      end
+    end
+  end
 
   // Flag TL-UL errors coming back from UART
   int uart_err_cnt;

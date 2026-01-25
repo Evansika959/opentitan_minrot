@@ -40,8 +40,7 @@ int main(int argc, char **argv) {
     top.eval();
     tfp.dump(main_time);
 
-    // stop after ~5k cycles (moved from SV tb)
-    if (cycle >= 5000) {
+    if (cycle >= 20000) {
       VL_PRINTF("\n[CPP] Timeout after %llu cycles\n", cycle);
       break;
     }

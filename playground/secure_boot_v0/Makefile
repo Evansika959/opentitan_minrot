@@ -10,7 +10,7 @@
 
 all: run
 run:
-	fusesoc --cores-root ../.. run --target=sim --tool=verilator xinting:playground:secure_boot_v0
+	fusesoc --cores-root ../.. run --target=sim --tool=verilator xinting:playground:secure_boot_v0 > sim.log 2>&1
 
 # waves: identical to run; keep target for compatibility
 waves: run

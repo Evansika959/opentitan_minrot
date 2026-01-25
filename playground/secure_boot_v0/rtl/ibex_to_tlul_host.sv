@@ -30,7 +30,12 @@ module ibex_to_tlul_host #(
   always_comb begin
     tl_d = tlul_pkg::TL_H2D_DEFAULT;
     tl_d.a_valid   = req_i && !outstanding_q;
-    tl_d.a_opcode  = (READ_ONLY || !we_i) ? tlul_pkg::Get : tlul_pkg::PutFullData;
+    // Use PutPartialData when any byte mask bit is cleared (e.g. byte/halfword stores).
+    if (READ_ONLY || !we_i) begin
+      tl_d.a_opcode = tlul_pkg::Get;
+    end else begin
+      tl_d.a_opcode = (be_i == 4'hF) ? tlul_pkg::PutFullData : tlul_pkg::PutPartialData;
+    end
     tl_d.a_param   = 3'b000;
     tl_d.a_size    = 3'd2; // 4 bytes
     tl_d.a_source  = '0;

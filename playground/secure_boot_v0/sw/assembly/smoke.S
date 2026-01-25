@@ -1,17 +1,19 @@
 .section .text
 .globl _start
 _start:
-  # DMEM base = 0x1000_0000
-  lui   t0, 0x10000        # t0 = 0x1000_0000
+  # DMEM base = 0x0002ff68
+  lui   t0, 0x00030        # 0x00030000
+  addi  t0, t0, -152       # -> 0x0002ff68
 
   li    t1, 0xdeadbeef
-  sw    t1, 0(t0)          # store to dmem[0]
+  sb    t1, 3(t0)          # store top byte (mask 0x8)
 
   nop
   nop
 
-  lw    t2, 0(t0)          # load back
-  bne   t1, t2, fail
+  lbu   t2, 3(t0)          # load back byte
+  li    t3, 0xde
+  bne   t3, t2, fail
 
 pass:
   j pass

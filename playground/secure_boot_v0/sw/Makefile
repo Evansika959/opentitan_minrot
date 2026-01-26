@@ -14,10 +14,10 @@
 #   DATA_SRAM_BASE= 0x00020000 (size 64KB)
 
 # ---- Toolchain ----
-CC       := riscv32-unknown-elf-gcc
-OBJCOPY  := riscv32-unknown-elf-objcopy
-OBJDUMP  := riscv32-unknown-elf-objdump
-SIZE     := riscv32-unknown-elf-size
+CC       := riscv64-unknown-elf-gcc
+OBJCOPY  := riscv64-unknown-elf-objcopy
+OBJDUMP  := riscv64-unknown-elf-objdump
+SIZE     := riscv64-unknown-elf-size
 PY       := python3
 OPENSSL  := openssl
 
@@ -50,7 +50,8 @@ PRIV_PEM := $(BUILD)/priv.pem
 PUB_PEM  := $(BUILD)/pub.pem
 
 DSRAM_HEX := $(BUILD)/d_sram.hex
-PUBKEY_H  := $(BOOTDIR)/trusted_pubkey.h  # generated into sw/boot/ for easy include
+PUBKEY_H  := $(BOOTDIR)/trusted_pubkey.h
+# generated into sw/boot/ for easy include
 
 # ---- Flags ----
 CFLAGS_COMMON := -march=rv32imc -mabi=ilp32 \
@@ -67,6 +68,10 @@ LDFLAGS_COMMON := -T$(LINKER) -Wl,--gc-sections -Wl,-Map,$@.map
 # ---- Default target ----
 .PHONY: all
 all: $(DSRAM_HEX)
+
+# Generate trusted_pubkey.h early if you only need the header
+.PHONY: pubkey
+pubkey: $(PUBKEY_H)
 
 # ---- Build ROM_EXT ----
 $(ROM_EXT_ELF): $(ROM_EXT_C) $(LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) | $(BUILD)
@@ -94,6 +99,14 @@ $(BL0_BIN): $(BL0_ELF) | $(BUILD)
 $(PRIV_PEM) $(PUB_PEM): | $(BUILD)
 	$(OPENSSL) ecparam -name prime256v1 -genkey -noout -out $(PRIV_PEM)
 	$(OPENSSL) ec -in $(PRIV_PEM) -pubout -out $(PUB_PEM)
+
+$(PUBKEY_H): $(PUB_PEM) $(PACK_PY) | $(BUILD)
+	$(PY) -c "import importlib.util, pathlib;\
+spec = importlib.util.spec_from_file_location('pack_image', pathlib.Path('$(PACK_PY)'));\
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod);\
+xy = mod.extract_pubkey_xy_from_pem('$(PUB_PEM)');\
+mod.write_trusted_pubkey_h('$(PUBKEY_H)', xy);\
+print('Wrote: $(PUBKEY_H)')"
 
 # ---- Generate trusted_pubkey.h + pack signed images into D-SRAM hex ----
 $(DSRAM_HEX): $(ROM_EXT_BIN) $(BL0_BIN) $(PACK_PY) $(PRIV_PEM) $(PUB_PEM) | $(BUILD)

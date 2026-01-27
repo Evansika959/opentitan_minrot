@@ -402,7 +402,7 @@ module top_tb(
       rvfi_cnt <= 0;
     end else if (rvfi_valid) begin
       rvfi_cnt <= rvfi_cnt + 1;
-      if (rvfi_cnt < 100) begin
+      if (rvfi_cnt < 1000000) begin
         $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x (%s) rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
                  rvfi_cnt, $time, rvfi_pc_rdata, rvfi_pc_wdata,
                  rvfi_insn, rv32_decode(rvfi_insn),
@@ -469,5 +469,13 @@ module top_tb(
 
   // stop after some time
   // (timeout now handled in C++ harness)
+
+  // C++ harness hook: dump exec SRAM (u_esram inside DUT) to hex
+  function automatic void dump_esram(input string path);
+    begin
+      dut.dump_esram(path);
+    end
+  endfunction
+  export "DPI-C" function dump_esram;
 
 endmodule

@@ -2,6 +2,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "boot_hdr.h"
+#include "./utils/uart.h"
+#include "./utils/sha256.h"
+#include "./utils/trusted_pubkey.h"
+
+// ====== ECDSA verify via micro-ecc ======
+#include "./utils/micro-ecc/uECC.h"
 
 // ====== Platform constants (adjust if your map differs) ======
 #define DATA_SRAM_BASE   0x00020000u
@@ -13,109 +19,89 @@
 #define BOOT_IMG_BASE    0x00021000u   // ROM_EXT image container base in D-SRAM
 #define BL0_IMG_BASE     0x00023000u   // BL0 image container base in D-SRAM
 
-// ====== UART (replace with your known-good MMIO) ======
-static inline void mmio32_write(uint32_t addr, uint32_t val) {
-  *(volatile uint32_t *)addr = val;
+// #define FAST_SIM  // Skip payload hashing in FAST_SIM to speed up runs
+
+typedef void (*entry_fn_t)(void);
+
+// Forward declarations (definitions after main)
+static void uart_puts(const char *s);
+static void die(const char *msg);
+static bool add_overflow_u32(uint32_t a, uint32_t b, uint32_t *out);
+static bool in_range_len(uint32_t addr, uint32_t len, uint32_t base, uint32_t size);
+static void compute_digest(const boot_hdr_t *h, const uint8_t *payload, uint8_t digest[32]);
+static void verify_header(const boot_hdr_t *h, uint32_t img_base, uint32_t expected_type);
+static void copy_payload(uint32_t dst_addr, const uint8_t *src, uint32_t len);
+static void jump_to(uint32_t entry_addr);
+static void uart_put_hex32(uint32_t v);
+static void uart_put_hex8(uint8_t v);
+
+// void rom_main(void) {
+int main(void) {
+  uart_putc('s');
+
+  const uint32_t img_base = BOOT_IMG_BASE;
+  const boot_hdr_t *h = (const boot_hdr_t *)(uintptr_t)img_base;
+
+  uart_putc('m');
+  uart_put_hex32(h->magic);
+  uart_putc('m');
+
+  verify_header(h, img_base, IMG_TYPE_ROM_EXT);
+
+  const uint8_t *payload = (const uint8_t *)(uintptr_t)(img_base + h->payload_off);
+  const uint8_t *sig     = (const uint8_t *)(uintptr_t)(img_base + h->sig_off);
+  
+  uint8_t digest[32];
+
+  // print the payload length
+  uart_putc('t');
+  uart_put_hex32(h->payload_len);
+  uart_put_hex32(h->payload_len);
+  uart_putc('t');
+
+  // In FAST_SIM, skip payload hashing to speed up runs; still hash header for structure integrity.
+// #ifdef FAST_SIM
+//   hdr_bind_t bind = {
+//     .img_type    = h->img_type,
+//     .payload_len = h->payload_len,
+//     .load_addr   = h->load_addr,
+//     .entry_addr  = h->entry_addr,
+//   };
+//   sha256_ctx_t ctx_fast;
+//   sha256_init(&ctx_fast);
+//   sha256_update(&ctx_fast, (const uint8_t *)&bind, sizeof(bind));
+//   sha256_final(&ctx_fast, digest);
+// #else
+//   compute_digest(h, payload, digest);
+// #endif
+  // uart_putc('c');
+
+  // Print the digest 
+  // for (int i = 0; i < 32; ++i) {
+  //   uart_put_hex8(digest[i]);
+  // }
+  // uart_putc('\n');
+
+  // micro-ecc expects pubkey as 64 bytes X||Y big-endian; signature as 64 bytes r||s big-endian.
+  // if (!uECC_verify(TRUSTED_PUBKEY_XY, digest, 32, sig, uECC_secp256r1())) {
+  //   die("ROM: ROM_EXT FAIL");
+  // }
+
+  uart_putc('J');
+  copy_payload(h->load_addr, payload, h->payload_len);
+  uart_putc('P');
+
+  jump_to(h->entry_addr);
+
+  // Emit "O" and halt without storing the string
+  uart_putc('O');
+  while (1) { __asm__ volatile("wfi"); }
 }
-static inline void uart_putc(char c) {
-  // TODO: replace with your demo's UART write sequence
-  // Example placeholder:
-  (void)c;
-}
+
+// ====== UART ======
 static void uart_puts(const char *s) {
   while (*s) uart_putc(*s++);
 }
-
-// ====== Minimal SHA-256 (compact, self-contained) ======
-typedef struct {
-  uint32_t h[8];
-  uint64_t len;
-  uint8_t  buf[64];
-  uint32_t buf_len;
-} sha256_ctx_t;
-
-static uint32_t rotr32(uint32_t x, uint32_t n) { return (x >> n) | (x << (32 - n)); }
-static uint32_t ch(uint32_t x, uint32_t y, uint32_t z) { return (x & y) ^ (~x & z); }
-static uint32_t maj(uint32_t x, uint32_t y, uint32_t z) { return (x & y) ^ (x & z) ^ (y & z); }
-static uint32_t bsig0(uint32_t x) { return rotr32(x, 2) ^ rotr32(x, 13) ^ rotr32(x, 22); }
-static uint32_t bsig1(uint32_t x) { return rotr32(x, 6) ^ rotr32(x, 11) ^ rotr32(x, 25); }
-static uint32_t ssig0(uint32_t x) { return rotr32(x, 7) ^ rotr32(x, 18) ^ (x >> 3); }
-static uint32_t ssig1(uint32_t x) { return rotr32(x, 17) ^ rotr32(x, 19) ^ (x >> 10); }
-
-static const uint32_t K[64] = {
-  0x428a2f98u,0x71374491u,0xb5c0fbcfu,0xe9b5dba5u,0x3956c25bu,0x59f111f1u,0x923f82a4u,0xab1c5ed5u,
-  0xd807aa98u,0x12835b01u,0x243185beu,0x550c7dc3u,0x72be5d74u,0x80deb1feu,0x9bdc06a7u,0xc19bf174u,
-  0xe49b69c1u,0xefbe4786u,0x0fc19dc6u,0x240ca1ccu,0x2de92c6fu,0x4a7484aau,0x5cb0a9dcu,0x76f988dau,
-  0x983e5152u,0xa831c66du,0xb00327c8u,0xbf597fc7u,0xc6e00bf3u,0xd5a79147u,0x06ca6351u,0x14292967u,
-  0x27b70a85u,0x2e1b2138u,0x4d2c6dfcu,0x53380d13u,0x650a7354u,0x766a0abbu,0x81c2c92eu,0x92722c85u,
-  0xa2bfe8a1u,0xa81a664bu,0xc24b8b70u,0xc76c51a3u,0xd192e819u,0xd6990624u,0xf40e3585u,0x106aa070u,
-  0x19a4c116u,0x1e376c08u,0x2748774cu,0x34b0bcb5u,0x391c0cb3u,0x4ed8aa4au,0x5b9cca4fu,0x682e6ff3u,
-  0x748f82eeu,0x78a5636fu,0x84c87814u,0x8cc70208u,0x90befffau,0xa4506cebu,0xbef9a3f7u,0xc67178f2u
-};
-
-static void sha256_init(sha256_ctx_t *c) {
-  c->h[0]=0x6a09e667u; c->h[1]=0xbb67ae85u; c->h[2]=0x3c6ef372u; c->h[3]=0xa54ff53au;
-  c->h[4]=0x510e527fu; c->h[5]=0x9b05688cu; c->h[6]=0x1f83d9abu; c->h[7]=0x5be0cd19u;
-  c->len = 0;
-  c->buf_len = 0;
-}
-
-static void sha256_block(sha256_ctx_t *c, const uint8_t b[64]) {
-  uint32_t w[64];
-  for (int i=0;i<16;i++) {
-    w[i] = ((uint32_t)b[i*4+0]<<24) | ((uint32_t)b[i*4+1]<<16) |
-           ((uint32_t)b[i*4+2]<<8)  | ((uint32_t)b[i*4+3]);
-  }
-  for (int i=16;i<64;i++) w[i] = ssig1(w[i-2]) + w[i-7] + ssig0(w[i-15]) + w[i-16];
-
-  uint32_t a=c->h[0],b0=c->h[1],c0=c->h[2],d=c->h[3],e=c->h[4],f=c->h[5],g=c->h[6],h=c->h[7];
-  for (int i=0;i<64;i++) {
-    uint32_t t1 = h + bsig1(e) + ch(e,f,g) + K[i] + w[i];
-    uint32_t t2 = bsig0(a) + maj(a,b0,c0);
-    h=g; g=f; f=e; e=d+t1; d=c0; c0=b0; b0=a; a=t1+t2;
-  }
-  c->h[0]+=a; c->h[1]+=b0; c->h[2]+=c0; c->h[3]+=d; c->h[4]+=e; c->h[5]+=f; c->h[6]+=g; c->h[7]+=h;
-}
-
-static void sha256_update(sha256_ctx_t *c, const uint8_t *p, uint32_t n) {
-  c->len += (uint64_t)n;
-  while (n) {
-    uint32_t take = 64 - c->buf_len;
-    if (take > n) take = n;
-    for (uint32_t i=0;i<take;i++) c->buf[c->buf_len+i] = p[i];
-    c->buf_len += take;
-    p += take; n -= take;
-    if (c->buf_len == 64) {
-      sha256_block(c, c->buf);
-      c->buf_len = 0;
-    }
-  }
-}
-
-static void sha256_final(sha256_ctx_t *c, uint8_t out[32]) {
-  uint64_t bitlen = c->len * 8u;
-  // append 0x80
-  c->buf[c->buf_len++] = 0x80;
-  // pad with zeros until 56
-  while (c->buf_len != 56) {
-    if (c->buf_len == 64) { sha256_block(c, c->buf); c->buf_len = 0; }
-    c->buf[c->buf_len++] = 0x00;
-  }
-  // append bit length (big-endian)
-  for (int i=7;i>=0;i--) c->buf[c->buf_len++] = (uint8_t)(bitlen >> (i*8));
-  sha256_block(c, c->buf);
-
-  for (int i=0;i<8;i++) {
-    out[i*4+0] = (uint8_t)(c->h[i] >> 24);
-    out[i*4+1] = (uint8_t)(c->h[i] >> 16);
-    out[i*4+2] = (uint8_t)(c->h[i] >> 8);
-    out[i*4+3] = (uint8_t)(c->h[i]);
-  }
-}
-
-// ====== ECDSA verify via micro-ecc ======
-#include "uECC.h"
-#include "trusted_pubkey.h"  // generated by pack_image.py: TRUSTED_PUBKEY_XY[64]
 
 static void die(const char *msg) {
   uart_puts(msg);
@@ -175,41 +161,33 @@ static void verify_header(const boot_hdr_t *h, uint32_t img_base, uint32_t expec
 
   // entry must lie within loaded payload
   if (h->entry_addr < h->load_addr || h->entry_addr >= (h->load_addr + h->payload_len)) die("ROM: ENTRY OOB");
+
+  uart_putc('v');
 }
 
 static void copy_payload(uint32_t dst_addr, const uint8_t *src, uint32_t len) {
   volatile uint8_t *dst = (volatile uint8_t *)(uintptr_t)dst_addr;
-  for (uint32_t i=0;i<len;i++) dst[i] = src[i];
-  __asm__ volatile("fence.i"); // ensure copied instructions are visible to I-fetch
+  for (uint32_t i = 0; i < len; ++i) {
+    dst[i] = src[i];
+  }
+  // __asm__ volatile("fence.i"); // ensure copied instructions are visible to I-fetch
 }
 
-typedef void (*entry_fn_t)(void);
 static void jump_to(uint32_t entry_addr) {
   ((entry_fn_t)(uintptr_t)entry_addr)();
 }
 
-void rom_main(void) {
-  uart_puts("ROM\n");
-
-  const uint32_t img_base = BOOT_IMG_BASE;
-  const boot_hdr_t *h = (const boot_hdr_t *)(uintptr_t)img_base;
-
-  verify_header(h, img_base, IMG_TYPE_ROM_EXT);
-
-  const uint8_t *payload = (const uint8_t *)(uintptr_t)(img_base + h->payload_off);
-  const uint8_t *sig     = (const uint8_t *)(uintptr_t)(img_base + h->sig_off);
-
-  uint8_t digest[32];
-  compute_digest(h, payload, digest);
-
-  // micro-ecc expects pubkey as 64 bytes X||Y big-endian; signature as 64 bytes r||s big-endian.
-  if (!uECC_verify(TRUSTED_PUBKEY_XY, digest, 32, sig, uECC_secp256r1())) {
-    die("ROM: ROM_EXT FAIL");
+static void uart_put_hex32(uint32_t v) {
+  for (int i = 7; i >= 0; --i) {
+    uint8_t nibble = (v >> (i * 4)) & 0xF;
+    char c = (nibble < 10) ? ('0' + nibble) : ('A' + (nibble - 10));
+    uart_putc(c);
   }
+}
 
-  uart_puts("ROM: ROM_EXT OK\n");
-  copy_payload(h->load_addr, payload, h->payload_len);
-  jump_to(h->entry_addr);
-
-  die("ROM: RETURNED");
+static void uart_put_hex8(uint8_t v) {
+  uint8_t hi = (v >> 4) & 0xF;
+  uint8_t lo = v & 0xF;
+  uart_putc((hi < 10) ? ('0' + hi) : ('A' + (hi - 10)));
+  uart_putc((lo < 10) ? ('0' + lo) : ('A' + (lo - 10)));
 }

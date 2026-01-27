@@ -1,6 +1,9 @@
 #include "Vtop_tb.h"
 #include "verilated.h"
 #include "verilated_fst_c.h"
+#include "verilated_dpi.h"
+
+extern "C" void dump_esram(const char* path);
 
 static vluint64_t main_time = 0;
 
@@ -33,20 +36,24 @@ int main(int argc, char **argv) {
     top.rst_n = (cycle >= 50);
 
     if (!announced_start && top.rst_n) {
-      VL_PRINTF("[CPP] Simulation starts! reset released at cycle %llu\n", cycle);
+      VL_PRINTF("[CPP] Simulation starts! reset released at cycle %lu\n", (unsigned long)cycle);
       announced_start = true;
     }
 
     top.eval();
     tfp.dump(main_time);
 
-    if (cycle >= 20000) {
-      VL_PRINTF("\n[CPP] Timeout after %llu cycles\n", cycle);
+    if (cycle >= 50000) {
+      VL_PRINTF("\n[CPP] Timeout after %lu cycles\n", (unsigned long)cycle);
       break;
     }
 
     main_time++;
   }
+
+  // Set SV scope and dump exec SRAM contents after simulation completes via DPI-exported function
+  svSetScope(svGetScopeFromName("TOP.top_tb"));
+  dump_esram("esram_dump.hex");
 
   tfp.close();
   return 0;

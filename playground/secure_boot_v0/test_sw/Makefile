@@ -21,6 +21,12 @@ HEX_DIR   ?= hex
 ASM_DIR   ?= assembly
 C_DIR     ?= c
 
+UTILS_SRCS := $(wildcard $(C_DIR)/utils/*.c)
+UTILS_OBJS := $(patsubst $(C_DIR)/utils/%.c,$(BUILD_DIR)/utils_%.o,$(UTILS_SRCS))
+
+UECC_SRC  := $(C_DIR)/utils/micro-ecc/uECC.c
+UECC_OBJ  := $(BUILD_DIR)/uECC.o
+
 CRT0_OBJ := $(BUILD_DIR)/crt0.o
 
 # Sources (add more .S or .c files under assembly/ and c/)
@@ -32,8 +38,8 @@ TESTS    := $(basename $(notdir $(ASM_SRCS) $(C_SRCS)))
 # Use the toolchain's standard headers (e.g. stdint.h) instead of providing local copies.
 STDINCDIR    := $(shell $(CC) -print-file-name=include)
 PICOLIBC_DIR ?= /usr/lib/picolibc/riscv64-unknown-elf
-CFLAGS  ?= -march=rv32im -mabi=ilp32 -nostdlib -g -O0 -Wall -Wextra
-CFLAGS  += -isystem $(STDINCDIR) -isystem $(PICOLIBC_DIR)/include
+CFLAGS  ?= -march=rv32im -mabi=ilp32 -nostdlib -g -O3 -Wall -Wextra
+CFLAGS  += -isystem $(STDINCDIR) -isystem $(PICOLIBC_DIR)/include -I$(C_DIR)/utils -I$(C_DIR)/utils/micro-ecc
 LDFLAGS ?= -nostdlib -static
 
 .PHONY: all clean $(TESTS)
@@ -42,6 +48,15 @@ all: \
 	$(addprefix $(HEX_DIR)/,$(addsuffix .hex,$(TESTS))) \
 	$(addprefix $(HEX_DIR)/,$(addsuffix .imem.hex,$(TESTS))) \
 	$(addprefix $(HEX_DIR)/,$(addsuffix .dmem.hex,$(TESTS)))
+
+# Explicit ROM build helper
+.PHONY: rom
+rom: $(HEX_DIR)/rom.hex $(HEX_DIR)/rom.imem.hex patch_rom_dmem
+
+# Replace first 1024 lines of rom_with_image.dmem.hex with rom.dmem.hex
+.PHONY: patch_rom_dmem
+patch_rom_dmem: $(HEX_DIR)/rom.dmem.hex $(HEX_DIR)/rom_with_image.dmem.hex replace_dmem.py
+	python3 replace_dmem.py --source $(HEX_DIR)/rom.dmem.hex --target $(HEX_DIR)/rom_with_image.dmem.hex --in-place
 
 # Convenience: `make <testname>` builds the corresponding hex
 $(TESTS): %: $(HEX_DIR)/%.hex $(HEX_DIR)/%.imem.hex $(HEX_DIR)/%.dmem.hex
@@ -87,10 +102,11 @@ $(BUILD_DIR)/%.dmem.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	  $< $@
 
 # Link
-$(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o $(CRT0_OBJ) link.ld | $(BUILD_DIR)
+
+$(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o $(CRT0_OBJ) $(UTILS_OBJS) $(UECC_OBJ) link.ld | $(BUILD_DIR)
 	@extra_objs=""; \
 	if [ -f $(C_DIR)/$*.c ]; then extra_objs="$(CRT0_OBJ)"; fi; \
-	$(CC) $(CFLAGS) $(LDFLAGS) -T link.ld -o $@ $$extra_objs $(BUILD_DIR)/$*.o $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -T link.ld -o $@ $$extra_objs $(BUILD_DIR)/$*.o $(UTILS_OBJS) $(UECC_OBJ) $(LDLIBS)
 
 # Compile assembly
 $(BUILD_DIR)/%.o: $(ASM_DIR)/%.S | $(BUILD_DIR)
@@ -98,6 +114,12 @@ $(BUILD_DIR)/%.o: $(ASM_DIR)/%.S | $(BUILD_DIR)
 
 # Compile C (if any)
 $(BUILD_DIR)/%.o: $(C_DIR)/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILD_DIR)/utils_%.o: $(C_DIR)/utils/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(UECC_OBJ): $(UECC_SRC) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # C runtime startup (stack/BSS init)

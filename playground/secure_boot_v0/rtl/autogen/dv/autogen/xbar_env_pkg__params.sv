@@ -27,6 +27,7 @@ tl_host_t xbar_hosts[$] = '{
         "d_esram"}}
     ,
     '{"h_d", 1, '{
+        "d_rom",
         "d_esram",
         "d_dmem",
         "d_uart"}}

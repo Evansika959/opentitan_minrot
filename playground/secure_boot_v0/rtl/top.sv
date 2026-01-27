@@ -1,10 +1,10 @@
 
 module top #(
-  parameter int unsigned IMEM_AW = 16,
-  parameter int unsigned DMEM_AW = 16,
+  parameter int unsigned IMEM_AW = 14,
+  parameter int unsigned DMEM_AW = 14,
   // Default program image for instruction memory
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/stack_test.imem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/stack_test.dmem.hex",
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (
@@ -288,5 +288,12 @@ module top #(
   // Expose UART TL for TB visibility
   assign tl_to_uart_o   = tl_to_uart;
   assign tl_from_uart_o = tl_from_uart;
+
+  // Expose exec SRAM dump to TB (called by top_tb)
+  function automatic void dump_esram(input string path);
+    begin
+      u_esram.dump_mem(path);
+    end
+  endfunction
 
 endmodule

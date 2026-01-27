@@ -24,6 +24,8 @@ module tlul_sram_if #(
   assign gnt    = 1'b1;
   assign rerror = 2'b00;
 
+  logic [3:0] wmask_unused;
+
   tlul_adapter_sram #(
     .SramAw(SramAw),
     .SramDw(32),
@@ -42,9 +44,9 @@ module tlul_sram_if #(
     .req_type_o(req_type),
     .gnt_i(gnt),
     .we_o(we),
-    .addr_o(addr),
-    .wdata_o(wdata),
-    .wmask_o(_),    // debug
+  .addr_o(addr),
+  .wdata_o(wdata),
+  .wmask_o(wmask_unused),
 
     .intg_error_o(),
 
@@ -59,6 +61,13 @@ module tlul_sram_if #(
   // 1-cycle read SRAM model
   logic [31:0] mem [0:(1<<SramAw)-1];
   initial if (INIT_HEX != "") $readmemh(INIT_HEX, mem);
+
+  function automatic void dump_mem(input string path);
+    begin
+      $display("[tlul_sram_if] dump_mem -> %s", path);
+      $writememh(path, mem);
+    end
+  endfunction
 
   logic [SramAw-1:0] rd_addr_q;
   logic rd_pending_q;

@@ -8,12 +8,15 @@
 // Interconnect
 // h_i
 //   -> s1n_6
-//     -> d_rom
 //     -> sm1_7
+//       -> d_rom
+//     -> sm1_8
 //       -> d_esram
 // h_d
-//   -> s1n_8
+//   -> s1n_9
 //     -> sm1_7
+//       -> d_rom
+//     -> sm1_8
 //       -> d_esram
 //     -> d_dmem
 //     -> d_uart
@@ -66,41 +69,54 @@ module xbar_tlul_2to4 (
   tl_h2d_t tl_sm1_7_ds_h2d ;
   tl_d2h_t tl_sm1_7_ds_d2h ;
 
-  tl_h2d_t tl_s1n_8_us_h2d ;
-  tl_d2h_t tl_s1n_8_us_d2h ;
+
+  tl_h2d_t tl_sm1_8_us_h2d [2];
+  tl_d2h_t tl_sm1_8_us_d2h [2];
+
+  tl_h2d_t tl_sm1_8_ds_h2d ;
+  tl_d2h_t tl_sm1_8_ds_d2h ;
+
+  tl_h2d_t tl_s1n_9_us_h2d ;
+  tl_d2h_t tl_s1n_9_us_d2h ;
 
 
-  tl_h2d_t tl_s1n_8_ds_h2d [3];
-  tl_d2h_t tl_s1n_8_ds_d2h [3];
+  tl_h2d_t tl_s1n_9_ds_h2d [4];
+  tl_d2h_t tl_s1n_9_ds_d2h [4];
 
   // Create steering signal
-  logic [1:0] dev_sel_s1n_8;
+  logic [2:0] dev_sel_s1n_9;
 
 
 
-  assign tl_d_rom_o = tl_s1n_6_ds_h2d[0];
-  assign tl_s1n_6_ds_d2h[0] = tl_d_rom_i;
+  assign tl_sm1_7_us_h2d[0] = tl_s1n_6_ds_h2d[0];
+  assign tl_s1n_6_ds_d2h[0] = tl_sm1_7_us_d2h[0];
 
-  assign tl_sm1_7_us_h2d[0] = tl_s1n_6_ds_h2d[1];
-  assign tl_s1n_6_ds_d2h[1] = tl_sm1_7_us_d2h[0];
+  assign tl_sm1_8_us_h2d[0] = tl_s1n_6_ds_h2d[1];
+  assign tl_s1n_6_ds_d2h[1] = tl_sm1_8_us_d2h[0];
 
-  assign tl_sm1_7_us_h2d[1] = tl_s1n_8_ds_h2d[0];
-  assign tl_s1n_8_ds_d2h[0] = tl_sm1_7_us_d2h[1];
+  assign tl_sm1_7_us_h2d[1] = tl_s1n_9_ds_h2d[0];
+  assign tl_s1n_9_ds_d2h[0] = tl_sm1_7_us_d2h[1];
 
-  assign tl_d_dmem_o = tl_s1n_8_ds_h2d[1];
-  assign tl_s1n_8_ds_d2h[1] = tl_d_dmem_i;
+  assign tl_sm1_8_us_h2d[1] = tl_s1n_9_ds_h2d[1];
+  assign tl_s1n_9_ds_d2h[1] = tl_sm1_8_us_d2h[1];
 
-  assign tl_d_uart_o = tl_s1n_8_ds_h2d[2];
-  assign tl_s1n_8_ds_d2h[2] = tl_d_uart_i;
+  assign tl_d_dmem_o = tl_s1n_9_ds_h2d[2];
+  assign tl_s1n_9_ds_d2h[2] = tl_d_dmem_i;
+
+  assign tl_d_uart_o = tl_s1n_9_ds_h2d[3];
+  assign tl_s1n_9_ds_d2h[3] = tl_d_uart_i;
 
   assign tl_s1n_6_us_h2d = tl_h_i_i;
   assign tl_h_i_o = tl_s1n_6_us_d2h;
 
-  assign tl_d_esram_o = tl_sm1_7_ds_h2d;
-  assign tl_sm1_7_ds_d2h = tl_d_esram_i;
+  assign tl_d_rom_o = tl_sm1_7_ds_h2d;
+  assign tl_sm1_7_ds_d2h = tl_d_rom_i;
 
-  assign tl_s1n_8_us_h2d = tl_h_d_i;
-  assign tl_h_d_o = tl_s1n_8_us_d2h;
+  assign tl_d_esram_o = tl_sm1_8_ds_h2d;
+  assign tl_sm1_8_ds_d2h = tl_d_esram_i;
+
+  assign tl_s1n_9_us_h2d = tl_h_d_i;
+  assign tl_h_d_o = tl_s1n_9_us_d2h;
 
   always_comb begin
     // default steering to generate error response if address is not within the range
@@ -117,18 +133,22 @@ end
 
   always_comb begin
     // default steering to generate error response if address is not within the range
-    dev_sel_s1n_8 = 2'd3;
-    if ((tl_s1n_8_us_h2d.a_address &
-         ~(ADDR_MASK_D_ESRAM)) == ADDR_SPACE_D_ESRAM) begin
-      dev_sel_s1n_8 = 2'd0;
+    dev_sel_s1n_9 = 3'd4;
+    if ((tl_s1n_9_us_h2d.a_address &
+         ~(ADDR_MASK_D_ROM)) == ADDR_SPACE_D_ROM) begin
+      dev_sel_s1n_9 = 3'd0;
 
-    end else if ((tl_s1n_8_us_h2d.a_address &
+    end else if ((tl_s1n_9_us_h2d.a_address &
+                  ~(ADDR_MASK_D_ESRAM)) == ADDR_SPACE_D_ESRAM) begin
+      dev_sel_s1n_9 = 3'd1;
+
+    end else if ((tl_s1n_9_us_h2d.a_address &
                   ~(ADDR_MASK_D_DMEM)) == ADDR_SPACE_D_DMEM) begin
-      dev_sel_s1n_8 = 2'd1;
+      dev_sel_s1n_9 = 3'd2;
 
-    end else if ((tl_s1n_8_us_h2d.a_address &
+    end else if ((tl_s1n_9_us_h2d.a_address &
                   ~(ADDR_MASK_D_UART)) == ADDR_SPACE_D_UART) begin
-      dev_sel_s1n_8 = 2'd2;
+      dev_sel_s1n_9 = 3'd3;
 end
   end
 
@@ -163,20 +183,34 @@ end
     .tl_d_o       (tl_sm1_7_ds_h2d),
     .tl_d_i       (tl_sm1_7_ds_d2h)
   );
+  tlul_socket_m1 #(
+    .HReqDepth (8'h0),
+    .HRspDepth (8'h0),
+    .DReqDepth (4'h0),
+    .DRspDepth (4'h0),
+    .M         (2)
+  ) u_sm1_8 (
+    .clk_i        (clk_i),
+    .rst_ni       (rst_ni),
+    .tl_h_i       (tl_sm1_8_us_h2d),
+    .tl_h_o       (tl_sm1_8_us_d2h),
+    .tl_d_o       (tl_sm1_8_ds_h2d),
+    .tl_d_i       (tl_sm1_8_ds_d2h)
+  );
   tlul_socket_1n #(
     .HReqDepth (4'h0),
     .HRspDepth (4'h0),
-    .DReqDepth (12'h0),
-    .DRspDepth (12'h0),
-    .N         (3)
-  ) u_s1n_8 (
+    .DReqDepth (16'h0),
+    .DRspDepth (16'h0),
+    .N         (4)
+  ) u_s1n_9 (
     .clk_i        (clk_i),
     .rst_ni       (rst_ni),
-    .tl_h_i       (tl_s1n_8_us_h2d),
-    .tl_h_o       (tl_s1n_8_us_d2h),
-    .tl_d_o       (tl_s1n_8_ds_h2d),
-    .tl_d_i       (tl_s1n_8_ds_d2h),
-    .dev_select_i (dev_sel_s1n_8)
+    .tl_h_i       (tl_s1n_9_us_h2d),
+    .tl_h_o       (tl_s1n_9_us_d2h),
+    .tl_d_o       (tl_s1n_9_ds_h2d),
+    .tl_d_i       (tl_s1n_9_ds_d2h),
+    .dev_select_i (dev_sel_s1n_9)
   );
 
 endmodule

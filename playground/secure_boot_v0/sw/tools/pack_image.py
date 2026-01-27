@@ -53,45 +53,33 @@ def parse_ecdsa_der_to_raw(der: bytes) -> bytes:
     return r + s
 
 def extract_pubkey_xy_from_pem(pub_pem: str) -> bytes:
-    # Convert to DER SPKI, then parse BIT STRING for uncompressed point: 0x04 || X || Y
-    with tempfile.TemporaryDirectory() as td:
-        der_path = os.path.join(td, "pub.der")
-        run(["openssl", "pkey", "-pubin", "-in", pub_pem, "-outform", "DER", "-out", der_path])
-        der = open(der_path, "rb").read()
-
-    # Very small DER parse for SubjectPublicKeyInfo -> BIT STRING.
-    # Look for the last BIT STRING tag 0x03 and parse its content.
-    i = der.rfind(b"\x03")
-    if i < 0:
-        raise ValueError("No BIT STRING in pubkey DER")
-    # length parsing
-    l = der[i+1]
-    j = i+2
-    if l & 0x80:
-        n = l & 0x7f
-        l = int.from_bytes(der[j:j+n], "big")
-        j += n
-    unused_bits = der[j]
-    if unused_bits != 0:
-        raise ValueError("Unexpected unused bits in BIT STRING")
-    bs = der[j+1:j+1+l-1]
-    if len(bs) != 65 or bs[0] != 0x04:
-        raise ValueError("Expected uncompressed EC point 65 bytes")
-    x = bs[1:33]
-    y = bs[33:65]
-    return x + y  # 64 bytes
+    # Use openssl text output to avoid fragile DER parsing. Expect uncompressed point: 0x04 || X || Y
+    out = run(["openssl", "ec", "-pubin", "-in", pub_pem, "-text", "-noout"])
+    hex_lines = []
+    grab = False
+    for line in out.splitlines():
+        line = line.strip()
+        if line.startswith("pub:"):
+            grab = True
+            continue
+        if grab:
+            if line.startswith("ASN1") or line.startswith("NIST"):
+                break
+            hex_lines.extend(line.replace(":", " ").split())
+    pub_bytes = bytes(int(h, 16) for h in hex_lines)
+    if len(pub_bytes) != 65 or pub_bytes[0] != 0x04:
+        raise ValueError("Expected uncompressed EC point 65 bytes from openssl ec -text")
+    return pub_bytes[1:33] + pub_bytes[33:65]
 
 def make_header(img_type, payload_off, payload_len, load_addr, entry_addr, sig_off, sig_len):
     # boot_hdr_t: see boot_hdr.h
-    # <I H H I I I I I I I  (first 10 fields) + 7I reserved
     reserved = [0]*7
     return struct.pack(
-        "<IHHIIIIIIII7I",
+        "<IHHIIIIIII7I",
         BOOT_MAGIC, HDR_VERSION, HDR_LEN,
         img_type, payload_off, payload_len,
         load_addr, entry_addr,
         sig_off, sig_len,
-        0, 0,  # two extra I to match 10 x 32-bit? NO: we already had 10 after IHH; keep exact:
         *reserved
     )
 
@@ -104,7 +92,7 @@ def make_header_exact(img_type, payload_off, payload_len, load_addr, entry_addr,
     # reserved[7] (7I)
     reserved = [0]*7
     return struct.pack(
-        "<IHHIIIIIIII7I",
+        "<IHHIIIIIII7I",
         BOOT_MAGIC, HDR_VERSION, HDR_LEN,
         img_type, payload_off, payload_len,
         load_addr, entry_addr,

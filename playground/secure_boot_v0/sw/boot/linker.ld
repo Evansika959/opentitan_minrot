@@ -9,6 +9,10 @@ DATA_SRAM_BASE = 0x00020000;
 IMG_BASE_MIN   = 0x00021000;  /* start of image storage in D-SRAM */
 STACK_TOP      = IMG_BASE_MIN; /* stack grows down from 0x21000 */
 
+MEMORY {
+  EXEC (rxw) : ORIGIN = EXEC_BASE, LENGTH = EXEC_SIZE
+}
+
 SECTIONS
 {
   . = EXEC_BASE;
@@ -20,11 +24,11 @@ SECTIONS
 
   .rodata : { *(.rodata .rodata.*) } > EXEC
   .data :  { *(.data .data.*) } > EXEC
-  .bss  :  { *(.bss .bss.*) *(COMMON) } > EXEC
+  .bss  :  {
+    PROVIDE(_bss_start = .);
+    *(.bss .bss.*) *(COMMON)
+    PROVIDE(_bss_end = .);
+  } > EXEC
 
   PROVIDE(_stack_top = STACK_TOP);
-}
-
-MEMORY {
-  EXEC (rxw) : ORIGIN = EXEC_BASE, LENGTH = EXEC_SIZE
 }

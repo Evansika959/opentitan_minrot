@@ -29,6 +29,7 @@ TOOLSDIR := tools
 
 # ---- Inputs ----
 LINKER   := $(BOOTDIR)/linker.ld
+ROM_LINKER := $(BOOTDIR)/rom_linker.ld
 ROM_EXT_C:= $(BOOTDIR)/rom_ext.c
 BL0_C    := $(BOOTDIR)/bl0.c
 # If you have a tiny crt0 that sets SP and jumps to _start, add it here:
@@ -53,12 +54,18 @@ DSRAM_HEX := $(BUILD)/d_sram.hex
 PUBKEY_H  := $(BOOTDIR)/trusted_pubkey.h
 # generated into sw/boot/ for easy include
 
+ROM_EXT_HEX := $(BUILD)/rom_ext.hex
+
+ROM_ELF   := $(BUILD)/rom.elf
+ROM_BIN   := $(BUILD)/rom.bin
+IMEM_HEX  := $(BUILD)/imem.hex
+
 # ---- Flags ----
 CFLAGS_COMMON := -march=rv32imc -mabi=ilp32 \
-  -ffreestanding -nostdlib -nostartfiles \
-  -fno-builtin -fdata-sections -ffunction-sections \
-  -Os -g3 \
-  -I$(BOOTDIR) -I$(UECCDIR)
+	-ffreestanding -nostdlib -nostartfiles \
+	-fno-builtin -fdata-sections -ffunction-sections \
+	-Os -g3 \
+	-I$(BOOTDIR) -I$(UECCDIR) -Iutils
 
 LDFLAGS_COMMON := -T$(LINKER) -Wl,--gc-sections -Wl,-Map,$@.map
 
@@ -73,10 +80,34 @@ all: $(DSRAM_HEX)
 .PHONY: pubkey
 pubkey: $(PUBKEY_H)
 
+.PHONY: imem
+imem: $(IMEM_HEX)
+
+.PHONY: rom_ext_hex
+rom_ext_hex: $(ROM_EXT_HEX)
+
+# ---- Build ROM (for IMEM init) ----
+ROM_SRCS := $(CRT0_S) $(BOOTDIR)/rom.c $(UECC_C) utils/sha256.c utils/memset.c utils/compat.c utils/uart.c
+
+$(ROM_ELF): $(BOOTDIR)/rom.c $(ROM_LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) utils/sha256.c utils/memset.c utils/compat.c utils/uart.c | $(BUILD)
+	$(CC) $(CFLAGS_COMMON) -T$(ROM_LINKER) -Wl,--gc-sections -Wl,-Map,$@.map \
+	  $(ROM_SRCS) \
+	  -o $@
+	$(SIZE) $@
+
+$(ROM_BIN): $(ROM_ELF) | $(BUILD)
+	$(OBJCOPY) -O binary $< $@
+	@ls -l $@
+
+$(IMEM_HEX): $(ROM_BIN) | $(BUILD)
+	$(PY) -c "from pathlib import Path; data=Path('$(ROM_BIN)').read_bytes(); data=b'\\x00'*0x80+data; pad=(-len(data))%4; data+=b'\\x00'*pad; f=open('$(IMEM_HEX)','w'); [f.write('{:08x}\\n'.format(int.from_bytes(data[i:i+4],'little'))) for i in range(0,len(data),4)]; f.close(); print('IMEM hex: $(IMEM_HEX)')"
 # ---- Build ROM_EXT ----
-$(ROM_EXT_ELF): $(ROM_EXT_C) $(LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) | $(BUILD)
+
+ROM_EXT_SRCS := $(CRT0_S) $(ROM_EXT_C) $(UECC_C) utils/sha256.c utils/memset.c utils/compat.c
+
+$(ROM_EXT_ELF): $(ROM_EXT_C) $(LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) utils/sha256.c utils/memset.c | $(BUILD)
 	$(CC) $(CFLAGS_COMMON) $(LDFLAGS_COMMON) \
-	  $(CRT0_S) $(ROM_EXT_C) $(UECC_C) \
+	  $(ROM_EXT_SRCS) \
 	  -o $@
 	$(SIZE) $@
 
@@ -84,10 +115,15 @@ $(ROM_EXT_BIN): $(ROM_EXT_ELF) | $(BUILD)
 	$(OBJCOPY) -O binary $< $@
 	@ls -l $@
 
+$(ROM_EXT_HEX): $(ROM_EXT_BIN) | $(BUILD)
+	$(PY) tools/gen_rom_ext_hex.py --rom-ext-bin $(ROM_EXT_BIN) --out-hex $(ROM_EXT_HEX) --pack-image $(PACK_PY)
+
 # ---- Build BL0 (no uECC needed) ----
-$(BL0_ELF): $(BL0_C) $(LINKER) | $(BUILD)
+BL0_SRCS := $(CRT0_S) $(BL0_C) utils/memset.c utils/compat.c
+
+$(BL0_ELF): $(BL0_C) $(LINKER) utils/memset.c | $(BUILD)
 	$(CC) $(CFLAGS_COMMON) $(LDFLAGS_COMMON) \
-	  $(CRT0_S) $(BL0_C) \
+	  $(BL0_SRCS) \
 	  -o $@
 	$(SIZE) $@
 

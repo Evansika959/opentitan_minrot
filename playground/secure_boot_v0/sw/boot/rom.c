@@ -95,7 +95,8 @@ static void jump_to(uint32_t entry_addr) {
   ((entry_fn_t)(uintptr_t)entry_addr)();
 }
 
-void rom_main(void) {
+// void rom_main(void) {
+int main(void) {
   uart_puts("ROM\n");
 
   const uint32_t img_base = BOOT_IMG_BASE;

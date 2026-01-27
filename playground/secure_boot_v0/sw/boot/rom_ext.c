@@ -76,8 +76,7 @@ typedef void (*entry_fn_t)(void);
 static void jump_to(uint32_t entry_addr) { ((entry_fn_t)(uintptr_t)entry_addr)(); }
 
 // Minimal entry
-__attribute__((section(".text.start")))
-void _start(void) {
+int main(void) {
   uart_puts("ROM_EXT\n");
 
   const uint32_t img_base = BL0_IMG_BASE;

@@ -7,7 +7,7 @@ EXEC_SIZE  = 0x00010000;
 
 DATA_SRAM_BASE = 0x00020000;
 IMG_BASE_MIN   = 0x00021000;  /* start of image storage in D-SRAM */
-STACK_TOP      = IMG_BASE_MIN; /* stack grows down from 0x21000 */
+STACK_TOP      = 0x00020000;   /* stack grows down from 0x20000 */
 
 MEMORY {
   EXEC (rxw) : ORIGIN = EXEC_BASE, LENGTH = EXEC_SIZE

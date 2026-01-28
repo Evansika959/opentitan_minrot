@@ -84,6 +84,20 @@ module top_tb(
   logic [top_pkg::TL_DW-1:0] dsram_d_data;
   logic       dsram_d_error;
 
+  logic        esram_a_valid;
+  logic [2:0]  esram_a_opcode;
+  logic [2:0]  esram_a_param;
+  logic [top_pkg::TL_SZW-1:0] esram_a_size;
+  logic [top_pkg::TL_AIW-1:0] esram_a_source;
+  logic [top_pkg::TL_AW-1:0]  esram_a_address;
+  logic [top_pkg::TL_DBW-1:0] esram_a_mask;
+  logic [top_pkg::TL_DW-1:0]  esram_a_data;
+  logic        esram_d_ready;
+
+  logic       esram_d_valid;
+  logic [top_pkg::TL_DW-1:0] esram_d_data;
+  logic       esram_d_error;
+
 `ifdef RVFI
   // Retire interface signals
   logic        rvfi_valid;
@@ -310,6 +324,21 @@ module top_tb(
   assign dsram_d_data    = dut.tl_from_dmem_sram.d_data;
   assign dsram_d_error   = dut.tl_from_dmem_sram.d_error;
 
+  // E-SRAM host to device signals
+  assign esram_a_valid   = dut.tl_to_esram.a_valid;
+  assign esram_a_opcode  = dut.tl_to_esram.a_opcode;
+  assign esram_a_param   = dut.tl_to_esram.a_param;
+  assign esram_a_size    = dut.tl_to_esram.a_size;
+  assign esram_a_source  = dut.tl_to_esram.a_source;
+  assign esram_a_address = dut.tl_to_esram.a_address;
+  assign esram_a_mask    = dut.tl_to_esram.a_mask;
+  assign esram_a_data    = dut.tl_to_esram.a_data;
+  assign esram_d_ready   = dut.tl_to_esram.d_ready;
+  // E-SRAM device->host
+  assign esram_d_valid   = dut.tl_from_esram.d_valid;
+  assign esram_d_data    = dut.tl_from_esram.d_data;
+  assign esram_d_error   = dut.tl_from_esram.d_error;
+
   // UART line listener: decode uart_tx into bytes using system clock (~10MHz) and expected baud (~115200).
   // Assumes UART NCO set to 0x2F30, giving ~87 clk cycles per bit.
   localparam int UART_BIT_TICKS = 87;
@@ -402,7 +431,7 @@ module top_tb(
       rvfi_cnt <= 0;
     end else if (rvfi_valid) begin
       rvfi_cnt <= rvfi_cnt + 1;
-      if (rvfi_cnt < 1000000) begin
+      if (rvfi_cnt < 32'hFFFFFFFF) begin
         $display("[TB][RVFI] #%0d @time %0t pc=0x%08x -> 0x%08x insn=0x%08x (%s) rd=x%0d wdata=0x%08x trap=%0d intr=%0d",
                  rvfi_cnt, $time, rvfi_pc_rdata, rvfi_pc_wdata,
                  rvfi_insn, rv32_decode(rvfi_insn),

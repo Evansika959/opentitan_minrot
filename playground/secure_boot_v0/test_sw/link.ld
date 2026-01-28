@@ -10,11 +10,8 @@ MEMORY {
 }
 
 SECTIONS {
-  /* Ibex reset vector is at 0x80; place .text there. */
-  . = ORIGIN(IMEM) + 0x80;
-
-  /* Code in IMEM */
-  .text : {
+  /* Ibex reset vector is at 0x80; place .text there explicitly. */
+  .text 0x80 : {
     *(.text.start)
     *(.text*)
   } > IMEM

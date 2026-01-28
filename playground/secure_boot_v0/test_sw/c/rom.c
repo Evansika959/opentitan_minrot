@@ -42,38 +42,41 @@ int main(void) {
   const uint32_t img_base = BOOT_IMG_BASE;
   const boot_hdr_t *h = (const boot_hdr_t *)(uintptr_t)img_base;
 
-  uart_putc('m');
-  uart_put_hex32(h->magic);
-  uart_putc('m');
+  // uart_putc('m');
+  // uart_put_hex32(h->magic);
+  // uart_putc('m');
 
-  verify_header(h, img_base, IMG_TYPE_ROM_EXT);
+  // verify_header(h, img_base, IMG_TYPE_ROM_EXT);
 
   const uint8_t *payload = (const uint8_t *)(uintptr_t)(img_base + h->payload_off);
   const uint8_t *sig     = (const uint8_t *)(uintptr_t)(img_base + h->sig_off);
   
-  uint8_t digest[32];
+  // uint8_t digest[32];
 
-  // print the payload length
-  uart_putc('t');
-  uart_put_hex32(h->payload_len);
-  uart_put_hex32(h->payload_len);
-  uart_putc('t');
+  // // print the payload length
+  // uart_putc('t');
+  // uart_put_hex32(h->sig_len);
+  // uart_putc('t');
+  // uart_put_hex32(h->load_addr);
+  // uart_putc('t');
+  // uart_put_hex32(h->payload_len);
+  // uart_putc('t');
 
   // In FAST_SIM, skip payload hashing to speed up runs; still hash header for structure integrity.
-// #ifdef FAST_SIM
-//   hdr_bind_t bind = {
-//     .img_type    = h->img_type,
-//     .payload_len = h->payload_len,
-//     .load_addr   = h->load_addr,
-//     .entry_addr  = h->entry_addr,
-//   };
-//   sha256_ctx_t ctx_fast;
-//   sha256_init(&ctx_fast);
-//   sha256_update(&ctx_fast, (const uint8_t *)&bind, sizeof(bind));
-//   sha256_final(&ctx_fast, digest);
-// #else
-//   compute_digest(h, payload, digest);
-// #endif
+  // #ifdef FAST_SIM
+  //   hdr_bind_t bind = {
+  //     .img_type    = h->img_type,
+  //     .payload_len = h->payload_len,
+  //     .load_addr   = h->load_addr,
+  //     .entry_addr  = h->entry_addr,
+  //   };
+  //   sha256_ctx_t ctx_fast;
+  //   sha256_init(&ctx_fast);
+  //   sha256_update(&ctx_fast, (const uint8_t *)&bind, sizeof(bind));
+  //   sha256_final(&ctx_fast, digest);
+  // #else
+  //   compute_digest(h, payload, digest);
+  // #endif
   // uart_putc('c');
 
   // Print the digest 

@@ -15,6 +15,7 @@ DATA_SRAM_SIZE = 0x10000
 BOOT_IMG_BASE = 0x21000
 BL0_IMG_BASE  = 0x23000
 EXEC_BASE     = 0x10000
+BL0_ENTRY_BASE = EXEC_BASE + 0x2000
 
 def run(cmd):
     r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -168,7 +169,7 @@ def main():
 
     # Build container images (copy-to-exec)
     rom_ext_img = build_image(IMG_TYPE_ROM_EXT, rom_ext_payload, EXEC_BASE, EXEC_BASE, args.priv_pem)
-    bl0_img     = build_image(IMG_TYPE_BL0,     bl0_payload,     EXEC_BASE, EXEC_BASE, args.priv_pem)
+    bl0_img     = build_image(IMG_TYPE_BL0,     bl0_payload,     BL0_ENTRY_BASE, BL0_ENTRY_BASE, args.priv_pem)
 
     # Place into D-SRAM image
     mem = bytearray(b"\x00" * DATA_SRAM_SIZE)

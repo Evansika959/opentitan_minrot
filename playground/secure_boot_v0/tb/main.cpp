@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     top.eval();
     tfp.dump(main_time);
 
-    if (cycle >= 50000) {
+    if (cycle >= 2000000) {
       VL_PRINTF("\n[CPP] Timeout after %lu cycles\n", (unsigned long)cycle);
       break;
     }

@@ -61,10 +61,10 @@ ROM_BIN   := $(BUILD)/rom.bin
 IMEM_HEX  := $(BUILD)/imem.hex
 
 # ---- Flags ----
-CFLAGS_COMMON := -march=rv32imc -mabi=ilp32 \
+CFLAGS_COMMON := -march=rv32im -mabi=ilp32 \
 	-ffreestanding -nostdlib -nostartfiles \
 	-fno-builtin -fdata-sections -ffunction-sections \
-	-Os -g3 \
+	-O3 -g \
 	-I$(BOOTDIR) -I$(UECCDIR) -Iutils
 
 LDFLAGS_COMMON := -T$(LINKER) -Wl,--gc-sections -Wl,-Map,$@.map
@@ -103,9 +103,9 @@ $(IMEM_HEX): $(ROM_BIN) | $(BUILD)
 	$(PY) -c "from pathlib import Path; data=Path('$(ROM_BIN)').read_bytes(); data=b'\\x00'*0x80+data; pad=(-len(data))%4; data+=b'\\x00'*pad; f=open('$(IMEM_HEX)','w'); [f.write('{:08x}\\n'.format(int.from_bytes(data[i:i+4],'little'))) for i in range(0,len(data),4)]; f.close(); print('IMEM hex: $(IMEM_HEX)')"
 # ---- Build ROM_EXT ----
 
-ROM_EXT_SRCS := $(CRT0_S) $(ROM_EXT_C) $(UECC_C) utils/sha256.c utils/memset.c utils/compat.c
+ROM_EXT_SRCS := $(CRT0_S) $(ROM_EXT_C) $(UECC_C) utils/sha256.c utils/memset.c utils/compat.c utils/uart.c
 
-$(ROM_EXT_ELF): $(ROM_EXT_C) $(LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) utils/sha256.c utils/memset.c | $(BUILD)
+$(ROM_EXT_ELF): $(ROM_EXT_C) $(LINKER) $(UECC_C) $(UECC_H) $(PUBKEY_H) utils/sha256.c utils/memset.c utils/uart.c | $(BUILD)
 	$(CC) $(CFLAGS_COMMON) $(LDFLAGS_COMMON) \
 	  $(ROM_EXT_SRCS) \
 	  -o $@
@@ -119,7 +119,7 @@ $(ROM_EXT_HEX): $(ROM_EXT_BIN) | $(BUILD)
 	$(PY) tools/gen_rom_ext_hex.py --rom-ext-bin $(ROM_EXT_BIN) --out-hex $(ROM_EXT_HEX) --pack-image $(PACK_PY)
 
 # ---- Build BL0 (no uECC needed) ----
-BL0_SRCS := $(CRT0_S) $(BL0_C) utils/memset.c utils/compat.c
+BL0_SRCS := $(CRT0_S) $(BL0_C) utils/memset.c utils/compat.c utils/uart.c
 
 $(BL0_ELF): $(BL0_C) $(LINKER) utils/memset.c | $(BUILD)
 	$(CC) $(CFLAGS_COMMON) $(LDFLAGS_COMMON) \

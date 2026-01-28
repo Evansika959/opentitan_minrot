@@ -1,10 +1,14 @@
 
 module top #(
-  parameter int unsigned IMEM_AW = 14,
-  parameter int unsigned DMEM_AW = 14,
+  // Address width; IMEM/DMEM default to 64 KiB to match link.ld (0x10000 bytes)
+  parameter int unsigned IMEM_AW = 16,
+  parameter int unsigned DMEM_AW = 16,
   // Default program image for instruction memory
+  // parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
   parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
+  // parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
   parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
+  // parameter string ESRAM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/esram_bk.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (
@@ -105,7 +109,8 @@ module top #(
     .ram_cfg_icache_data_i(prim_ram_1p_pkg::RAM_1P_CFG_DEFAULT),
     .ram_cfg_rsp_icache_data_o(),
     .hart_id_i(32'h0),
-    .boot_addr_i(IMEM_BASE),
+    // Ibex reset PC: skip the 0x00-0x7F padding we prepend in IMEM hex
+    .boot_addr_i(IMEM_BASE + 32'h80),
 
     // Instruction interface
     .instr_req_o(instr_req),
@@ -207,7 +212,7 @@ module top #(
   // IMEM SRAM (Exec SRAM) 
   tlul_sram_if #(
     .SramAw(IMEM_AW),
-    .INIT_HEX(""),
+    .INIT_HEX(),
     .BASE_ADDR(32'h0001_0000)
   ) u_esram (
     .clk_i(clk_i), .rst_ni(rst_ni),

@@ -18,3 +18,4 @@ _start:
 
   /* If main returns, halt */
 3: j 3b
+

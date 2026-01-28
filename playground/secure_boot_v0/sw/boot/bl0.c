@@ -2,10 +2,17 @@
 #include <stdint.h>
 
 // UART stubs (replace with your known-good)
-static inline void uart_putc(char c) { (void)c; }
-static void uart_puts(const char *s) { while (*s) uart_putc(*s++); }
+
+#include "../utils/uart.h"
+
+static void uart_puts(const char *s);
 
 int main(void) {
-  uart_puts("BL0\n");
+  uart_putc('B');
   while (1) { __asm__ volatile("wfi"); }
+}
+
+// ====== UART ======
+static void uart_puts(const char *s) {
+  while (*s) uart_putc(*s++);
 }

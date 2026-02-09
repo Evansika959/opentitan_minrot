@@ -24,6 +24,7 @@ C_DIR     ?= c
 UTILS_SRCS := $(wildcard $(C_DIR)/utils/*.c)
 UTILS_OBJS := $(patsubst $(C_DIR)/utils/%.c,$(BUILD_DIR)/utils_%.o,$(UTILS_SRCS))
 
+USE_UECC ?= 0
 UECC_SRC  := $(C_DIR)/utils/micro-ecc/uECC.c
 UECC_OBJ  := $(BUILD_DIR)/uECC.o
 
@@ -39,7 +40,11 @@ TESTS    := $(basename $(notdir $(ASM_SRCS) $(C_SRCS)))
 STDINCDIR    := $(shell $(CC) -print-file-name=include)
 PICOLIBC_DIR ?= /usr/lib/picolibc/riscv64-unknown-elf
 CFLAGS  ?= -march=rv32im -mabi=ilp32 -nostdlib -g -O3 -Wall -Wextra
-CFLAGS  += -isystem $(STDINCDIR) -isystem $(PICOLIBC_DIR)/include -I$(C_DIR)/utils -I$(C_DIR)/utils/micro-ecc
+CFLAGS  += -isystem $(STDINCDIR) -isystem $(PICOLIBC_DIR)/include -I$(C_DIR)/utils
+# Add micro-ecc headers only when enabled
+ifeq ($(USE_UECC),1)
+CFLAGS  += -I$(C_DIR)/utils/micro-ecc
+endif
 LDFLAGS ?= -nostdlib -static
 
 .PHONY: all clean $(TESTS)
@@ -103,10 +108,12 @@ $(BUILD_DIR)/%.dmem.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 
 # Link
 
-$(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o $(CRT0_OBJ) $(UTILS_OBJS) $(UECC_OBJ) link.ld | $(BUILD_DIR)
+$(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o $(CRT0_OBJ) $(UTILS_OBJS) link.ld | $(BUILD_DIR)
 	@extra_objs=""; \
+	uecc_objs=""; \
 	if [ -f $(C_DIR)/$*.c ]; then extra_objs="$(CRT0_OBJ)"; fi; \
-	$(CC) $(CFLAGS) $(LDFLAGS) -T link.ld -o $@ $$extra_objs $(BUILD_DIR)/$*.o $(UTILS_OBJS) $(UECC_OBJ) $(LDLIBS)
+	if [ "$(USE_UECC)" = "1" ]; then uecc_objs="$(UECC_OBJ)"; fi; \
+	$(CC) $(CFLAGS) $(LDFLAGS) -T link.ld -o $@ $$extra_objs $(BUILD_DIR)/$*.o $(UTILS_OBJS) $$uecc_objs $(LDLIBS)
 
 # Compile assembly
 $(BUILD_DIR)/%.o: $(ASM_DIR)/%.S | $(BUILD_DIR)
@@ -120,7 +127,9 @@ $(BUILD_DIR)/utils_%.o: $(C_DIR)/utils/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(UECC_OBJ): $(UECC_SRC) | $(BUILD_DIR)
+ifeq ($(USE_UECC),1)
 	$(CC) $(CFLAGS) -c -o $@ $<
+endif
 
 # C runtime startup (stack/BSS init)
 $(CRT0_OBJ): $(C_DIR)/crt0.S | $(BUILD_DIR)

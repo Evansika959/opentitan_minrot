@@ -20,3 +20,22 @@ void uart_putc(char c) {
   // Write byte
   *wdata = (uint8_t)c;
 }
+
+void uart_puts(const char *s) {
+  while (*s) {
+    uart_putc(*s++);
+  }
+}
+
+void uart_put_hex8(uint8_t v) {
+  const char hex_chars[] = "0123456789ABCDEF";
+  uart_putc(hex_chars[(v >> 4) & 0xF]);
+  uart_putc(hex_chars[v & 0xF]);
+}
+
+void uart_put_hex32(uint32_t v) {
+  uart_put_hex8((v >> 24) & 0xFF);
+  uart_put_hex8((v >> 16) & 0xFF);
+  uart_put_hex8((v >> 8) & 0xFF);
+  uart_put_hex8(v & 0xFF);
+}

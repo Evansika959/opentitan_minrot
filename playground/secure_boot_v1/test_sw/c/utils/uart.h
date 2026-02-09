@@ -10,5 +10,8 @@
 #define UART_STATUS_TXFULL_MASK 0x1u
 
 void uart_putc(char c);
+void uart_puts(const char *s);
+void uart_put_hex8(uint8_t v);
+void uart_put_hex32(uint32_t v);
 
 #endif // SW_UTILS_UART_H_

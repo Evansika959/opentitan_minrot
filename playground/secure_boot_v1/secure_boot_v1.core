@@ -6,12 +6,12 @@ description: secure boot minimal top with Ibex + TL-UL SRAM + TL-UL ROM + UART (
 filesets:
   rtl:
     files:
-      - rtl/top.sv
       - rtl/ibex_to_tlul_host.sv
       - rtl/tlul_sram_if.sv
       - rtl/tlul_rom_if.sv
       - rtl/autogen/rtl/autogen/tl_tlul_main_pkg.sv
       - rtl/autogen/rtl/autogen/xbar_tlul_main.sv
+      - rtl/top.sv
     file_type: systemVerilogSource
     depend:
       - lowrisc:prim_generic:all

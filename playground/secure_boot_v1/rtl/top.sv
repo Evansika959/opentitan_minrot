@@ -4,11 +4,8 @@ module top #(
   parameter int unsigned IMEM_AW = 16,
   parameter int unsigned DMEM_AW = 16,
   // Default program image for instruction memory
-  // parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
-  // parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
-  // parameter string ESRAM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/esram_bk.hex",
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/uart_test.imem.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/uart_test.dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (

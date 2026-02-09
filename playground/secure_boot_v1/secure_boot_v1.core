@@ -1,0 +1,50 @@
+CAPI=2:
+
+name: xinting:playground:secure_boot_v1:0.1
+description: secure boot minimal top with Ibex + TL-UL SRAM + TL-UL ROM + UART (Verilator) + HMAC + OTBN
+
+filesets:
+  rtl:
+    files:
+      - rtl/top.sv
+      - rtl/ibex_to_tlul_host.sv
+      - rtl/tlul_sram_if.sv
+      - rtl/tlul_rom_if.sv
+      - rtl/autogen/rtl/autogen/tl_tlul_main_pkg.sv
+      - rtl/autogen/rtl/autogen/xbar_tlul_main.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:prim_generic:all
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:ip:hmac:0.1
+      - lowrisc:ip:otbn:0.1 
+
+  tb_sv:
+    files:
+      - tb/top_tb.sv
+    file_type: systemVerilogSource
+
+  tb_cpp:
+    files:
+      - tb/main.cpp
+    file_type: cppSource
+
+parameters: {}
+
+targets:
+  sim:
+    default_tool: verilator
+    filesets: [rtl, tb_sv, tb_cpp]
+    toplevel: top_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--trace-fst"
+          - "-DRVFI"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"

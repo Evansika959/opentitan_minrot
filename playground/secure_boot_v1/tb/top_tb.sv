@@ -98,6 +98,20 @@ module top_tb(
   logic [top_pkg::TL_DW-1:0] esram_d_data;
   logic       esram_d_error;
 
+  logic        hmac_a_valid;
+  logic [2:0]  hmac_a_opcode;
+  logic [2:0]  hmac_a_param;
+  logic [top_pkg::TL_SZW-1:0] hmac_a_size;
+  logic [top_pkg::TL_AIW-1:0] hmac_a_source;
+  logic [top_pkg::TL_AW-1:0]  hmac_a_address;
+  logic [top_pkg::TL_DBW-1:0] hmac_a_mask;
+  logic [top_pkg::TL_DW-1:0]  hmac_a_data;
+  logic        hmac_d_ready;
+
+  logic       hmac_d_valid;
+  logic [top_pkg::TL_DW-1:0] hmac_d_data;
+  logic       hmac_d_error;
+
 `ifdef RVFI
   // Retire interface signals
   logic        rvfi_valid;
@@ -275,6 +289,28 @@ module top_tb(
   assign imem_d_data    = dut.tl_imem_d2h.d_data;
   assign imem_d_error   = dut.tl_imem_d2h.d_error;
 
+  // IMEM host transactions (log a few fetches and errors)
+  // int imem_req_cnt;
+  // int imem_err_cnt;
+  // always_ff @(posedge clk) begin
+  //   if (!rst_n) begin
+  //     imem_req_cnt <= 0;
+  //     imem_err_cnt <= 0;
+  //   end else begin
+  //     if (imem_a_valid && dut.tl_imem_d2h.a_ready) begin
+  //       imem_req_cnt <= imem_req_cnt + 1;
+  //       if (imem_req_cnt < 16) begin
+  //         $display("[TB][IMEM] req #%0d @time %0t opc=%0d addr=0x%08x mask=0x%x", imem_req_cnt, $time, imem_a_opcode, imem_a_address, imem_a_mask);
+  //       end
+  //     end
+  //     if (imem_d_valid && imem_d_error) begin
+  //       imem_err_cnt <= imem_err_cnt + 1;
+  //       if (imem_err_cnt < 8)
+  //         $display("[TB][IMEM][ERR] @time %0t data=0x%08x", $time, imem_d_data);
+  //     end
+  //   end
+  // end
+
   // DMEM host->device
   assign dmem_a_valid   = dut.tl_dmem_h2d.a_valid;
   assign dmem_a_opcode  = dut.tl_dmem_h2d.a_opcode;
@@ -287,6 +323,29 @@ module top_tb(
   assign dmem_d_valid   = dut.tl_dmem_d2h.d_valid;
   assign dmem_d_data    = dut.tl_dmem_d2h.d_data;
   assign dmem_d_error   = dut.tl_dmem_d2h.d_error;
+
+  // DMEM host transactions (log a few and any errors)
+  int dmem_req_cnt;
+  int dmem_err_cnt;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      dmem_req_cnt <= 0;
+      dmem_err_cnt <= 0;
+    end else begin
+      if (dmem_a_valid && dut.tl_dmem_d2h.a_ready) begin
+        dmem_req_cnt <= dmem_req_cnt + 1;
+        if (dmem_req_cnt < 300) begin
+          $display("[TB][DMEM] req #%0d @time %0t opc=%0d addr=0x%08x data=0x%08x mask=0x%x", 
+                   dmem_req_cnt, $time, dmem_a_opcode, dmem_a_address, dmem_a_data, dmem_a_mask);
+        end
+      end
+      if (dmem_d_valid && dmem_d_error) begin
+        dmem_err_cnt <= dmem_err_cnt + 1;
+        if (dmem_err_cnt < 8)
+          $display("[TB][DMEM][ERR] @time %0t data=0x%08x", $time, dmem_d_data);
+      end
+    end
+  end
 
   // UART host->device
   assign uart_a_valid   = dut.tl_to_uart.a_valid;
@@ -338,6 +397,46 @@ module top_tb(
   assign esram_d_valid   = dut.tl_from_esram.d_valid;
   assign esram_d_data    = dut.tl_from_esram.d_data;
   assign esram_d_error   = dut.tl_from_esram.d_error;
+
+  // HMAC host to device signals
+  assign hmac_a_valid   = dut.tl_to_hmac.a_valid;
+  assign hmac_a_opcode  = dut.tl_to_hmac.a_opcode;
+  assign hmac_a_param   = dut.tl_to_hmac.a_param;
+  assign hmac_a_size    = dut.tl_to_hmac.a_size;
+  assign hmac_a_source  = dut.tl_to_hmac.a_source;
+  assign hmac_a_address = dut.tl_to_hmac.a_address;
+  assign hmac_a_mask    = dut.tl_to_hmac.a_mask;
+  assign hmac_a_data    = dut.tl_to_hmac.a_data;
+  assign hmac_d_ready   = dut.tl_to_hmac.d_ready;
+  // HMAC device->host
+  assign hmac_d_valid   = dut.tl_from_hmac.d_valid;
+  assign hmac_d_data    = dut.tl_from_hmac.d_data;
+  assign hmac_d_error   = dut.tl_from_hmac.d_error;
+
+  // HMAC TL monitor (log first few requests and any errors)
+  int hmac_req_cnt;
+  int hmac_err_cnt;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      hmac_req_cnt <= 0;
+      hmac_err_cnt <= 0;
+    end else begin
+      if (hmac_a_valid && dut.tl_from_hmac.a_ready) begin
+        hmac_req_cnt <= hmac_req_cnt + 1;
+        if (hmac_req_cnt < 32) begin
+          $display("[TB][HMAC] TL req #%0d @time %0t opcode=%0d addr=0x%08x data=0x%08x mask=0x%x size=%0d", 
+            hmac_req_cnt, $time, hmac_a_opcode, hmac_a_address, hmac_a_data, hmac_a_mask, hmac_a_size);
+        end
+      end
+
+      if (hmac_d_valid && hmac_d_error) begin
+        hmac_err_cnt <= hmac_err_cnt + 1;
+        if (hmac_err_cnt < 8) begin
+          $display("[TB][HMAC][ERR] @time %0t data=0x%08x alert=0x%08x", $time, hmac_d_data, dut.u_hmac.alerts[0]);
+        end
+      end
+    end
+  end
 
   // UART line listener: decode uart_tx into bytes using system clock (~10MHz) and expected baud (~115200).
   // Assumes UART NCO set to 0x2F30, giving ~87 clk cycles per bit.

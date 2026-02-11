@@ -27,6 +27,11 @@ void uart_puts(const char *s) {
   }
 }
 
+void uart_put_hex4(uint8_t v) {
+  const char hex_chars[] = "0123456789ABCDEF";
+  uart_putc(hex_chars[v & 0xF]);
+}
+
 void uart_put_hex8(uint8_t v) {
   const char hex_chars[] = "0123456789ABCDEF";
   uart_putc(hex_chars[(v >> 4) & 0xF]);

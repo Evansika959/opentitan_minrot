@@ -10,15 +10,15 @@ package tl_tlul_main_pkg;
   localparam logic [31:0] ADDR_SPACE_D_ESRAM = 32'h 00010000;
   localparam logic [31:0] ADDR_SPACE_D_DMEM  = 32'h 00020000;
   localparam logic [31:0] ADDR_SPACE_D_UART  = 32'h 00030000;
-  localparam logic [31:0] ADDR_SPACE_D_HMAC  = 32'h 00031000;
-  localparam logic [31:0] ADDR_SPACE_D_OTBN  = 32'h 00032000;
+  localparam logic [31:0] ADDR_SPACE_D_HMAC  = 32'h 00040000;
+  localparam logic [31:0] ADDR_SPACE_D_OTBN  = 32'h 00050000;
 
   localparam logic [31:0] ADDR_MASK_D_ROM   = 32'h 0000ffff;
   localparam logic [31:0] ADDR_MASK_D_ESRAM = 32'h 0000ffff;
   localparam logic [31:0] ADDR_MASK_D_DMEM  = 32'h 0000ffff;
-  localparam logic [31:0] ADDR_MASK_D_UART  = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_D_HMAC  = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_D_OTBN  = 32'h 00000fff;
+  localparam logic [31:0] ADDR_MASK_D_UART  = 32'h 0000ffff;
+  localparam logic [31:0] ADDR_MASK_D_HMAC  = 32'h 0000ffff;
+  localparam logic [31:0] ADDR_MASK_D_OTBN  = 32'h 0000ffff;
 
   localparam int N_HOST   = 2;
   localparam int N_DEVICE = 6;

@@ -70,7 +70,7 @@
         base_addrs: {
           hart: 0x30000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     },
@@ -80,9 +80,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x31000
+          hart: 0x40000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     },
@@ -92,9 +92,9 @@
       reset: "rst_ni",
       addr_range: [{
         base_addrs: {
-          hart: 0x32000
+          hart: 0x50000
         },
-        size_byte: "0x1000"
+        size_byte: "0x10000"
       }]
       xbar: false
     }

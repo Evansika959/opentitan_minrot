@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   Vtop_tb top;
   VerilatedFstC tfp;
   top.trace(&tfp, 99);
-  tfp.open("secure_boot_v0.fst");
+  tfp.open("secure_boot_v1.fst");
 
   bool announced_start = false;
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     top.eval();
     tfp.dump(main_time);
 
-    if (cycle >= 2000000) {
+    if (cycle >= 2000) {
       VL_PRINTF("\n[CPP] Timeout after %lu cycles\n", (unsigned long)cycle);
       break;
     }

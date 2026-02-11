@@ -11,6 +11,7 @@
 
 void uart_putc(char c);
 void uart_puts(const char *s);
+void uart_put_hex4(uint8_t v);
 void uart_put_hex8(uint8_t v);
 void uart_put_hex32(uint32_t v);
 

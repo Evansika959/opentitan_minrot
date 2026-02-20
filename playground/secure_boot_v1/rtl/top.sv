@@ -4,8 +4,8 @@ module top #(
   parameter int unsigned IMEM_AW = 16,
   parameter int unsigned DMEM_AW = 16,
   // Default program image for instruction memory
-  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/hmac_demo.imem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/hmac_demo.dmem.hex",
+  parameter string IMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/otbn_demo.imem.hex",
+  parameter string DMEM_INIT_HEX = "/home/xinting/opentitan_minrot/playground/secure_boot_v1/test_sw/hex/otbn_demo.dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (
@@ -313,17 +313,119 @@ module top #(
     .idle_o(hmac_idle)
   );
 
-  // Dummy OTBN responder (always returns bus error)
-  tlul_err_resp u_otbn_err (
+  // OTBN device (basic configuration; interrupts/alerts tied off)
+  localparam int OTBN_NUM_ALERTS = otbn_reg_pkg::NumAlerts;
+  prim_alert_pkg::alert_rx_t [OTBN_NUM_ALERTS-1:0] otbn_alert_rx =
+      '{default: prim_alert_pkg::ALERT_RX_DEFAULT};
+  prim_alert_pkg::alert_tx_t [OTBN_NUM_ALERTS-1:0] otbn_alert_tx;
+
+  prim_mubi_pkg::mubi4_t otbn_idle;
+  logic otbn_intr_done;
+
+  prim_ram_1p_pkg::ram_1p_cfg_t     otbn_ram_cfg_imem;
+  prim_ram_1p_pkg::ram_1p_cfg_t     otbn_ram_cfg_dmem;
+  prim_ram_1p_pkg::ram_1p_cfg_rsp_t otbn_ram_cfg_rsp_imem;
+  prim_ram_1p_pkg::ram_1p_cfg_rsp_t otbn_ram_cfg_rsp_dmem;
+
+  edn_pkg::edn_req_t otbn_edn_rnd_req;
+  edn_pkg::edn_rsp_t otbn_edn_rnd_rsp;
+  edn_pkg::edn_req_t otbn_edn_urnd_req;
+  edn_pkg::edn_rsp_t otbn_edn_urnd_rsp;
+
+  otp_ctrl_pkg::otbn_otp_key_req_t otbn_otp_key_req;
+  otp_ctrl_pkg::otbn_otp_key_rsp_t otbn_otp_key_rsp;
+
+  keymgr_pkg::otbn_key_req_t otbn_keymgr_key;
+
+  // Tie off optional interfaces for a minimal build
+  assign otbn_ram_cfg_imem = prim_ram_1p_pkg::RAM_1P_CFG_DEFAULT;
+  assign otbn_ram_cfg_dmem = prim_ram_1p_pkg::RAM_1P_CFG_DEFAULT;
+  // Provide simple, valid EDN responses to satisfy OTBN's repetition checks.
+  logic [31:0] otbn_edn_rnd_data;
+  logic [31:0] otbn_edn_urnd_data;
+
+  function automatic logic [31:0] lfsr32_step(input logic [31:0] state);
+    logic feedback;
+    begin
+      feedback = state[31] ^ state[21] ^ state[1] ^ state[0];
+      lfsr32_step = {state[30:0], feedback};
+    end
+  endfunction
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      otbn_edn_rnd_data  <= 32'h1;
+      otbn_edn_urnd_data <= 32'h2;
+    end else begin
+      if (otbn_edn_rnd_req.edn_req) begin
+        otbn_edn_rnd_data <= lfsr32_step(otbn_edn_rnd_data);
+      end
+      if (otbn_edn_urnd_req.edn_req) begin
+        otbn_edn_urnd_data <= lfsr32_step(otbn_edn_urnd_data);
+      end
+    end
+  end
+
+  assign otbn_edn_rnd_rsp.edn_ack  = otbn_edn_rnd_req.edn_req;
+  assign otbn_edn_rnd_rsp.edn_fips = 1'b1;
+  assign otbn_edn_rnd_rsp.edn_bus  = otbn_edn_rnd_data;
+
+  assign otbn_edn_urnd_rsp.edn_ack  = otbn_edn_urnd_req.edn_req;
+  assign otbn_edn_urnd_rsp.edn_fips = 1'b1;
+  assign otbn_edn_urnd_rsp.edn_bus  = otbn_edn_urnd_data;
+
+  // Handshake OTP key response only when requested to avoid spurious acks.
+  assign otbn_otp_key_rsp.ack        = otbn_otp_key_req.req;
+  assign otbn_otp_key_rsp.key        = '0;
+  assign otbn_otp_key_rsp.nonce      = '0;
+  assign otbn_otp_key_rsp.seed_valid = 1'b1;
+
+  assign otbn_keymgr_key = keymgr_pkg::OTBN_KEY_REQ_DEFAULT;
+
+  otbn u_otbn (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
-    .tl_h_i(tl_to_otbn),
-    .tl_h_o(tl_from_otbn)
+
+    .tl_i(tl_to_otbn),
+    .tl_o(tl_from_otbn),
+
+    .idle_o(otbn_idle),
+    .intr_done_o(otbn_intr_done),
+
+    .alert_rx_i(otbn_alert_rx),
+    .alert_tx_o(otbn_alert_tx),
+
+    .lc_escalate_en_i(lc_ctrl_pkg::Off),
+    .lc_rma_req_i(lc_ctrl_pkg::Off),
+    .lc_rma_ack_o(),
+
+    .ram_cfg_imem_i(otbn_ram_cfg_imem),
+    .ram_cfg_dmem_i(otbn_ram_cfg_dmem),
+    .ram_cfg_rsp_imem_o(otbn_ram_cfg_rsp_imem),
+    .ram_cfg_rsp_dmem_o(otbn_ram_cfg_rsp_dmem),
+
+    .clk_edn_i(clk_i),
+    .rst_edn_ni(rst_ni),
+    .edn_rnd_o(otbn_edn_rnd_req),
+    .edn_rnd_i(otbn_edn_rnd_rsp),
+    .edn_urnd_o(otbn_edn_urnd_req),
+    .edn_urnd_i(otbn_edn_urnd_rsp),
+
+    .clk_otp_i(clk_i),
+    .rst_otp_ni(rst_ni),
+    .otbn_otp_key_o(otbn_otp_key_req),
+    .otbn_otp_key_i(otbn_otp_key_rsp),
+
+    .keymgr_key_i(otbn_keymgr_key)
   );
 
   // Silence unused warnings
   logic unused_hmac;
+  logic unused_otbn;
   assign unused_hmac = ^{hmac_intr_done, hmac_intr_fifo_empty, hmac_intr_err, hmac_idle};
+  assign unused_otbn = ^{otbn_idle, otbn_intr_done, otbn_alert_tx, otbn_ram_cfg_rsp_imem,
+                         otbn_ram_cfg_rsp_dmem, otbn_edn_rnd_req, otbn_edn_urnd_req,
+                         otbn_otp_key_req};
 
   // Expose UART TL for TB visibility
   assign tl_to_uart_o   = tl_to_uart;

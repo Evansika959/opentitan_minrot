@@ -14,8 +14,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "./utils/uart.h"
+
 #ifndef HMAC_BASE_ADDR
-#define HMAC_BASE_ADDR 0x00031000u  // <-- set to your memory map
+#define HMAC_BASE_ADDR 0x00040000u  // <-- set to your memory map
 #endif
 
 // ---------- Register offsets (bytes) ----------
@@ -37,6 +39,11 @@
 #define HMAC_CFG_SHA_EN_BIT     1
 #define HMAC_CFG_ENDIAN_SWAP_BIT 2
 #define HMAC_CFG_DIGEST_SWAP_BIT 3
+// CFG fields: [8:5]=digest_size, [14:9]=key_length (one-hot encoded)
+#define HMAC_CFG_DIGEST_SIZE_SHIFT 5
+#define HMAC_CFG_KEY_LENGTH_SHIFT  9
+#define HMAC_CFG_DIGEST_SHA256     0x1u
+#define HMAC_CFG_KEY_NONE          0x20u
 
 // CMD fields: [0]=hash_start, [1]=hash_process, [2]=hash_stop, [3]=hash_continue
 #define HMAC_CMD_HASH_START_BIT   0
@@ -45,6 +52,47 @@
 // STATUS fields: [0]=hmac_idle, [1]=fifo_empty, [2]=fifo_full, [9:4]=fifo_depth
 #define HMAC_STATUS_HMAC_IDLE_BIT 0
 #define HMAC_STATUS_FIFO_FULL_BIT 2
+
+// ---------- Tiny MMIO helpers ----------
+static inline void mmio_write32(uint32_t addr, uint32_t val);
+static inline uint32_t mmio_read32(uint32_t addr);
+static inline void mmio_write8(uint32_t addr, uint8_t val);
+
+static void uart_puthex4(uint8_t v);
+static void uart_puthex8(uint8_t v);
+static void uart_puthex_buf(const uint8_t *buf, size_t len);
+
+static void die(const char *msg);
+static void hmac_intr_clear(uint32_t mask);
+static void hmac_wait_idle(void);
+static void hmac_wait_fifo_not_full(void);
+static void hmac_write_msg_bytes(const uint8_t *data, size_t len);
+static void hmac_sha256_reg(const uint8_t *msg, size_t msg_len, uint8_t out32[32]);
+static bool buf_equal(const uint8_t *a, const uint8_t *b, size_t n);
+
+int main(void) {
+  uart_putc('s');
+
+  static const uint8_t msg[] = {'a','b','c'};
+  uint8_t digest[32];
+  hmac_sha256_reg(msg, sizeof(msg), digest);
+
+  uart_putc('^');
+  uart_puthex_buf(digest, 32);
+  uart_putc('&');
+
+  // Expected SHA-256("abc")
+  static const uint8_t exp[32] = {
+    0xba,0x78,0x16,0xbf,0x8f,0x01,0xcf,0xea,
+    0x41,0x41,0x40,0xde,0x5d,0xae,0x22,0x23,
+    0xb0,0x03,0x61,0xa3,0x96,0x17,0x7a,0x9c,
+    0xb4,0x10,0xff,0x61,0xf2,0x00,0x15,0xad
+  };
+
+  uart_puts(buf_equal(digest, exp, 32) ? "PASS" : "FAIL");
+  
+  while (1) { __asm__ volatile("wfi"); }
+}
 
 // ---------- Tiny MMIO helpers ----------
 static inline void mmio_write32(uint32_t addr, uint32_t val) {
@@ -68,7 +116,7 @@ static void uart_puthex_buf(const uint8_t *buf, size_t len) {
 }
 
 static void die(const char *msg) {
-  uart_puts("FATAL: "); uart_puts(msg); uart_puts("\n");
+  uart_puts("FATAL: "); uart_puts(msg); uart_putc('\n');
   while (1) { __asm__ volatile("wfi"); }
 }
 
@@ -109,6 +157,8 @@ static void hmac_sha256_reg(const uint8_t *msg, size_t msg_len, uint8_t out32[32
   cfg |= (0u << HMAC_CFG_HMAC_EN_BIT);    // disable HMAC mode (no key)
   cfg |= (0u << HMAC_CFG_ENDIAN_SWAP_BIT);
   cfg |= (0u << HMAC_CFG_DIGEST_SWAP_BIT);
+  cfg |= (HMAC_CFG_DIGEST_SHA256 << HMAC_CFG_DIGEST_SIZE_SHIFT);
+  cfg |= (HMAC_CFG_KEY_NONE << HMAC_CFG_KEY_LENGTH_SHIFT);
   mmio_write32(HMAC_BASE_ADDR + HMAC_CFG_OFF, cfg);
 
   // 2) Start hashing stream
@@ -122,13 +172,19 @@ static void hmac_sha256_reg(const uint8_t *msg, size_t msg_len, uint8_t out32[32
   // Programmer’s guide says finalize by setting CMD.hash_process. :contentReference[oaicite:4]{index=4}
   mmio_write32(HMAC_BASE_ADDR + HMAC_CMD_OFF, (1u << HMAC_CMD_HASH_PROCESS_BIT));
 
+  uart_putc('*');
+
   // 5) Wait for done or error
   while (1) {
     uint32_t intr = mmio_read32(HMAC_BASE_ADDR + HMAC_INTR_STATE_OFF);
     if (intr & (1u << HMAC_INTR_HMAC_ERR_BIT)) {
       uint32_t err = mmio_read32(HMAC_BASE_ADDR + HMAC_ERR_CODE_OFF);
       (void)err;
-      die("HMAC error (see ERR_CODE)");
+      uart_putc('p');
+      uart_put_hex32(err);
+      uart_putc('l');
+
+      die("HMAC error");
     }
     if (intr & (1u << HMAC_INTR_HMAC_DONE_BIT)) break;
   }
@@ -153,27 +209,4 @@ static bool buf_equal(const uint8_t *a, const uint8_t *b, size_t n) {
   uint8_t diff = 0;
   for (size_t i = 0; i < n; i++) diff |= (a[i] ^ b[i]);
   return diff == 0;
-}
-
-int main(void) {
-  uart_putc("s");
-
-  static const uint8_t msg[] = {'a','b','c'};
-  uint8_t digest[32];
-  hmac_sha256_reg(msg, sizeof(msg), digest);
-
-  uart_putc("1");
-  uart_puthex_buf(digest, 32);
-  uart_putc("2");
-
-  // Expected SHA-256("abc")
-  static const uint8_t exp[32] = {
-    0xba,0x78,0x16,0xbf,0x8f,0x01,0xcf,0xea,
-    0x41,0x41,0x40,0xde,0x5d,0xae,0x22,0x23,
-    0xb0,0x03,0x61,0xa3,0x96,0x17,0x7a,0x9c,
-    0xb4,0x10,0xff,0x61,0xf2,0x00,0x15,0xad
-  };
-
-  uart_puts(buf_equal(digest, exp, 32) ? "PASS\n" : "FAIL\n");
-  while (1) { __asm__ volatile("wfi"); }
 }

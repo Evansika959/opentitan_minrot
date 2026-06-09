@@ -14,10 +14,19 @@
 #   DATA_SRAM_BASE= 0x00020000 (size 64KB)
 
 # ---- Toolchain ----
-CC       := riscv64-unknown-elf-gcc
-OBJCOPY  := riscv64-unknown-elf-objcopy
-OBJDUMP  := riscv64-unknown-elf-objdump
-SIZE     := riscv64-unknown-elf-size
+# Auto-detect the RISC-V prefix (prefer riscv32, fall back to riscv64) unless the
+# caller overrides RISCV_PREFIX. Both build rv32im/ilp32 objects fine.
+ifeq ($(origin RISCV_PREFIX), undefined)
+RISCV_PREFIX := $(shell command -v riscv32-unknown-elf-gcc >/dev/null 2>&1 && echo riscv32-unknown-elf-)
+ifeq ($(RISCV_PREFIX),)
+RISCV_PREFIX := $(shell command -v riscv64-unknown-elf-gcc >/dev/null 2>&1 && echo riscv64-unknown-elf-)
+endif
+endif
+RISCV_PREFIX ?= riscv64-unknown-elf-
+CC       := $(RISCV_PREFIX)gcc
+OBJCOPY  := $(RISCV_PREFIX)objcopy
+OBJDUMP  := $(RISCV_PREFIX)objdump
+SIZE     := $(RISCV_PREFIX)size
 PY       := python3
 OPENSSL  := openssl
 

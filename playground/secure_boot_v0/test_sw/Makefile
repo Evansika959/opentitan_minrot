@@ -53,10 +53,13 @@ all: \
 .PHONY: rom
 rom: $(HEX_DIR)/rom.hex $(HEX_DIR)/rom.imem.hex patch_rom_dmem
 
-# Replace first 1024 lines of rom_with_image.dmem.hex with rom.dmem.hex
+# Overlay the ROM's own .data (rom.dmem.hex) onto the signed D-SRAM image
+# (../sw/build/d_sram.hex) to produce the combined DMEM init image the RTL loads.
+# DSRAM_IMAGE can be overridden if the packed image lives elsewhere.
+DSRAM_IMAGE ?= ../sw/build/d_sram.hex
 .PHONY: patch_rom_dmem
-patch_rom_dmem: $(HEX_DIR)/rom.dmem.hex $(HEX_DIR)/rom_with_image.dmem.hex replace_dmem.py
-	python3 replace_dmem.py --source $(HEX_DIR)/rom.dmem.hex --target /home/xinting/opentitan_minrot/playground/secure_boot_v0/sw/build/d_sram.hex --output $(HEX_DIR)/rom_with_image.dmem.hex 
+patch_rom_dmem: $(HEX_DIR)/rom.dmem.hex replace_dmem.py
+	python3 replace_dmem.py --source $(HEX_DIR)/rom.dmem.hex --target $(DSRAM_IMAGE) --output $(HEX_DIR)/rom_with_image.dmem.hex
 
 # Convenience: `make <testname>` builds the corresponding hex
 $(TESTS): %: $(HEX_DIR)/%.hex $(HEX_DIR)/%.imem.hex $(HEX_DIR)/%.dmem.hex

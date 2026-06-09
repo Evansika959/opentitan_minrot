@@ -1,0 +1,5 @@
+# Local, machine-specific, and per-run generated files (see setup.bash / run_v0.bash)
+.env.local
+sim.log
+*.fst
+esram_dump.hex

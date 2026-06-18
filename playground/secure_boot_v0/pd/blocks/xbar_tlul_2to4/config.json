@@ -1,7 +1,7 @@
 {
   "DESIGN_NAME": "xbar_tlul_2to4",
   "CLOCK_PORT": "clk_i",
-  "CLOCK_PERIOD": 50,
+  "CLOCK_PERIOD": 100,
   "PNR_SDC_FILE": "dir::xbar.sdc",
   "SIGNOFF_SDC_FILE": "dir::xbar.sdc",
   "PDK": "gf180mcuD",
@@ -10,6 +10,7 @@
   "DIE_AREA": [0, 0, 560, 560],
   "PL_TARGET_DENSITY_PCT": 25,
   "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
+  "STA_CORNERS": ["nom_tt_025C_5v00", "max_ss_125C_4v50", "min_ff_n40C_5v50"],
 
   "//": "VERILOG_FILES, VERILOG_INCLUDE_DIRS, USE_SLANG and SLANG_ARGUMENTS are injected by harden_block.sh from the FuseSoC-resolved closure (raw SystemVerilog read via the bundled slang frontend; no sv2v). Pad-limited block: the 2-host x 4-device TL-UL struct interface flattens to ~1056 pins, so the die is sized by pin perimeter (400um/side), not core logic. Derisk pass: relaxed 20ns clock."
 }

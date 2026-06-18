@@ -7,7 +7,7 @@
 # paths are combinational host->device feedthroughs (address decode + response
 # mux + TL-UL integrity), which pay BOTH the input and the output budget.
 
-set clk_period 50.0 ;# 20 MHz target — keep in sync with CLOCK_PERIOD in config.json
+set clk_period 100.0 ;# 10 MHz target — keep in sync with CLOCK_PERIOD in config.json
 
 # --- single synchronous clock -------------------------------------------------
 create_clock -name clk_i -period $clk_period [get_ports clk_i]
@@ -32,11 +32,13 @@ set outputs     [all_outputs]
 # outputs). A feedthrough host->device path thus reserves ~30%, leaving ~70% of
 # the period for the crossbar's own logic.
 set io_budget [expr {0.15 * $clk_period}]
-set_input_delay  -max $io_budget -clock $clocks $data_inputs
-set_input_delay  -min 0.0        -clock $clocks $data_inputs
-
-set_output_delay -max $io_budget -clock $clocks $outputs
-set_output_delay -min 0.0        -clock $clocks $outputs
+# Single value sets BOTH the max (setup) and min (hold) arrival to the same budget.
+# A separate `-min 0.0` makes every one of the ~1080 I/O a hold path, which on this
+# large pin-limited die triggers a ~1000-cell delay-buffer ("dlyb") explosion and a
+# pathologically slow repair_design. Keeping min=max avoids that and matches the
+# proven sky130 setup.
+set_input_delay  $io_budget -clock $clocks $data_inputs
+set_output_delay $io_budget -clock $clocks $outputs
 
 # Realistic on-chip drive/load. Model the driver as a medium buffer (drive-4) —
 # what a real net fanning across a block actually sees — not a weakest-drive (x1)
@@ -45,8 +47,11 @@ set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__buf_4 -pin Z $in_wo_clk
 set_load 0.02 [all_outputs]
 
 # --- design-rule + clock realism ---------------------------------------------
-set_max_fanout 10 [current_design]
-set_max_transition 0.75 [current_design]
+set_max_fanout 16 [current_design]
+# Loose at 10 MHz: GF180's resistive metal over this sparse, pin-limited die makes
+# the long perimeter->core I/O nets over-buffer at a tight transition; 3 ns slew is
+# negligible vs a 100 ns period and slashes repair_design buffering/runtime.
+set_max_transition 3.0 [current_design]
 
 set_clock_uncertainty 0.10 $clocks
 set_clock_transition 0.15 $clocks

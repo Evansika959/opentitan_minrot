@@ -23,6 +23,8 @@ set clk_input [get_port clk_i]
 set clk_indx  [lsearch [all_inputs] $clk_input]
 set in_wo_clk [lreplace [all_inputs] $clk_indx $clk_indx ""]
 set clocks    [get_clocks clk_i]
+set data_inputs $in_wo_clk
+set outputs     [all_outputs]
 
 # --- on-chip I/O budget -------------------------------------------------------
 # Reserve ~15% of the period at each boundary for the neighbour register stage

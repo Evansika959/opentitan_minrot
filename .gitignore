@@ -93,5 +93,6 @@ book
 .ruff.toml
 
 .venv/
+.venv-fusesoc/
 tmp/
 hex/

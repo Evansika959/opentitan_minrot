@@ -44,9 +44,9 @@ module tlul_sram_if #(
     .req_type_o(req_type),
     .gnt_i(gnt),
     .we_o(we),
-  .addr_o(addr),
-  .wdata_o(wdata),
-  .wmask_o(wmask_unused),
+    .addr_o(addr),
+    .wdata_o(wdata),
+    .wmask_o(wmask_unused),
 
     .intg_error_o(),
 

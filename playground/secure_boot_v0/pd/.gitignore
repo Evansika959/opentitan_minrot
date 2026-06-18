@@ -1,0 +1,15 @@
+# LibreLane run outputs
+blocks/*/runs/
+
+# generated at run time by harden_block.sh (from the FuseSoC-resolved closure)
+blocks/*/config.resolved.json
+
+# local tool checkouts (LibreLane clone defaults to ~/tools, but ignore any here)
+tools/
+
+# local PDK clone (wafer.space gf180mcu, fetched by setup_pdk.sh)
+pdk/
+
+# logs / misc
+*.log
+__pycache__/

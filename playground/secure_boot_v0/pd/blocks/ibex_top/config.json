@@ -1,0 +1,16 @@
+{
+  "DESIGN_NAME": "ibex_top",
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100,
+  "PNR_SDC_FILE": "dir::ibex_top.sdc",
+  "SIGNOFF_SDC_FILE": "dir::ibex_top.sdc",
+  "PDK": "gf180mcuD",
+
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [0, 0, 1000, 1000],
+  "PL_TARGET_DENSITY_PCT": 60,
+  "STA_CORNERS": ["nom_tt_025C_5v00"],
+  "SYNTH_LATCH_MAP": "dir::latch_map.v",
+
+  "//": "gf180mcuD @ 10 MHz. Ibex core, default config (RegFileFF, ICache=0) -> pure std-cell, no RAM macros. First-pass die 1000x1000um with auto pin placement (no IO_PIN_ORDER_CFG); shrink once utilization is known. VERILOG_FILES/USE_SLANG injected by harden_block.sh."
+}

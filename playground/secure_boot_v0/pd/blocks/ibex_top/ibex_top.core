@@ -1,0 +1,22 @@
+CAPI=2:
+# Resolves the ibex_top synthesis closure via FuseSoC (incl. primgen-generated prim
+# wrappers) so harden_block.sh can harvest the file list for LibreLane (USE_SLANG).
+# Default Ibex config: RegFileFF (flop register file), ICache=0 -> pure std-cell,
+# no RAM macros. Setup/lint only.
+name: xinting:pd:ibex_top:0.1
+description: Ibex core (ibex_top) synthesis closure for the LibreLane flow (FuseSoC setup only)
+
+filesets:
+  deps:
+    depend:
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:prim_generic:all
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [deps]
+    toplevel: ibex_top
+    tools:
+      verilator:
+        mode: lint-only

@@ -2,42 +2,42 @@
 
 This directory holds the **ASIC implementation** flow for `secure_boot_v0`, kept
 separate from the simulation flow (`rtl/`, `tb/`, `sw/`, `test_sw/`) so the two
-never pollute each other. Target: **gf180mcuD** (the wafer.space shuttle PDK, for
-chipathon-2026) via **LibreLane 3.x**. (Initial bring-up was on sky130A; some result
-notes below still cite those numbers and are being re-run on gf180mcuD.)
+never pollute each other. Target: **gf180mcuD** — the **wafer.space** shuttle PDK
+(chipathon-2026) — via **LibreLane 3.x**.
 
 The flow uses LibreLane's **recommended entrypoint**: a local clone of the
 LibreLane repo entered with `nix-shell` (which provides `librelane` + all EDA
 tools — `yosys-with-plugins` incl. **slang**, OpenROAD, KLayout, Magic — at pinned
-versions). No vendored software (OpenTitan RTL or LibreLane) is modified.
+versions). No vendored software (OpenTitan RTL, LibreLane, or the PDK) is modified.
 
-## Strategy: derisk on one block first
+## Approach: harden one block at a time
 
-The full SoC has two hard problems for an open ASIC flow (see
-`docs/librelane-reference.md`):
+The full SoC has two hard problems for an open ASIC flow:
 
-1. **Behavioral memories** — `tlul_sram_if`/`tlul_rom_if` model RAM/ROM as
-   `logic [31:0] mem [0:(1<<16)-1]` (≈256 KiB *each*, ×3). Infeasible as flops;
-   must become PDK SRAM/ROM macros. (Still open — the SoC's real fork.)
-2. **SystemVerilog frontend** — Yosys's built-in `read_verilog -sv` won't reliably
-   digest OpenTitan SV. **Solved**: set **`USE_SLANG: true`** so the `Yosys.Synthesis`
-   step uses the bundled `read_slang` frontend on the raw SV — no sv2v, no extra
-   tools. (sv2v pre-flattening is the documented fallback; see the reference doc.)
+1. **SystemVerilog frontend** — Yosys's built-in `read_verilog -sv` won't reliably
+   digest OpenTitan SV. **Solved**: set **`USE_SLANG: true`** so `Yosys.Synthesis`
+   uses the bundled `read_slang` frontend on the raw SV — no sv2v, no extra tools.
+   (sv2v pre-flattening is a documented fallback; see `docs/librelane-reference.md`.)
+2. **Memories** — `tlul_sram_if`/`tlul_rom_if` are behavioral (`logic [..] mem[..]`),
+   ≈256 KiB each. For ASIC they must become PDK macros. GF180 ships **SRAM IP only**
+   (`gf180mcu_fd_ip_sram`, 8-bit wide, max `sram512x8`; 4-wide for a 32-bit word) and
+   **no ROM macro** (ROM ⇒ small synthesizable std-cell ROM, or a preloaded SRAM).
+   The 64 KiB×3 in the RTL is infeasible — memories must be right-sized. *(Open.)*
 
-So we prove the **FuseSoC → LibreLane (slang) → gf180mcuD** pipeline on a small but
-representative block (`xbar_tlul_2to4`: packages + structs + prim deps +
-assertions, **no memory**) before scaling to `uart` and then the full SoC.
+So each block is hardened standalone first (logic correctness, timing, the flow),
+building toward the full SoC + memory integration.
 
 ## How a block is built
 
 `harden_block.sh <blk>` runs the whole flow:
 
-1. **FuseSoC** resolves the block's closure from `blocks/<blk>/*.core` (this runs
+1. **FuseSoC** resolves the block's closure from `blocks/<blk>/*.core` (runs
    OpenTitan's `primgen` to materialize the abstract prim wrappers) and emits an
    ordered verilator `.vc` file list.
 2. The script merges `blocks/<blk>/config.json` with that **raw SV file list +
    `USE_SLANG`** into `config.resolved.json` (generated, gitignored).
-3. **LibreLane** runs inside `nix-shell` on the resolved config → GDS.
+3. **LibreLane** runs inside `nix-shell` on the resolved config (`--manual-pdk`,
+   pointing at the wafer.space gf180mcuD clone) → GDS.
 
 ## Layout
 
@@ -46,83 +46,71 @@ pd/
 ├── README.md
 ├── docs/librelane-reference.md   # captured LibreLane 3.x facts (version-stamped)
 ├── scripts/
-│   ├── env.sh                    # LIBRELANE_DIR/TAG, PDK_ROOT, ll_shell()/ll_env() helpers
+│   ├── env.sh                    # LIBRELANE_DIR/TAG, PDK/PDK_TAG/PDK_ROOT, ll_shell()/ll_env()
 │   │                             #   (run `bash scripts/env.sh` to print the env summary)
 │   ├── setup_librelane.sh        # clone LibreLane (pinned) + smoke test
 │   ├── setup_pdk.sh              # clone wafer.space gf180mcu PDK (pinned tag) for --manual-pdk
 │   ├── smoke_test.sh             # smoke test via the clone's nix-shell
 │   └── harden_block.sh <blk>     # FuseSoC resolve -> USE_SLANG config -> LibreLane (nix-shell)
 ├── pdk/                          # wafer.space gf180mcu clone (gitignored, from setup_pdk.sh)
-└── blocks/
-    └── xbar_tlul_2to4/
-        ├── xbar_tlul_2to4.core   # FuseSoC core: defines the SV closure + toplevel
-        ├── xbar.sdc              # block timing constraints (PNR + signoff)
-        ├── config.json           # stable LibreLane knobs (sources injected at run time)
-        ├── config.resolved.json  # generated (gitignored)
-        └── runs/                 # LibreLane outputs (gitignored)
+└── blocks/<blk>/                 # one dir per block:
+    ├── <blk>.core                #   FuseSoC core: SV closure + toplevel
+    ├── <blk>.sdc                 #   block timing constraints (PNR + signoff)
+    ├── config.json               #   stable LibreLane knobs (sources injected at run time)
+    ├── latch_map.v               #   GF180 latch techmap (PDK ships none; see Notes)
+    ├── config.resolved.json      #   generated (gitignored)
+    └── runs/                     #   LibreLane outputs (gitignored)
 ```
 
-The LibreLane clone lives at `~/tools/librelane` by default (outside this repo, next
-to the RISC-V toolchain); override with `LIBRELANE_DIR=...`. The **PDK** is the
-wafer.space **gf180mcuD** distribution cloned to `pd/pdk/gf180mcu` (gitignored) by
-`setup_pdk.sh`, used via `librelane --manual-pdk`; override with `PDK`/`PDK_TAG`/`PDK_ROOT`.
+Blocks present: **`xbar_tlul_2to4`**, **`ibex_top`**, **`uart`**.
+
+The LibreLane clone lives at `~/tools/librelane` by default; override with
+`LIBRELANE_DIR=`. The **PDK** is the wafer.space gf180mcuD distribution cloned to
+`pd/pdk/gf180mcu` (gitignored) by `setup_pdk.sh`; override with `PDK`/`PDK_TAG`/`PDK_ROOT`.
 
 ## Prerequisites (already satisfied on this machine)
 
 - **Nix** (multi-user daemon) with the **FOSSi binary cache** in `/etc/nix/nix.conf`
-  (`nix-cache.fossi-foundation.org`) and `flakes` enabled — `nix-shell` substitutes
-  prebuilt binaries instead of building from source.
-- **FuseSoC** in the sim flow's venv (`<repo>/.venv-fusesoc`, via `.env.local`) — used
-  only to resolve the source closure.
+  and `flakes` enabled — `nix-shell` substitutes prebuilt binaries.
+- **FuseSoC** in the sim flow's venv (`<repo>/.venv-fusesoc`, via `.env.local`) —
+  used only to resolve the source closure.
 
 ## Quick start
 
 ```bash
 cd pd
-./scripts/setup_librelane.sh              # one-time: clone LibreLane + smoke test
-./scripts/setup_pdk.sh                    # one-time: clone wafer.space gf180mcuD PDK (~1.2 GB)
-./scripts/harden_block.sh xbar_tlul_2to4  # whole flow -> GDS
-#   synth-only sanity check:  ./scripts/harden_block.sh xbar_tlul_2to4 --to Yosys.Synthesis
-# results: blocks/xbar_tlul_2to4/runs/<tag>/  (final GDS under .../final/gds/)
+./scripts/setup_librelane.sh        # one-time: clone LibreLane + smoke test
+./scripts/setup_pdk.sh              # one-time: clone wafer.space gf180mcuD PDK (~1.2 GB)
+./scripts/harden_block.sh ibex_top  # or: xbar_tlul_2to4 | uart   -> GDS
+#   synth-only sanity check:  ./scripts/harden_block.sh ibex_top --to Yosys.Synthesis
+# results: blocks/<blk>/runs/<tag>/  (final GDS under .../final/gds/)
 ```
 
 ## Status
 
-- [x] LibreLane docs captured (`docs/librelane-reference.md`)
-- [x] Workspace scaffolded
-- [x] Smoke test / PDK fetch (LibreLane 3.0.4, sky130A)
-- [x] **`xbar_tlul_2to4` → GDS** — SV→GDS pipeline proven (2026-06-17)
-- [x] re-confirmed `xbar_tlul_2to4` → GDS via **nix-shell + USE_SLANG** (no sv2v)
-- [x] **`xbar_tlul_2to4` timing closed @ 20 MHz** with real SDC (`xbar.sdc`):
-      setup WNS **+17.9 ns**, hold met, 0 DRC/antenna/slew/cap — sign-off clean
-- [ ] `uart` → GDS
-- [ ] full SoC (needs the memory-macro decision)
+All blocks below are **GDS, gf180mcuD @ 10 MHz, sign-off on `nom_tt_025C_5v00`**:
 
-### Derisk result — `xbar_tlul_2to4` (final: nix-shell + USE_SLANG, 20 MHz)
+| block | die (µm) | utilization | setup WNS | hold | DRC / antenna |
+|---|---|---|---|---|---|
+| `xbar_tlul_2to4` | 200 × 1060 | 0.66 | + (clean) | met | 0 / 0 |
+| `ibex_top` | 1000 × 1000 | 0.61 | +24.4 ns | met | 0 / 0 |
+| `uart` | ~497 × 514 (auto) | 0.83 | +26 ns | met | 0 / 0 |
 
-FuseSoC → LibreLane (slang) → sky130A works end to end on OpenTitan SV, fully
-sign-off clean:
+- [x] flow proven: FuseSoC → LibreLane (`USE_SLANG`) → gf180mcuD (`--manual-pdk`)
+- [x] `xbar_tlul_2to4`, `ibex_top`, `uart` → GDS, timing-clean
+- [ ] memory block (`sram512x8` tiling wrapper) + small std-cell ROM
+- [ ] full SoC integration (Ibex + xbar + uart + memories)
 
-| | |
-|---|---|
-| DRC / antenna | **0 / 0** |
-| Setup WNS / TNS | **+17.9 ns / 0** (closed @ 20 MHz, real `xbar.sdc`) |
-| Hold WNS / TNS | **+0.19 ns / 0** (met) |
-| Max slew / cap violations | **none** |
-| Std cells | 4,713 |
-| Die | 400×400 µm (pad-limited: 1056-bit TL-UL struct interface), ~19% util |
+## Notes / lessons baked into the configs
 
-Lessons baked into the scripts/config:
-- **`USE_SLANG: true`** reads raw OpenTitan SV directly (validated: 0 unmapped
-  cells), so the flow needs no sv2v and stays inside LibreLane's nix-shell.
-- `VERILOG_DEFINES: ["SYNTHESIS=1"]` keeps OT assertion modules out of synthesis.
-- Wide struct interfaces are **pad-limited** — size the die by pin perimeter
-  (`FP_SIZING: absolute` + `DIE_AREA`), not core utilization.
-- A context-aware SDC (`blocks/xbar_tlul_2to4/xbar.sdc`) — single clock, `scanmode_i`
-  false-path, on-chip 15% I/O budget (not 4 ns off-chip), realistic driver/load,
-  0.10 ns uncertainty — cut setup **TNS from −209 ns to −42 ns (~5×)**. WNS plateaus
-  at ~−1.7 ns @ 50 MHz: the worst path is a ~15.6 ns combinational host→device
-  feedthrough (decode + mux + integrity) plus route buffering across the pad-limited
-  die — **structural/floorplan, not SDC**. Standalone Fmax ≈ 45 MHz; the design's
-  documented clock is **10 MHz** (sim TB), at which the block closes with huge margin.
-  Real xbar timing is set in-SoC (flattened/placed with neighbours), not standalone.
+- **GF180 missing latch map**: the PDK references a `latch_map.v` it doesn't ship,
+  so Yosys can't map OpenTitan `prim_clock_gating`'s D-latch ("1 unmapped cell" on
+  Ibex). Each block carries a `latch_map.v` (mapping `$_DLATCH_*` → `latq_1`) wired
+  via `SYNTH_LATCH_MAP`.
+- **Density** is reported as `design__instance__utilization` in `final/metrics.json`.
+  Since std-cell area is ~constant, util = stdcell/core → shrink the core to raise it.
+- **Pin-limited blocks** (e.g. the 1080-pin xbar): the die is set by the pin ring,
+  not the logic; OpenROAD inserts ~1 I/O buffer per pin (the "buffer bloat"). It's
+  benign — it vanishes in-SoC once the block is **flattened** into the top.
+- **Signoff** is `nom_tt_025C_5v00` only (`STA_CORNERS`); the slow 4.5 V `ss` corner
+  is excluded. Ibex closes 10 MHz at nominal; it would need ~120 ns to cover `ss`.

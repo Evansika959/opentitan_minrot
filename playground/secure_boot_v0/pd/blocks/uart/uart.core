@@ -1,0 +1,21 @@
+CAPI=2:
+# Resolves the OpenTitan UART synthesis closure via FuseSoC (incl. primgen prim
+# wrappers) so harden_block.sh can harvest the file list for LibreLane (USE_SLANG).
+# Pure std-cell (TX/RX use prim_fifo_sync = flops; no RAM macros). Setup/lint only.
+name: xinting:pd:uart:0.1
+description: OpenTitan UART (uart) synthesis closure for the LibreLane flow (FuseSoC setup only)
+
+filesets:
+  deps:
+    depend:
+      - lowrisc:ip:uart:0.1
+      - lowrisc:prim_generic:all
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [deps]
+    toplevel: uart
+    tools:
+      verilator:
+        mode: lint-only

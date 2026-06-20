@@ -1,0 +1,29 @@
+CAPI=2:
+# 1 KiB TL-UL SRAM/ROM block (gf180 sram256x8 x4) for the LibreLane PD + LVS
+# flow. Resolves the tlul_adapter_sram closure via FuseSoC so harden_block.sh
+# can harvest the file list for LibreLane (raw SV via USE_SLANG). The macro
+# blackbox.v is included so both Verilator lint and slang synthesis see the
+# sram256x8 module as a leaf cell. Setup/lint only -- never built from here.
+name: xinting:pd:tlul_sram_if_macro:0.1
+description: 1 KiB TL-UL SRAM/ROM (4x gf180 sram256x8) PD closure for LibreLane
+
+filesets:
+  rtl:
+    files:
+      - ../../../rtl/gf180mcu_fd_ip_sram__sram256x8m8wm1__blackbox.sv
+      - ../../../rtl/prim_ram_1p_macro.sv
+      - ../../../rtl/tlul_sram_if_macro.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:tlul:adapter_sram:0.1
+      - lowrisc:tlul:common:0.1
+      - lowrisc:prim_generic:all
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: tlul_sram_if_macro
+    tools:
+      verilator:
+        mode: lint-only

@@ -7,10 +7,11 @@
   "PDK": "gf180mcuD",
 
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 1000, 1000],
-  "PL_TARGET_DENSITY_PCT": 60,
+  "DIE_AREA": [0, 0, 2400, 500],
+  "PL_TARGET_DENSITY_PCT": 57,
+  "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
   "STA_CORNERS": ["nom_tt_025C_5v00"],
   "SYNTH_LATCH_MAP": "dir::latch_map.v",
 
-  "//": "gf180mcuD @ 10 MHz. Ibex core, default config (RegFileFF, ICache=0) -> pure std-cell, no RAM macros. First-pass die 1000x1000um with auto pin placement (no IO_PIN_ORDER_CFG); shrink once utilization is known. VERILOG_FILES/USE_SLANG injected by harden_block.sh."
+  "//": "gf180mcuD @ 10 MHz. Ibex core (RegFileFF, ICache=0) -> pure std-cell, no RAM macros. Die 2400x500um: height pinned at 500; width widened to 2400 -> ~52% util (1800x500 @70% congested on clk_i routing for this wide-thin aspect). 672 pins don't fit the 500um East edge (~364 slots), so pin_order.cfg puts the functional interface (instr/data/irq/boot/hart/alerts/clk/rst) on East and spills the tie-off buses to North (crash_dump) and South (scramble_*, ram_cfg_*). VERILOG_FILES/USE_SLANG injected by harden_block.sh."
 }

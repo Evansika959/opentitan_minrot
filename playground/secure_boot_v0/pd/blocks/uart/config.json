@@ -6,10 +6,12 @@
   "SIGNOFF_SDC_FILE": "dir::uart.sdc",
   "PDK": "gf180mcuD",
 
-  "FP_SIZING": "relative",
-  "FP_CORE_UTIL": 60,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [0, 0, 565, 500],
+  "PL_TARGET_DENSITY_PCT": 80,
+  "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
   "STA_CORNERS": ["nom_tt_025C_5v00"],
   "SYNTH_LATCH_MAP": "dir::latch_map.v",
 
-  "//": "gf180mcuD @ 10 MHz. OpenTitan UART, pure std-cell (no RAM). Auto-sized 'as small as possible' via FP_SIZING:relative + FP_CORE_UTIL=60 (LibreLane sizes the die to ~60% core util), auto pin placement. latch_map for any prim_clock_gating. VERILOG_FILES/USE_SLANG injected by harden_block.sh."
+  "//": "gf180mcuD @ 10 MHz. OpenTitan UART. Single-sided I/O: all pins on the West edge (pin_order.cfg = '#W' + '.*'). Height pinned at 500um; width widened to 565um so core util ~0.75 (UART std-cell ~193k um2) -- enough headroom for CTS/legalization with all I/O on one edge. (500x500 = ~85% util failed CTS detailed placement.) VERILOG_FILES/USE_SLANG injected by harden_block.sh."
 }

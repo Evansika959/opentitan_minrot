@@ -7,7 +7,7 @@
   "PDK": "gf180mcuD",
 
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 200, 1060],
+  "DIE_AREA": [0, 0, 500, 500],
   "PL_TARGET_DENSITY_PCT": 25,
   "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
   "STA_CORNERS": ["nom_tt_025C_5v00"],

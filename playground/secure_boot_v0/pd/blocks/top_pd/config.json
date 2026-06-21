@@ -9,8 +9,8 @@
   "DIE_AREA": [
     0,
     0,
-    2700,
-    2800
+    3200,
+    3200
   ],
   "PL_TARGET_DENSITY_PCT": 30,
   "STA_CORNERS": [
@@ -38,8 +38,8 @@
       "instances": {
         "u_ibex": {
           "location": [
-            126.46,
-            28.81
+            100,
+            1100
           ],
           "orientation": "N"
         }
@@ -66,22 +66,22 @@
       "instances": {
         "u_imem": {
           "location": [
-            126.46,
-            1254.25
+            300,
+            2200
           ],
           "orientation": "N"
         },
         "u_esram": {
           "location": [
-            1355.26,
-            1713.79
+            1700,
+            2200
           ],
           "orientation": "N"
         },
         "u_dmem": {
           "location": [
-            1355.26,
-            28.81
+            1000,
+            100
           ],
           "orientation": "N"
         }
@@ -108,8 +108,8 @@
       "instances": {
         "u_uart": {
           "location": [
-            1969.66,
-            1101.07
+            2150,
+            1360
           ],
           "orientation": "N"
         }
@@ -136,8 +136,8 @@
       "instances": {
         "u_xbar": {
           "location": [
-            1355.26,
-            1101.07
+            1350,
+            1350
           ],
           "orientation": "N"
         }
@@ -148,5 +148,6 @@
     "u_(ibex|imem|esram|dmem|xbar|uart) VDD VSS VDD VSS"
   ],
   "RUN_MAGIC_DRC": false,
-  "//": "REVERTED to the closest-to-success state (run RUN_2026-06-20_18-04-16): default PDN, DIE 2700x2800, original tight floorplan, uart RACL tied, darjeeling top_pkg. LVS devices match 2011=2011; remaining = 4 orphaned VDD/VSS power-strap fragments (net 3164 vs 3160) + dangling macro outputs. Run with: harden_block.sh top_pd --skip KLayout.Render --skip OpenROAD.IRDropReport. PDN experiments (pdn_cfg.tcl) left in the dir but NOT referenced. VERILOG_FILES/USE_SLANG injected by harden_block.sh."
+  "//": "HALO top v2 (branch halo-pdn): hub-and-spoke matching xbar pin sides (W=ibex, E=uart, N=imem/esram, S=dmem) on a 3200x3200 die, 45% fill, 250-350um dataflow channels. v1 (2700x2800, corner layout, 100-260um channels) hit GRT-0116 with 6760 M2/M3 overflow: blocks obstruct M1-M3 so inter-block routing is channel-confined, and the wide TL buses jammed the narrow channels + xbar-in-corner long routes. Default top M4/M5 grid in channels; macro-halo grid + PDN_MACRO_CONNECTIONS tie block rings. Run: harden_block.sh top_pd --skip KLayout.Render --skip OpenROAD.IRDropReport.",
+  "PDN_CORE_RING": true
 }

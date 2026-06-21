@@ -18,6 +18,9 @@ filesets:
       - lowrisc:tlul:adapter_sram:0.1
       - lowrisc:tlul:common:0.1
       - lowrisc:prim_generic:all
+      # Bind the virtual top_pkg to darjeeling so tl_h2d_t is 114-bit, matching
+      # the xbar/uart/sim (FuseSoC otherwise picked earlgrey -> 109-bit -> skew).
+      - lowrisc:darjeeling_constants:top_pkg
 
 targets:
   lint:

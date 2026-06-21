@@ -1,0 +1,35 @@
+CAPI=2:
+# Full-chip PD integration top. Pulls ONLY the packages + the local Ibex->TL-UL
+# adapter; the six hardened blocks are provided as (* blackbox *) stubs (stubs/),
+# so synthesis keeps them as hard macros (physical views come from MACROS in
+# config.json). Deliberately does NOT depend on ibex_top/uart/xbar cores -- that
+# would pull their RTL and flatten them. Setup/lint only.
+name: xinting:pd:top_pd:0.1
+description: secure_boot_v0 full-chip PD top (hardened blocks as hard macros)
+
+filesets:
+  rtl:
+    files:
+      - stubs/ibex_top__bb.sv
+      - stubs/xbar_tlul_2to4__bb.sv
+      - stubs/uart__bb.sv
+      - stubs/tlul_sram_if_macro__bb.sv
+      - ../../../rtl/ibex_to_tlul_host.sv
+      - ../../../rtl/top_pd.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:darjeeling_constants:top_pkg
+      - lowrisc:ibex:ibex_pkg:0.1
+      - lowrisc:tlul:headers:0.1
+      - lowrisc:prim:mubi_pkg:0.1
+      - lowrisc:prim_generic:ram_1p_pkg
+      - lowrisc:prim:alert
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: top_pd
+    tools:
+      verilator:
+        mode: lint-only

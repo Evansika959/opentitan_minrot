@@ -10,6 +10,9 @@ tools/
 # local PDK clone (wafer.space gf180mcu, fetched by setup_pdk.sh)
 pdk/
 
+# generated macro hardening artifacts (gds/lef/def/spef/lib/netlists)
+macros/
+
 # logs / misc
 *.log
 __pycache__/

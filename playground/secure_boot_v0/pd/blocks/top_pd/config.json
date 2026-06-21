@@ -38,8 +38,8 @@
       "instances": {
         "u_ibex": {
           "location": [
-            100,
-            100
+            126.46,
+            28.81
           ],
           "orientation": "N"
         }
@@ -66,22 +66,22 @@
       "instances": {
         "u_imem": {
           "location": [
-            100,
-            1300
+            126.46,
+            1254.25
           ],
           "orientation": "N"
         },
         "u_esram": {
           "location": [
-            1400,
-            1750
+            1355.26,
+            1713.79
           ],
           "orientation": "N"
         },
         "u_dmem": {
           "location": [
-            1400,
-            100
+            1355.26,
+            28.81
           ],
           "orientation": "N"
         }
@@ -108,8 +108,8 @@
       "instances": {
         "u_uart": {
           "location": [
-            2000,
-            1100
+            1969.66,
+            1101.07
           ],
           "orientation": "N"
         }
@@ -136,8 +136,8 @@
       "instances": {
         "u_xbar": {
           "location": [
-            1400,
-            1100
+            1355.26,
+            1101.07
           ],
           "orientation": "N"
         }

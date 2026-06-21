@@ -5,25 +5,16 @@
   "PNR_SDC_FILE": "dir::ibex_top.sdc",
   "SIGNOFF_SDC_FILE": "dir::ibex_top.sdc",
   "PDK": "gf180mcuD",
+
   "FP_SIZING": "absolute",
-  "DIE_AREA": [
-    0,
-    0,
-    1400,
-    1400
-  ],
+  "DIE_AREA": [0, 0, 1000, 1000],
   "PL_TARGET_DENSITY_PCT": 65,
   "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
-  "STA_CORNERS": [
-    "nom_tt_025C_5v00"
-  ],
+  "STA_CORNERS": ["nom_tt_025C_5v00"],
+  "PDN_CORE_RING": true,
   "RUN_HEURISTIC_DIODE_INSERTION": true,
   "HEURISTIC_ANTENNA_THRESHOLD": 200,
   "SYNTH_LATCH_MAP": "dir::latch_map.v",
-  "//": "gf180mcuD @ 10 MHz. Ibex core (RegFileFF, ICache=0) -> pure std-cell, no RAM macros. Die 1000x1000um -> ~0.615 util. Pins East-facing: the functional interface (instr/data/irq/boot/hart/alerts/clk/rst) on East; tied-off buses spill to NE (crash_dump) and SE (scramble_*, ram_cfg_*) corners. All-East (672 pins on one edge) routes-congests at this size even though the slots fit, so the dead buses are distributed to relieve East routing. VERILOG_FILES/USE_SLANG injected by harden_block.sh.",
-  "//pdn": "Uniform M2/M3 in-block PDN (scripts/block_pdn_m2m3.tcl): M1 rails -> sparse M2 risers -> M3(H), exposing ONLY Metal3; M4+M5 left entirely free (RT_MAX_LAYER=Metal3 keeps signals off them too) so the chip-top owns M4/M5 and the only handoff is top-M4 <-> block-M3 (Via3). No shared layer -> no duplicate-metal DRC. DIE grown 1000->1400 because capping routing at M3 (only M2+M3 for signal; ibex put ~25% of wire on M4/M5 at 1000um) needs ~2x area; util drops ~14%->~7%.",
-  "PDN_CFG": "dir::../../scripts/block_pdn_m2m3.tcl",
-  "RT_MAX_LAYER": "Metal3",
-  "//grt": "Routing capped at Metal3 leaves only M2+M3 for signal. First M2/M3 run hit GRT-0116 with only 4 overflow GCells at 35% usage (NOT capacity-bound) -> the global router's default 0.3 derating was too conservative for ibex's local pin hotspots. GRT_ADJUSTMENT 0.3->0.2 frees GR capacity to clear them; DRT still has room (35% global usage).",
-  "GRT_ADJUSTMENT": 0.2
+
+  "//": "gf180mcuD @ 10 MHz. Ibex core (RegFileFF, ICache=0) -> pure std-cell, no RAM macros. Die 1000x1000um -> ~0.615 util. Pins East-facing: the functional interface (instr/data/irq/boot/hart/alerts/clk/rst) on East; tied-off buses spill to NE (crash_dump) and SE (scramble_*, ram_cfg_*) corners. All-East (672 pins on one edge) routes-congests at this size even though the slots fit, so the dead buses are distributed to relieve East routing. VERILOG_FILES/USE_SLANG injected by harden_block.sh."
 }

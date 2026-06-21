@@ -7,15 +7,11 @@
   "PDK": "gf180mcuD",
 
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 760, 760],
+  "DIE_AREA": [0, 0, 500, 500],
   "PL_TARGET_DENSITY_PCT": 25,
-  "//m2m3": "DIE grown 500x500 -> 760x760 because M2/M3-only routing (RT_MAX_LAYER=Metal3) pushed util to ~93% -> 1712 GR overflow. ~2.3x area drops routing usage to ~40% so it routes honestly in 2 layers (M4/M5 left free for the top).",
   "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
   "STA_CORNERS": ["nom_tt_025C_5v00"],
-  "PDN_CFG": "dir::../../scripts/block_pdn_m2m3.tcl",
-  "RT_MAX_LAYER": "Metal3",
-  "GRT_ALLOW_CONGESTION": true,
-  "//grt": "Pin-bound (1080 TL pins); at 760x760 M2/M3 routes to 45% usage with a single residual overflow GCell. GRT_ALLOW_CONGESTION lets detailed routing absorb that one GCell (safe at this scale, unlike forcing thousands). Honest GRT_ADJUSTMENT kept (no derating hack).",
+  "PDN_CORE_RING": true,
 
   "//": "gf180mcuD @ 10 MHz (100 ns). VERILOG_FILES/VERILOG_INCLUDE_DIRS/USE_SLANG/SLANG_ARGUMENTS are injected by harden_block.sh from the FuseSoC closure (raw SV via slang; no sv2v). Channel floorplan: pins W=hosts, E=devices (pin_order.cfg). 200x1060um is sized so the E edge holds the 720 device pins (height) while width 200 stays routable (175 congested); this shrinks the core to push design__instance__utilization to ~0.665 (>65%). STA_CORNERS trimmed to the 3-corner signoff set."
 }

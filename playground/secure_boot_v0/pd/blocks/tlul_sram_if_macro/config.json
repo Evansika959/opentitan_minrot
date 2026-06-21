@@ -30,6 +30,7 @@
 
   "PDN_MACRO_CONNECTIONS": ["u_mem.* VDD VSS VDD VSS"],
   "PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CORE_RING": true,
   "RUN_MAGIC_DRC": false,
 
   "//": "gf180mcuD @ 10 MHz. 1 KiB TL-UL SRAM = vendor tlul_adapter_sram + prim_ram_1p_macro (4x sram256x8 byte lanes, all pins on macro South edge). 2x2 macro placement in a 1100x900 die: lower-left origins, ~60um center channels, ~80um margins; byte0/1 bottom row, byte2/3 top row, all orient N. PDN_MACRO_CONNECTIONS ties the 4 macros' VDD/VSS into the grid. STA single-corner nom_tt_025C_5v00. VERILOG_FILES/USE_SLANG injected by harden_block.sh; (* blackbox *) .sv stub gives synth the macro leaf so Yosys keeps the instances. RUN_MAGIC_DRC=false: magic's open deck false-positives M3.1 (Metal3 min-width) on the foundry sram256x8 abstract power pins (8 markers = ~2 features x4 macros, all INSIDE the signed-off macro); the maglef blackbox cut 169641->8 but can't drop the abstract pin geometry, and there is no per-violation magic waiver hook. KLayout DRC (complete gf180 deck) + route DRC + LVS + antenna are all 0, so signoff rests on those."

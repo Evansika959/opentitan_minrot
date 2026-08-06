@@ -1,0 +1,63 @@
+CAPI=2:
+# Real-crypto secure-boot + PUF GLS test of the taped-out top_pd_7bank
+# netlist. Forked from secure_boot_v0_7bank_smoke_gls.core (identical
+# gate_netlists fileset -- same DUT, nothing about the netlist changes),
+# pointed at top_pd_7bank_secboot_gls_tb.sv instead: that tb backdoor-loads
+# all 7 IMEM banks (not just bank 0 -- the compiled-C ROM is bigger than
+# the smoke test's hand-written program) and adds an optional DMEM
+# backdoor-load for the packed signed container.
+
+name: xinting:playground:secure_boot_v0_7bank_secboot_gls:0.1
+description: Real SHA256+ECDSA(secp160r1)+PUF-derived-key secure boot GLS test of the taped-out top_pd_7bank netlist
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v
+      - ../pd/macros/top_pd_7bank/top_pd_7bank.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - top_pd_7bank_secboot_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_dmem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir, gls_dmem_hexdir, gls_realdata_hex]
+    toplevel: top_pd_7bank_secboot_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

@@ -1,0 +1,20 @@
+read_liberty -lib -ignore_miss_func /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+read_verilog /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.nl.v
+
+hierarchy -top ibex_top
+
+log ===== x5(t0) bit16 D-input (_01487_) fanin cone stats =====
+select -module ibex_top w:_01487_ %ci*
+stat
+
+log ===== x5(t0) bit16 D-input (_01487_) fanin cone -- dff cells only =====
+select -module ibex_top w:_01487_ %ci* t:*dff* %i
+select -list
+
+log ===== x8(s0) bit13 D-input (_01580_) fanin cone stats =====
+select -module ibex_top w:_01580_ %ci*
+stat
+
+log ===== x8(s0) bit13 D-input (_01580_) fanin cone -- dff cells only =====
+select -module ibex_top w:_01580_ %ci* t:*dff* %i
+select -list

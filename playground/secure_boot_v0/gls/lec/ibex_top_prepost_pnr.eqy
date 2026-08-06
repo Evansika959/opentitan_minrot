@@ -1,0 +1,22 @@
+[options]
+
+[gold]
+# Pre-place-and-route synthesis-stage netlist -- proven functionally
+# correct by ibex_lui_timing_gls_tb.sv (matches RTL on every case: s0
+# sanity + all 5 LUI immediate patterns). This is the reference.
+read_liberty -lib -ignore_miss_func /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+read_verilog /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/blocks/ibex_top/runs/RUN_2026-06-29_19-19-49/06-yosys-synthesis/ibex_top.nl.v
+prep -top ibex_top
+
+[gate]
+# Final, post-place-and-route netlist actually exported to
+# pd/macros/ibex_top/ibex_top.nl.v and used by every GLS test so far --
+# proven functionally WRONG (LUI results corrupted, s0 register never
+# updates). This is the candidate under test.
+read_liberty -lib -ignore_miss_func /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+read_verilog /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.nl.v
+prep -top ibex_top
+
+[strategy sat]
+use sat
+depth 1

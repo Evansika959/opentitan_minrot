@@ -1,0 +1,37 @@
+CAPI=2:
+name: xinting:pd:tlul_sram_if_macro_ocd_test:0.1
+description: 1 KiB TL-UL SRAM/ROM (OCD macro) sim test
+filesets:
+  rtl:
+    files:
+      - ../../../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../../../rtl/prim_ram_1p_macro_OCD.sv
+      - ../../../rtl/tlul_sram_if_macro_ocd_test.sv
+      - ../../../rtl/tb_tlul_sram_if_macro_ocd_test.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:tlul:adapter_sram:0.1
+      - lowrisc:tlul:common:0.1
+      - lowrisc:prim_generic:all
+      - lowrisc:darjeeling_constants:top_pkg
+targets:
+  sim:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: tb_tlul_sram_if_macro_ocd_test
+    tools:
+      verilator:
+        mode: cc
+        verilator_options:
+          - --binary
+          - --trace-fst
+          - --timing
+          - -Wno-fatal
+          - -Wno-WIDTH
+          - -Wno-UNOPTFLAT
+          - -Wno-TIMESCALEMOD
+          - -Wno-LATCH
+          - -Wno-INITIALDLY
+          - -Wno-SPECIFYIGN
+          - -Wno-MINTYPMAXDLY
+          - -Wno-PINMISSING

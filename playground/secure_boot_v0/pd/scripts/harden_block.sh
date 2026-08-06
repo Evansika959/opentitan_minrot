@@ -45,11 +45,14 @@ for ln in open(vc):
     elif ln.endswith(".sv"):
         files.append(os.path.realpath(os.path.join(vcdir, ln)))
 cfg = json.load(open(base))
+# --keep-hierarchy: without it, slang's frontend tries to "inline" (flatten)
+# module instance boundaries during its own elaboration pass, before Yosys
+# ever sees the design. 
 cfg.update({
     "VERILOG_FILES": files,
     "VERILOG_INCLUDE_DIRS": incs,
     "USE_SLANG": True,
-    "SLANG_ARGUMENTS": ["--top", block],
+    "SLANG_ARGUMENTS": ["--top", block, "--keep-hierarchy"],
 })
 cfg.setdefault("VERILOG_DEFINES", ["SYNTHESIS=1"])
 json.dump(cfg, open(out, "w"), indent=2)

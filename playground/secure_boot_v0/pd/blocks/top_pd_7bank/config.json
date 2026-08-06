@@ -1,0 +1,129 @@
+{
+  "DESIGN_NAME": "top_pd_7bank",
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100,
+  "PNR_SDC_FILE": "dir::top.sdc",
+  "SIGNOFF_SDC_FILE": "dir::top.sdc",
+  "PDK": "gf180mcuD",
+  "FP_SIZING": "absolute",
+  "//_floorplan_note": "L-shape: 3x tlul_sram_if_macro_ocd_7bank (1500x2050 each, tight_v1) tiled as a 2x2 grid, top-right corner empty. 150um margin die edge -> outermost macro edge, 120um gap between adjacent macros. DIE_AREA = 3420x4520 (15.46mm^2). CORE_AREA (50um inset) added after checkpoint1 (60um gap) hit GRT-0116 (total overflow 19) -- this 120um-gap + 38% density + CORE_AREA combination is CONFIRMED WORKING: RUN_2026-08-04_17-30-27 completed floorplan through klayout-streamout (step 58/80) cleanly, including global+detailed routing, with only the cosmetic KLayout.Render step failing (multiple-top-cells artifact from the PUF raw foundry SRAM macro's Magic streamout, unrelated to floorplan/routing -- fix: --skip KLayout.Render). A later 200um-gap/3500x4600 variant was drafted as extra margin but was NEVER actually run -- reverted back to this proven 120um version to keep the config file consistent with the completed run's actual built layout (every step from 13-openroad-floorplan through 58-klayout-streamout confirmed DIE_AREA=3420x4520).",
+  "DIE_AREA": [
+    0,
+    0,
+    3420,
+    4520
+  ],
+  "PL_TARGET_DENSITY_PCT": 38,
+  "STA_CORNERS": [
+    "nom_tt_025C_3v30"
+  ],
+  "MACROS": {
+    "tlul_sram_if_macro_ocd_7bank": {
+      "gds": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.gds"
+      ],
+      "lef": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank__nom_tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.spice"
+      ],
+      "nl": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v"
+      ],
+      "instances": {
+        "u_imem": {
+          "location": [
+            150,
+            150
+          ],
+          "orientation": "N"
+        },
+        "u_dmem": {
+          "location": [
+            1770,
+            150
+          ],
+          "orientation": "N"
+        },
+        "u_esram": {
+          "location": [
+            150,
+            2320
+          ],
+          "orientation": "N"
+        }
+      }
+    },
+    "gf180mcu_fd_ip_sram__sram64x8m8wm1": {
+      "gds": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram64x8m8wm1.gds"
+      ],
+      "lef": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram64x8m8wm1.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram64x8m8wm1__tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram64x8m8wm1.spice"
+      ],
+      "instances": {
+        "u_puf_regif.u_puf.u_sram": {
+          "location": [
+            2304,
+            3229
+          ],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+  "PDN_MACRO_CONNECTIONS": [
+    "u_(imem|esram|dmem) VDD VSS VDD VSS",
+    "u_puf_regif.u_puf.u_sram VDD VSS VDD VSS"
+  ],
+  "//_pdn_cfg_note": "Same as top_pd_puf: the PUF's own foundry SRAM is a raw, unhardened macro at this level -- its native VDD/VSS pins are on Metal2/Metal3, not Metal4/Metal5 like the tlul_sram_if_macro_ocd_7bank instances (pre-hardened) -- so it needs the Metal3->Metal4 bridge in pdn_cfg.tcl (PSM-0039/PSM-0069 unconnected VSS without it).",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "RUN_MAGIC_DRC": false,
+  "PDN_CORE_RING": true,
+  "FP_PDN_CORE_RING": true,
+  "FP_PDN_RING_OFFSET_X": 15,
+  "FP_PDN_RING_OFFSET_Y": 15,
+  "CELL_PAD_LIBS_AND_CELLS": [
+    "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 10"
+  ],
+  "CTS_APPLY_NDR": "none",
+  "SYNTH_LATCH_MAP": "dir::latch_map.v",
+  "SYNTH_CORNER": "nom_tt_025C_3v30",
+  "DEFAULT_CORNER": "nom_tt_025C_3v30",
+  "LIB": {
+    "nom_tt_025C_3v30": [
+      "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    ]
+  },
+  "LIB_SYNTH": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_SLOWEST": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_FASTEST": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "KLAYOUT_DRC_RUNSET": "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "//": "Derived from top_pd_puf/config.json (same mixed-flow architecture, PUF included), swapping the memory plan to 3x tlul_sram_if_macro_ocd_7bank in an L-shape floorplan per the user's request: uniform 7KB memories, L-shaped tiling, ibex+PUF+glue packed into the remaining rectangle as tight as reasonably possible on a first attempt.",
+  "CORE_AREA": [
+    50,
+    50,
+    3370,
+    4470
+  ]
+}

@@ -1,0 +1,14 @@
+EQY 21:01:34 [ibex_top_prepost_pnr] read_gold: starting process "yosys -ql ibex_top_prepost_pnr/gold.log ibex_top_prepost_pnr/gold.ys"
+EQY 21:01:35 [ibex_top_prepost_pnr] read_gate: starting process "yosys -ql ibex_top_prepost_pnr/gate.log ibex_top_prepost_pnr/gate.ys"
+EQY 21:01:38 [ibex_top_prepost_pnr] read_gold: finished (returncode=0)
+EQY 21:01:40 [ibex_top_prepost_pnr] read_gate: finished (returncode=0)
+EQY 21:01:40 [ibex_top_prepost_pnr] combine: starting process "yosys -ql ibex_top_prepost_pnr/combine.log ibex_top_prepost_pnr/combine.ys"
+EQY 21:01:40 [ibex_top_prepost_pnr] combine: ERROR: Can't load module `/foss/tools/bin/eqy_combine.so': /foss/tools/bin/eqy_combine.so: cannot open shared object file: No such file or directory
+EQY 21:01:40 [ibex_top_prepost_pnr] combine: finished (returncode=1)
+EQY 21:02:58 [ibex_top_prepost_pnr] read_gold: starting process "yosys -ql ibex_top_prepost_pnr/gold.log ibex_top_prepost_pnr/gold.ys"
+EQY 21:02:59 [ibex_top_prepost_pnr] read_gate: starting process "yosys -ql ibex_top_prepost_pnr/gate.log ibex_top_prepost_pnr/gate.ys"
+EQY 21:03:01 [ibex_top_prepost_pnr] read_gold: finished (returncode=0)
+EQY 21:03:04 [ibex_top_prepost_pnr] read_gate: finished (returncode=0)
+EQY 21:03:04 [ibex_top_prepost_pnr] combine: starting process "yosys -ql ibex_top_prepost_pnr/combine.log ibex_top_prepost_pnr/combine.ys"
+EQY 21:03:04 [ibex_top_prepost_pnr] combine: ERROR: Can't load module `/foss/tools/bin/eqy_combine.so': /foss/tools/bin/eqy_combine.so: cannot open shared object file: No such file or directory
+EQY 21:03:04 [ibex_top_prepost_pnr] combine: finished (returncode=1)

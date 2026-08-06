@@ -1,0 +1,52 @@
+CAPI=2:
+# Same LUI-immediate diagnostic as ibex_lui_timing_gls.core, but against
+# ibex_top synthesized ALONE (no xbar/uart/chip-level flattening) at the
+# 3.3V corner top_pd_puf uses, instead of the 5V corner the existing clean
+# ibex_top macro uses. Isolates whether the corner/liberty difference alone
+# reproduces the s0-write failure, independent of adding any other RTL.
+
+name: xinting:playground:ibex_lui_timing_3v3test:0.1
+description: LUI test against ibex_top synthesized alone at the 3.3V corner
+
+filesets:
+  gate_netlist:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../pd/blocks/ibex_top_3v3test/runs/RUN_2026-07-31_22-12-08/final/nl/ibex_top.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_lui_timing_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlist, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_lui_timing_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

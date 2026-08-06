@@ -1,0 +1,150 @@
+{
+  "DESIGN_NAME": "top_pd_min",
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100,
+  "PNR_SDC_FILE": "dir::top.sdc",
+  "SIGNOFF_SDC_FILE": "dir::top.sdc",
+  "PDK": "gf180mcuD",
+  "FP_SIZING": "absolute",
+  "//_floorplan_note": "columnswap -- PASSED (run-tag fasttest_columnswap, full flow through Checker.LVS/SetupViolations/HoldViolations/MaxSlewViolations/MaxCapViolations, all clear, 'Flow complete'). Superseded v1 (col1=u_imem alone, col2=u_dmem+u_esram stacked+logic -- 3568 PSM-0038/0039/0069 power-grid violations) and v2 (col1=u_imem+u_esram stacked, col2=u_dmem alone -- fixed u_esram but u_dmem still failed identically). Root cause was never conclusively pinned on a column-sharing rule; controlled fast-resume tests (swap u_dmem/u_esram positions, then swap u_imem's column with the u_dmem+u_esram pair) showed the failure follows X-POSITION (specifically X=1770, col2), not instance identity or macro pairing -- u_imem is fine at X=1770 alone, and the SAME u_dmem+u_esram stacked pairing that failed at X=1770 in v1 is clean at X=150 in this layout. Working topology: col1 (X=150) = u_dmem (tlul_sram_if_macro_ocd_2bank, 1500x650) at (150,150) stacked with 120um gap above u_esram (same macro) at (150,920) -- v1's exact failing pairing, just relocated. col2 (X=1770) = u_imem (tlul_sram_if_macro_ocd_10bank, 1500x2890) alone at (1770,150), with std-cell logic + the PUF raw SRAM (moved to (684,2599) to stay clear of u_imem's footprint) filling the remaining area. DIE_AREA/CORE_AREA unchanged from v2 (3420x3960 / [50,50,3370,3910]). Carries over top_pd_7bank's one non-floorplan finding: KLayout.Render fails on a cosmetic multiple-top-cells artifact from the PUF's raw foundry SRAM macro (unrelated to floorplan/routing/DRC) -- pass --skip KLayout.Render to harden_block.sh/librelane.",
+  "DIE_AREA": [
+    0,
+    0,
+    3420,
+    3960
+  ],
+  "PL_TARGET_DENSITY_PCT": 38,
+  "STA_CORNERS": [
+    "nom_tt_025C_3v30"
+  ],
+  "MACROS": {
+    "tlul_sram_if_macro_ocd_10bank": {
+      "gds": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.gds"
+      ],
+      "lef": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank__nom_tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.spice"
+      ],
+      "nl": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.nl.v"
+      ],
+      "instances": {
+        "u_imem": {
+          "location": [
+            1770,
+            150
+          ],
+          "orientation": "N"
+        }
+      }
+    },
+    "tlul_sram_if_macro_ocd_2bank": {
+      "gds": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.gds"
+      ],
+      "lef": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank__nom_tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.spice"
+      ],
+      "nl": [
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.nl.v"
+      ],
+      "instances": {
+        "u_dmem": {
+          "location": [
+            150,
+            150
+          ],
+          "orientation": "N"
+        },
+        "u_esram": {
+          "location": [
+            150,
+            920
+          ],
+          "orientation": "N"
+        }
+      }
+    },
+    "gf180mcu_fd_ip_sram__sram64x8m8wm1": {
+      "gds": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram64x8m8wm1.gds"
+      ],
+      "lef": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram64x8m8wm1.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram64x8m8wm1__tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram64x8m8wm1.spice"
+      ],
+      "instances": {
+        "u_puf_regif.u_puf.u_sram": {
+          "location": [
+            684,
+            2599
+          ],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+  "PDN_MACRO_CONNECTIONS": [
+    "u_(imem|esram|dmem) VDD VSS VDD VSS",
+    "u_puf_regif.u_puf.u_sram VDD VSS VDD VSS"
+  ],
+  "//_pdn_cfg_note": "Same as top_pd_7bank/top_pd_puf: the PUF's own foundry SRAM is a raw, unhardened macro at this level -- its native VDD/VSS pins are on Metal2/Metal3, not Metal4/Metal5 like the pre-hardened tlul_sram_if_macro_ocd_10bank/2bank instances -- so it needs the Metal3->Metal4 bridge in pdn_cfg.tcl (PSM-0039/PSM-0069 unconnected VSS without it).",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "RUN_MAGIC_DRC": false,
+  "PDN_CORE_RING": true,
+  "FP_PDN_CORE_RING": true,
+  "FP_PDN_RING_OFFSET_X": 15,
+  "FP_PDN_RING_OFFSET_Y": 15,
+  "CELL_PAD_LIBS_AND_CELLS": [
+    "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 10"
+  ],
+  "CTS_APPLY_NDR": "none",
+  "SYNTH_LATCH_MAP": "dir::latch_map.v",
+  "SYNTH_CORNER": "nom_tt_025C_3v30",
+  "DEFAULT_CORNER": "nom_tt_025C_3v30",
+  "LIB": {
+    "nom_tt_025C_3v30": [
+      "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    ]
+  },
+  "LIB_SYNTH": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_SLOWEST": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_FASTEST": [
+    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "KLAYOUT_DRC_RUNSET": "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "//": "Derived from top_pd_7bank/config.json (same mixed-flow architecture, PUF included), swapping the uniform 3x7bank memory plan for right-sized macros (10bank IMEM, 2x2bank ESRAM/DMEM) per the real minimum-footprint measurements from the secure-boot bring-up session.",
+  "CORE_AREA": [
+    50,
+    50,
+    3370,
+    3910
+  ]
+}

@@ -1,0 +1,11 @@
+plugin -i /foss/tools/yosys/bin/../share/yosys/plugins/eqy_combine.so
+read_rtlil top_pd_puf_ibex/gold.il
+uniquify
+hierarchy
+design -stash gold
+read_rtlil top_pd_puf_ibex/gate_recoded.il
+uniquify
+hierarchy
+design -stash gate
+eqy_combine -gold_ids top_pd_puf_ibex/gold.ids -gate_ids top_pd_puf_ibex/gate_recoded.ids
+write_rtlil top_pd_puf_ibex/combined.il

@@ -9,7 +9,7 @@
   "DIE_AREA": [
     0,
     0,
-    3200,
+    3000,
     3200
   ],
   "PL_TARGET_DENSITY_PCT": 30,
@@ -19,21 +19,21 @@
   "MACROS": {
     "ibex_top": {
       "gds": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.gds"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.gds"
       ],
       "lef": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.lef"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.lef"
       ],
       "lib": {
         "nom_tt_025C_5v00": [
-          "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top__nom_tt_025C_5v00.lib"
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top__nom_tt_025C_5v00.lib"
         ]
       },
       "spice": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.spice"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.spice"
       ],
       "nl": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.nl.v"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.nl.v"
       ],
       "instances": {
         "u_ibex": {
@@ -47,21 +47,21 @@
     },
     "tlul_sram_if_macro": {
       "gds": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.gds"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.gds"
       ],
       "lef": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.lef"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.lef"
       ],
       "lib": {
         "nom_tt_025C_5v00": [
-          "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro__nom_tt_025C_5v00.lib"
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro__nom_tt_025C_5v00.lib"
         ]
       },
       "spice": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.spice"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.spice"
       ],
       "nl": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v"
       ],
       "instances": {
         "u_imem": {
@@ -89,21 +89,21 @@
     },
     "uart": {
       "gds": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/uart/uart.gds"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/uart/uart.gds"
       ],
       "lef": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/uart/uart.lef"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/uart/uart.lef"
       ],
       "lib": {
         "nom_tt_025C_5v00": [
-          "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/uart/uart__nom_tt_025C_5v00.lib"
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/uart/uart__nom_tt_025C_5v00.lib"
         ]
       },
       "spice": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/uart/uart.spice"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/uart/uart.spice"
       ],
       "nl": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/uart/uart.nl.v"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/uart/uart.nl.v"
       ],
       "instances": {
         "u_uart": {
@@ -117,21 +117,21 @@
     },
     "xbar_tlul_2to4": {
       "gds": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.gds"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.gds"
       ],
       "lef": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.lef"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.lef"
       ],
       "lib": {
         "nom_tt_025C_5v00": [
-          "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4__nom_tt_025C_5v00.lib"
+          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4__nom_tt_025C_5v00.lib"
         ]
       },
       "spice": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.spice"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.spice"
       ],
       "nl": [
-        "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.nl.v"
+        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/xbar_tlul_2to4/xbar_tlul_2to4.nl.v"
       ],
       "instances": {
         "u_xbar": {
@@ -149,5 +149,12 @@
   ],
   "RUN_MAGIC_DRC": false,
   "//": "HALO top v2 (branch halo-pdn): hub-and-spoke matching xbar pin sides (W=ibex, E=uart, N=imem/esram, S=dmem) on a 3200x3200 die, 45% fill, 250-350um dataflow channels. v1 (2700x2800, corner layout, 100-260um channels) hit GRT-0116 with 6760 M2/M3 overflow: blocks obstruct M1-M3 so inter-block routing is channel-confined, and the wide TL buses jammed the narrow channels + xbar-in-corner long routes. Default top M4/M5 grid in channels; macro-halo grid + PDN_MACRO_CONNECTIONS tie block rings. Run: harden_block.sh top_pd --skip KLayout.Render --skip OpenROAD.IRDropReport.",
-  "PDN_CORE_RING": true
+  "PDN_CORE_RING": true,
+  "FP_PDN_CORE_RING": true,
+  "FP_PDN_RING_OFFSET_X": 15,
+  "FP_PDN_RING_OFFSET_Y": 15,
+  "CELL_PAD_LIBS_AND_CELLS": [
+    "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 10"
+  ],
+  "CTS_APPLY_NDR": "none"
 }

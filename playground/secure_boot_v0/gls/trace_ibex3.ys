@@ -1,0 +1,16 @@
+read_liberty -lib -ignore_miss_func /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+read_verilog /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/ibex_top/ibex_top.nl.v
+
+hierarchy -top ibex_top
+
+log ===== sanity: select whole instr_rdata_i port =====
+select -module ibex_top w:instr_rdata_i
+select -list
+
+log ===== instr_rdata_i bit 16 via range syntax, fanout depth 8 =====
+select -module ibex_top ibex_top/instr_rdata_i[16:16] %co8
+stat
+
+log ===== instr_rdata_i bit 16 via range syntax, fanout depth 8 -- cells =====
+select -module ibex_top ibex_top/instr_rdata_i[16:16] %co8
+select -list

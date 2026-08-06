@@ -48,11 +48,11 @@ This repository now lives at `/home/xinting/Desktop/opentitan_minrot/` (note the
 `Desktop/`), so `$readmemh` will silently fail to find the images and Ibex will execute
 zeros. Two `test_sw/Makefile`s have the same stale path.
 
-> **For `secure_boot_v0` you don't need to do this by hand** — `secure_boot_v0/run_v0.bash`
+> **For `secure_boot_v0` you don't need to do this by hand** — `run_v0.bash`
 > rewrites the RTL image paths to the correct local location on every run (and the
 > `test_sw/Makefile` path bug is already fixed). See
-> [Quick start with the helper scripts](#quick-start-with-the-helper-scripts). The manual
-> patch below is for the other examples / doing it yourself:
+> [Quick start with the helper scripts](#quick-start-with-the-helper-scripts) for where to
+> find it. The manual patch below is for the other examples / doing it yourself:
 
 Patch them all to match wherever you cloned the repo:
 
@@ -222,15 +222,30 @@ the toolchain, pin FuseSoC, fix the paths, build, and run):
 
 ```bash
 cd secure_boot_v0
-./setup.bash      # one-time: find RISC-V GCC / Verilator / OpenSSL, make a FuseSoC venv,
-                  #           init the micro-ecc submodule, write .env.local
-./run_v0.bash     # build+sign images, build the ROM, wire up rtl/top.sv, run the sim,
-                  #           then print the UART console output
+./setup.bash                              # one-time: find RISC-V GCC / Verilator / OpenSSL,
+                                           #   make a FuseSoC venv, init the micro-ecc
+                                           #   submodule, write .env.local
+./_archive_toplevel/scripts/run_v0.bash   # build+sign images, build the ROM, wire up
+                                           #   rtl/top.sv, run the sim, print UART output
 ```
+
+> **Where the helper scripts live:** this is the older, plain-RTL secure boot flow
+> (`rtl/top.sv`, no PUF, no taped-out gates). It's since been superseded by the
+> gate-level `top_pd_min` flow documented in `secure_boot_v0/README.md`
+> (`run_gls_min_full.bash` / `run_gls_min_stageA.bash`, which still live directly in
+> `secure_boot_v0/`). `run_v0.bash` and its siblings (`run_v1.bash`, `run_standard.bash`,
+> `run_macro.bash`, and the earlier one-off `run_gls_*.bash` smoke/probe scripts) were
+> moved into `secure_boot_v0/_archive_toplevel/scripts/` to clear clutter out of the top
+> level — they're unmodified and still fully functional from their new location (each
+> self-locates via `$(dirname "${BASH_SOURCE[0]}")`, patched to account for the extra
+> directory level), just prefix commands with that path as shown above, or `cd` into it.
+> Logs and old waveform dumps these scripts produce were likewise moved into
+> `secure_boot_v0/_archive_toplevel/{logs,waveforms}/`.
 
 `setup.bash` is idempotent and writes `secure_boot_v0/.env.local` recording the toolchain
 it found; `run_v0.bash` reads that. The simulation runs to a 2,000,000-cycle cap and takes
-a few minutes; the full log lands in `sim.log`.
+a few minutes; the full log lands in `sim.log` (in `secure_boot_v0/`, regardless of where
+the script itself was launched from).
 
 **Expected output** (the boot chain prints short per-stage markers over UART):
 
@@ -305,7 +320,9 @@ about the disabled on-target signature check.)
 > **Note:** `hex/` and `sw/build/` are **build artifacts** (not committed), so steps A–C
 > must run before the first `make run`. The `make rom` path bug and the `sw/Makefile`'s
 > hard-coded `riscv64-` prefix are already fixed; the only remaining machine-specific bit is
-> the `rtl/top.sv` image path (handled by `run_v0.bash`, or the
+> the `rtl/top.sv` image path (handled by `run_v0.bash` — now at
+> `secure_boot_v0/_archive_toplevel/scripts/run_v0.bash`, see
+> [Quick start with the helper scripts](#quick-start-with-the-helper-scripts) — or the
 > [manual patch](#️-fix-the-hard-coded-paths-first-one-time)).
 
 The C tests use the host's RISC-V `stdint.h` and picolibc headers. If picolibc isn't at

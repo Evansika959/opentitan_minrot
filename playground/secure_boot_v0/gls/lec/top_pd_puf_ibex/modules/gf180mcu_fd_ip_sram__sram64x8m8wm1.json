@@ -1,0 +1,148 @@
+{
+  "partition": {
+    "index": 0,
+    "name": "gf180mcu_fd_ip_sram__sram64x8m8wm1",
+    "inbits": {
+      "A": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "CEN": [
+        0
+      ],
+      "CLK": [
+        0
+      ],
+      "D": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "GWEN": [
+        0
+      ],
+      "WEN": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "outbits": {
+      "Q": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "crossbits": {}
+  },
+  "gold_module": {
+    "name": "gold.gf180mcu_fd_ip_sram__sram64x8m8wm1",
+    "internal": {},
+    "unused": {
+      "A": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "CEN": [
+        0
+      ],
+      "CLK": [
+        0
+      ],
+      "D": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "GWEN": [
+        0
+      ],
+      "WEN": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "cellcount": 0,
+    "bitcount": 33
+  },
+  "gate_module": {
+    "name": "gold.gf180mcu_fd_ip_sram__sram64x8m8wm1",
+    "internal": {},
+    "unused": {
+      "A": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "CEN": [
+        0
+      ],
+      "CLK": [
+        0
+      ],
+      "D": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "GWEN": [
+        0
+      ],
+      "WEN": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "cellcount": 0,
+    "bitcount": 33
+  }
+}

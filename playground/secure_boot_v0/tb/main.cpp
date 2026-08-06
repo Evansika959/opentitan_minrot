@@ -1,7 +1,10 @@
 #include "Vtop_tb.h"
+#include "Vtop_tb___024root.h"
 #include "verilated.h"
 #include "verilated_fst_c.h"
 #include "verilated_dpi.h"
+#include <iostream>
+#include <ostream>
 
 extern "C" void dump_esram(const char* path);
 
@@ -23,6 +26,7 @@ int main(int argc, char **argv) {
   tfp.open("secure_boot_v0.fst");
 
   bool announced_start = false;
+  vluint64_t post_reset_cycles = 0;
 
   while (!Verilated::gotFinish()) {
     // clock: 10 MHz -> 100 time units per cycle (assuming 1 time unit = 1 ns)
@@ -31,20 +35,31 @@ int main(int argc, char **argv) {
     // keep UART RX idle high
     top.uart_rx = 1;
 
-    // deassert reset after 50 clock cycles (moved from SV tb)
-    cycle = main_time / kClkPeriod;  // full cycles elapsed
+    // deassert reset after 50 clock cycles
+    cycle = main_time / kClkPeriod;  
     top.rst_n = (cycle >= 50);
 
     if (!announced_start && top.rst_n) {
-      VL_PRINTF("[CPP] Simulation starts! reset released at cycle %lu\n", (unsigned long)cycle);
+      std::cout << "[CPP] Simulation starts! reset released at cycle " << (unsigned long)cycle << std::endl;
       announced_start = true;
     }
 
     top.eval();
     tfp.dump(main_time);
 
-    if (cycle >= 2000000) {
-      VL_PRINTF("\n[CPP] Timeout after %lu cycles\n", (unsigned long)cycle);
+    // Track cycles after reset release to pinpoint when the boot sequence stalls or crashes
+    if (top.rst_n) {
+      post_reset_cycles++;
+      
+      // If we are around the time the 'P' character prints and it starts looping into illegal instructions,
+      // let's log milestone cycles to see how far the execution gets before crashing.
+      if (post_reset_cycles == 50000 || post_reset_cycles == 100000 || post_reset_cycles == 200000) {
+        std::cout << "[CPP CHECK] Active at post-reset cycle " << (unsigned long)post_reset_cycles << std::endl;
+      }
+    }
+
+    if (cycle >= 500000) { // Shortened timeout slightly to catch the crash window faster
+      std::cout << "\n[CPP] Stopping simulation for inspection at cycle " << (unsigned long)cycle << std::endl;
       break;
     }
 

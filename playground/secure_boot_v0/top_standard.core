@@ -1,0 +1,46 @@
+CAPI=2:
+name: xinting:playground:top_standard:0.1
+description: Standard top.sv with rtl/tb_top.sv testbench for isolation
+
+filesets:
+  rtl:
+    files:
+      - rtl/top.sv
+      - rtl/ibex_to_tlul_host.sv
+      - rtl/tlul_sram_if.sv
+      - rtl/tlul_rom_if.sv
+      - rtl/autogen/rtl/autogen/tl_tlul_2to4_pkg.sv
+      - rtl/autogen/rtl/autogen/xbar_tlul_2to4.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:prim_generic:all
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+
+  tb_sv:
+    files:
+      - rtl/tb_top.sv
+    file_type: systemVerilogSource
+
+targets:
+  sim:
+    default_tool: verilator
+    filesets: [rtl, tb_sv]
+    toplevel: tb_top
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--timing"
+          - "--trace-fst"
+          - "--trace-structs"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-WIDTH"
+          - "-Wno-UNOPTFLAT"
+          - "-Wno-TIMESCALEMOD"
+          - "-Wno-INITIALDLY"
+          - "-Wno-SPECIFYIGN"
+          - "-Wno-MINTYPMAXDLY"

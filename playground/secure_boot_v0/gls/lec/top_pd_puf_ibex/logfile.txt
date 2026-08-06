@@ -1,0 +1,21 @@
+EQY 17:38:00 [top_pd_puf_ibex] read_gold: starting process "yosys -ql top_pd_puf_ibex/gold.log top_pd_puf_ibex/gold.ys"
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: ../../../../build/xinting_pd_top_pd_puf_0.1/rtl/top_pd_puf.sv:158:8: warning: output port 'lsio_trigger_o' has no connection [-Wunconnected-output-port]
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: uart u_uart (
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: ^
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: ../../../../build/xinting_pd_top_pd_puf_0.1/rtl/top_pd_puf.sv:158:8: warning: output port 'intr_tx_done_o' has no connection [-Wunconnected-output-port]
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: uart u_uart (
+EQY 17:38:01 [top_pd_puf_ibex] read_gold: ^
+EQY 17:38:01 [top_pd_puf_ibex] read_gate: starting process "yosys -ql top_pd_puf_ibex/gate.log top_pd_puf_ibex/gate.ys"
+EQY 17:38:04 [top_pd_puf_ibex] read_gold: Top level design units:
+EQY 17:38:04 [top_pd_puf_ibex] read_gold: top_pd_puf
+EQY 17:38:04 [top_pd_puf_ibex] read_gold: Build succeeded: 0 errors, 2 warnings
+EQY 17:38:04 [top_pd_puf_ibex] read_gold: finished (returncode=0)
+EQY 17:38:06 [top_pd_puf_ibex] read_gate: finished (returncode=0)
+EQY 17:38:06 [top_pd_puf_ibex] combine: starting process "yosys -ql top_pd_puf_ibex/combine.log top_pd_puf_ibex/combine.ys"
+EQY 17:38:11 [top_pd_puf_ibex] combine: Warning: Ignoring boxed module tlul_sram_if_macro_ocd_21bank.
+EQY 17:38:11 [top_pd_puf_ibex] combine: Warning: Ignoring boxed module tlul_sram_if_macro.
+EQY 17:38:11 [top_pd_puf_ibex] combine: Warning: Ignoring boxed module gf180mcu_fd_ip_sram__sram64x8m8wm1.
+EQY 17:38:16 [top_pd_puf_ibex] combine: finished (returncode=0)
+EQY 17:38:24 [top_pd_puf_ibex] partition: starting process "cd top_pd_puf_ibex; yosys -ql partition.log partition.ys"
+EQY 17:38:27 [top_pd_puf_ibex] partition: ERROR: conflicting matches for gold bit \u_puf_regif.u_puf.cen: \u_puf_regif.u_puf.cen vs \_30495_.B
+EQY 17:38:28 [top_pd_puf_ibex] partition: finished (returncode=1)

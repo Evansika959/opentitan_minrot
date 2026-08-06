@@ -1,0 +1,77 @@
+CAPI=2:
+# Gate-level smoke test of the taped-out top_pd_7bank netlist.
+#
+# Sibling of ../gls/secure_boot_v0_puf_smoke_gls.core (top_pd_puf). Proves
+# the mechanism -- netlist boots, real ESRAM read/write works, the real
+# PUF path (adapter -> regif -> foundry SRAM) works, UART pins toggle
+# correctly -- using smoke_puf_boot.S, the same hand-written program
+# reused unchanged (fits in one IMEM bank, never touches DMEM; the
+# xbar/address map is identical to top_pd_puf since ibex/uart/xbar/
+# PUF-glue RTL is byte-for-byte the same, only the memory macro type
+# differs). This exists because the real secure-boot ROM+DMEM payload
+# (sw/build/imem.hex, 5053 words) was sized for the old 21-bank IMEM
+# (5376-word capacity) and does not fit in top_pd_7bank's 7-bank IMEM
+# (1792-word capacity).
+#
+# Unlike top_pd_puf (mixed macro types: 21bank IMEM + 1KiB ESRAM/DMEM,
+# needing two separate macro netlist files), top_pd_7bank uses ONE macro
+# type for all three memories, so only one extra netlist file
+# (tlul_sram_if_macro_ocd_7bank.nl.v) is needed alongside top_pd_7bank.nl.v
+# itself.
+#
+# Same self-contained, PORT-LESS testbench convention as
+# top_pd_puf_smoke_gls_tb.sv -- generates its own clock/reset, calls
+# $finish itself. Use --binary (Verilator's own generated main()), not
+# main_gls.cpp (that's hardcoded to a different class and different ports).
+
+name: xinting:playground:secure_boot_v0_7bank_smoke_gls:0.1
+description: Gate-level smoke test of the taped-out top_pd_7bank netlist (real IMEM bank 0 + real ESRAM + real PUF path, hand-written program, no DMEM)
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v
+      - ../pd/macros/top_pd_7bank/top_pd_7bank.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - top_pd_7bank_smoke_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir, gls_realdata_hex]
+    toplevel: top_pd_7bank_smoke_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

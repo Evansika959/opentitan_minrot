@@ -1,0 +1,7 @@
+read_liberty -lib -ignore_miss_func /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+read_verilog /foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/blocks/ibex_top/runs/RUN_2026-06-29_19-19-49/06-yosys-synthesis/ibex_top.nl.v
+prep -top ibex_top
+opt_clean
+check -initdrv
+setundef -undriven -undef
+write_rtlil ibex_top_prepost_pnr/gold.il

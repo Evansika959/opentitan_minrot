@@ -1,3 +1,4 @@
+.PRECIOUS: build/rom.elf
 ## Simple RISC-V build for Ibex playground
 # Usage examples:
 #   make start        # builds hex/start.hex from assembly/start.S

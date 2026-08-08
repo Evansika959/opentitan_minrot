@@ -1,0 +1,67 @@
+CAPI=2:
+# Multithreaded-Verilator variant of secure_boot_v0_7bank_secboot_gls.core,
+# for empirically measuring whether --threads gives a real speedup on this
+# specific design before committing to the full multi-hour real-crypto GLS
+# run. Identical DUT/tb/parameters to the single-threaded core -- only the
+# verilator_options differ (adds --threads 15, leaving one of this
+# container's 16 cores free for the user's other work).
+# count). Separate core name so it builds into its own directory and never
+# clobbers the already-built single-threaded binary or its measured
+# baseline timings.
+
+name: xinting:playground:secure_boot_v0_7bank_secboot_gls_mt:0.1
+description: Multithreaded-Verilator (--threads 15) variant for A/B timing against the single-threaded secboot GLS baseline
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v
+      - ../pd/macros/top_pd_7bank/top_pd_7bank.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - top_pd_7bank_secboot_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_dmem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir, gls_dmem_hexdir, gls_realdata_hex]
+    toplevel: top_pd_7bank_secboot_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "--threads"
+          - "15"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

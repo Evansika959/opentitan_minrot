@@ -1,0 +1,54 @@
+CAPI=2:
+name: xinting:playground:top_macro:0.1
+description: top.sv with tlul_sram_if_macro (Tim's OCD SRAM) for u_esram/u_dmem + Ibex + UART (Verilator)
+filesets:
+  rtl:
+    files:
+      - rtl/ibex_to_tlul_host.sv
+      - rtl/tlul_rom_if.sv
+      - rtl/tlul_sram_if_macro.sv
+      - rtl/prim_ram_1p_macro_OCD.sv
+      - rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - rtl/autogen/rtl/autogen/tl_tlul_2to4_pkg.sv
+      - rtl/autogen/rtl/autogen/xbar_tlul_2to4.sv
+      - rtl/top_macro.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:prim_generic:all
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+  tb_sv:
+    files:
+      - tb/top_tb.sv
+    file_type: systemVerilogSource
+
+  tb_cpp:
+    files:
+      - tb/main.cpp
+    file_type: cppSource
+
+parameters: {}
+
+targets:
+  sim:
+    default_tool: verilator
+    filesets: [rtl, tb_sv, tb_cpp]
+    toplevel: top_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--timing"
+          - "--trace-fst"
+          - "--trace-structs"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-WIDTH"
+          - "-Wno-UNOPTFLAT"
+          - "-Wno-TIMESCALEMOD"
+          - "-Wno-LATCH"
+          - "-Wno-INITIALDLY"
+          - "-Wno-SPECIFYIGN"
+          - "-Wno-MINTYPMAXDLY"

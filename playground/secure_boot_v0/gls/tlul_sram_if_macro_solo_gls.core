@@ -1,0 +1,63 @@
+CAPI=2:
+# Standalone gate-level simulation (GLS) of ONLY the already-independently-
+# hardened tlul_sram_if_macro netlist -- no ibex, no xbar, no PUF, no
+# top_pd/top_pd_puf. First step of building up top_pd_puf verification one
+# real macro at a time instead of only ever simulating the whole thing.
+#
+# Why: both existing integration-level GLS runs on record failed --
+# gls_smoke_sim.log (top_pd) hangs forever returning rdata=0xffffffff
+# err=1; gls_puf_smoke_sim.log (top_pd_puf) times out with zero UART bytes
+# decoded -- and neither failure has ever been isolated to one block.
+# rtl/tlul_sram_if_macro.sv's own header flags an unreconciled concern:
+# the real macro's read latency (1 cycle) vs. what the behavioural models
+# assume (2 cycles). This target exists to check that, in isolation, before
+# blaming ibex/xbar/PUF/anything upstream.
+#
+# Does not modify tlul_sram_if_macro.core, rtl/, or anything under pd/ --
+# an additional, independent target, same convention as secure_boot_v0_gls.core
+# and secure_boot_v0_puf_smoke_gls.core.
+
+name: xinting:playground:tlul_sram_if_macro_solo_gls:0.1
+description: Standalone gate-level simulation of just the tlul_sram_if_macro netlist (directed TL-UL write/read), Verilator
+
+filesets:
+  gate_netlist:
+    files:
+      # async_dff_simpatch MUST be read before gf180mcu_fd_sc_mcu7t5v0.v --
+      # it pre-defines that file's own include-guards for the reset/set DFF
+      # cells so its (broken-under-Verilator) versions get skipped in favor
+      # of this simulation-correct replacement. See that file's header.
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - tlul_sram_if_macro_solo_gls_tb.sv
+    file_type: systemVerilogSource
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlist, tb_sv]
+    toplevel: tlul_sram_if_macro_solo_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

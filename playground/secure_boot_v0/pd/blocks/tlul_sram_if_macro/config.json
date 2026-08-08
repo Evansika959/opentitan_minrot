@@ -5,33 +5,39 @@
   "PNR_SDC_FILE": "dir::sram.sdc",
   "SIGNOFF_SDC_FILE": "dir::sram.sdc",
   "PDK": "gf180mcuD",
-
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 1100, 900],
+  "DIE_AREA": [
+    0,
+    0,
+    1020,
+    820
+  ],
   "PL_TARGET_DENSITY_PCT": 40,
-  "STA_CORNERS": ["nom_tt_025C_5v00"],
-
+  "STA_CORNERS": [
+    "nom_tt_025C_5v00"
+  ],
   "MACROS": {
-    "gf180mcu_fd_ip_sram__sram256x8m8wm1": {
-      "gds": ["/home/xinting/.ciel/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram256x8m8wm1.gds"],
-      "lef": ["/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram256x8m8wm1.lef"],
-      "lib": {
-        "nom_tt_025C_5v00": ["/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__tt_025C_5v00.lib"]
-      },
-      "spice": ["/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram256x8m8wm1.spice"],
-      "instances": {
-        "u_mem.gen_byte[0].u_macro": {"location": [88, 79],  "orientation": "N"},
-        "u_mem.gen_byte[1].u_macro": {"location": [580, 79], "orientation": "N"},
-        "u_mem.gen_byte[2].u_macro": {"location": [88, 480], "orientation": "N"},
-        "u_mem.gen_byte[3].u_macro": {"location": [580, 480],"orientation": "N"}
-      }
+  "gf180mcu_ocd_ip_sram__sram256x8m8wm1": {
+    "gds": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.gds"],
+    "lef": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.lef"],
+    "lib": {
+      "nom_tt_025C_5v00": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1__tt_025C_1v80.lib"]
+    },
+    "spice": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.spice"],
+    "instances": {
+      "u_mem.gen_byte[0].u_macro": { "location": [88, 79], "orientation": "N" },
+      "u_mem.gen_byte[1].u_macro": { "location": [580, 79], "orientation": "N" },
+      "u_mem.gen_byte[2].u_macro": { "location": [88, 480], "orientation": "N" },
+      "u_mem.gen_byte[3].u_macro": { "location": [580, 480], "orientation": "N" }
     }
-  },
-
-  "PDN_MACRO_CONNECTIONS": ["u_mem.* VDD VSS VDD VSS"],
+  }
+},
+  "PDN_MACRO_CONNECTIONS": [
+    "u_mem.* VDD VSS VDD VSS"
+  ],
   "PDN_CFG": "dir::pdn_cfg.tcl",
   "PDN_CORE_RING": true,
   "RUN_MAGIC_DRC": false,
-
-  "//": "gf180mcuD @ 10 MHz. 1 KiB TL-UL SRAM = vendor tlul_adapter_sram + prim_ram_1p_macro (4x sram256x8 byte lanes, all pins on macro South edge). 2x2 macro placement in a 1100x900 die: lower-left origins, ~60um center channels, ~80um margins; byte0/1 bottom row, byte2/3 top row, all orient N. PDN_MACRO_CONNECTIONS ties the 4 macros' VDD/VSS into the grid. STA single-corner nom_tt_025C_5v00. VERILOG_FILES/USE_SLANG injected by harden_block.sh; (* blackbox *) .sv stub gives synth the macro leaf so Yosys keeps the instances. RUN_MAGIC_DRC=false: magic's open deck false-positives M3.1 (Metal3 min-width) on the foundry sram256x8 abstract power pins (8 markers = ~2 features x4 macros, all INSIDE the signed-off macro); the maglef blackbox cut 169641->8 but can't drop the abstract pin geometry, and there is no per-violation magic waiver hook. KLayout DRC (complete gf180 deck) + route DRC + LVS + antenna are all 0, so signoff rests on those."
+  "//": "gf180mcuD @ 10 MHz. 1 KiB TL-UL SRAM = vendor tlul_adapter_sram + prim_ram_1p_macro (4x sram256x8 byte lanes, all pins on macro South edge). 2x2 macro placement in a 1100x900 die: lower-left origins, ~60um center channels, ~80um margins; byte0/1 bottom row, byte2/3 top row, all orient N. PDN_MACRO_CONNECTIONS ties the 4 macros' VDD/VSS into the grid. STA single-corner nom_tt_025C_5v00. VERILOG_FILES/USE_SLANG injected by harden_block.sh; (* blackbox *) .sv stub gives synth the macro leaf so Yosys keeps the instances. RUN_MAGIC_DRC=false: magic's open deck false-positives M3.1 (Metal3 min-width) on the foundry sram256x8 abstract power pins (8 markers = ~2 features x4 macros, all INSIDE the signed-off macro); the maglef blackbox cut 169641->8 but can't drop the abstract pin geometry, and there is no per-violation magic waiver hook. KLayout DRC (complete gf180 deck) + route DRC + LVS + antenna are all 0, so signoff rests on those.",
+  "MAGIC_MACRO_STD_CELL_SOURCE": "PDK"
 }

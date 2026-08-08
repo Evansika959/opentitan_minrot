@@ -1,0 +1,54 @@
+CAPI=2:
+# Bisection stage 0.5: same LUI/s0 test as ibex_lui_timing_gls.core, but
+# against ibex_wrapper_test.nl.v -- a trivial pass-through wrapper around
+# ibex_top with NO other logic at all. Isolates whether merely being a
+# SUB-INSTANCE (rather than the literal SLANG --top) is what triggers the
+# s0-write corruption seen once ibex_top is combined with any other RTL
+# (glue, xbar_2to4, xbar_2to5) in the same synthesis pass. See
+# ibex_wrapper_test.sv's header for the full reasoning.
+
+name: xinting:playground:ibex_wrapper_test_lui:0.1
+description: LUI/s0 test against ibex_top wrapped in a trivial pass-through module, gate netlist, Verilator
+
+filesets:
+  gate_netlist:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../pd/blocks/ibex_wrapper_test/runs/RUN_2026-08-01_01-16-56/final/nl/ibex_wrapper_test.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_wrapper_test_lui_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlist, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_wrapper_test_lui_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

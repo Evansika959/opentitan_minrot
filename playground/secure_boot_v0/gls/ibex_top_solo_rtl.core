@@ -1,0 +1,42 @@
+CAPI=2:
+# Sanity-check sibling of ibex_top_solo_gls.core: EXACT SAME testbench
+# (ibex_top_solo_gls_tb.sv, unmodified) against ibex_top's own RTL source
+# instead of the post-synthesis gate netlist. Purpose: tell apart "the
+# gate netlist has a real defect" from "the testbench's simplified BFM
+# protocol timing doesn't match what ibex_top expects" -- if this ALSO
+# shows the same wrong-address/wrong-data store the gate-level run showed,
+# the testbench is at fault; if this passes cleanly, the anomaly is
+# specific to the synthesized netlist.
+
+name: xinting:playground:ibex_top_solo_rtl:0.1
+description: Same standalone ibex_top testbench, run against RTL instead of the gate netlist (sanity check)
+
+filesets:
+  rtl:
+    depend:
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:prim_generic:all
+
+  tb_sv:
+    files:
+      - ibex_top_solo_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [rtl, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_top_solo_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--timing"
+          - "-Wno-fatal"

@@ -1,0 +1,36 @@
+CAPI=2:
+# Same as ibex_lui_timing_gls.core but against ibex_top's RTL source
+# instead of the gate netlist, for comparison.
+
+name: xinting:playground:ibex_lui_timing_rtl:0.1
+description: LUI-then-store with 0..4 cycles of NOP delay, RTL, Verilator
+
+filesets:
+  rtl:
+    depend:
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:prim_generic:all
+
+  tb_sv:
+    files:
+      - ibex_lui_timing_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [rtl, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_lui_timing_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--timing"
+          - "-Wno-fatal"

@@ -1,0 +1,73 @@
+CAPI=2:
+# Full-chip PD integration top reflecting the simulated architecture
+# (puf_secure_boot_macro21_top.sv): 5-port xbar + PUF, real 21-bank OCD
+# IMEM, real 1KiB FD-macro ESRAM/DMEM.
+#
+# MIXED flow (matches top_pd/config_mixed_3.json's own convention, not the
+# older all-blackbox top_pd/config.json one): ibex_core+ibex_top, uart, and
+# xbar_tlul_2to5 are synthesized directly from their real RTL as part of
+# this block -- no separate harden_block.sh run needed for them, and no
+# blackbox stub required (harden_block.sh's own FuseSoC resolution pulls
+# their full dependency closure in automatically). Only the three real
+# SRAM macros stay as (* blackbox *) stubs, since SRAM isn't synthesizable
+# std-cell RTL: tlul_sram_if_macro (u_esram/u_dmem, 1 KiB each, already
+# hardened) and tlul_sram_if_macro_ocd_21bank (u_imem, the real 21-bank/
+# 21 KiB block, already hardened). The PUF's own internal foundry SRAM
+# primitive (gf180mcu_fd_ip_sram__sram64x8m8wm1, inside sram_puf.v) is
+# likewise blackboxed via the PDK's own vendored stub -- it's real,
+# already-signed-off foundry IP, not something to synthesize or re-harden.
+#
+# NOTE: harden_block.sh's own VERILOG_FILES resolver only keeps lines
+# ending in ".sv" from the FuseSoC .vc file (see its embedded Python:
+# `elif ln.endswith(".sv")`) -- any plain ".v" file is silently dropped
+# from config.resolved.json, with no warning, causing a downstream
+# MODMISSING error during LibreLane's own lint stage. sram_puf.v and the
+# gf180mcu_fd_ip_sram blackbox stub are both real ".v" files upstream, so
+# this fileset references .sv COPIES of them (sram_puf.sv,
+# pdk_stubs/gf180mcu_fd_ip_sram__sram64x8m8wm1__blackbox.sv) instead --
+# content-identical (SV is a superset of V), just renamed so they survive
+# harden_block.sh's filter. Don't revert to the .v originals here.
+#
+# NOTE 2: don't list tlul_adapter_reg.sv explicitly -- lowrisc:ip:tlul:0.1
+# already provides it transitively (via lowrisc:tlul:adapter_reg:0.1), so
+# an explicit file entry duplicates it. Verilator's own lint only WARNS
+# about this (MODDUP); slang (LibreLane's synthesis frontend) treats it
+# as a hard error, so this only surfaces at the Yosys/jsonheader stage,
+# not during fusesoc's own lint/setup step.
+name: xinting:pd:top_pd_puf:0.1
+description: secure_boot_v0 full-chip PD top w/ PUF (mixed flow -- xbar/ibex/uart synthesized, 3 real SRAMs as hard macros)
+
+filesets:
+  rtl:
+    files:
+      - stubs/tlul_sram_if_macro__bb.sv
+      - stubs/tlul_sram_if_macro_ocd_21bank__bb.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/pdk_stubs/gf180mcu_fd_ip_sram__sram64x8m8wm1__blackbox.sv
+      - ../../../rtl/ibex_to_tlul_host.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/sram_puf_regif.sv
+      - /foss/designs/sram_puf/sram_puf.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/tl_tlul_2to5_pkg.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/xbar_tlul_2to5.sv
+      - ../../../rtl/top_pd_puf.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:darjeeling_constants:top_pkg
+      - lowrisc:ibex:ibex_pkg:0.1
+      - lowrisc:tlul:headers:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:prim:mubi_pkg:0.1
+      - lowrisc:prim_generic:ram_1p_pkg
+      - lowrisc:prim:alert
+      - lowrisc:prim_generic:all
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: top_pd_puf
+    tools:
+      verilator:
+        mode: lint-only

@@ -1,0 +1,55 @@
+CAPI=2:
+# Bisection stage 2: LUI/s0 diagnostic against ibex_xbar_test.nl.v (ibex_top
+# + ibex_to_tlul_host + xbar_tlul_2to5, synthesized together) with the
+# real, already-proven-correct tlul_sram_if_macro_ocd_21bank/
+# tlul_sram_if_macro netlists stitched in for ROM/ESRAM. See
+# ibex_xbar_test_lui_tb.sv's header for what this isolates.
+
+name: xinting:playground:ibex_xbar_test_lui:0.1
+description: LUI/s0 test against ibex_top+xbar_tlul_2to5 synthesized together, real ROM/ESRAM stitched in
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v
+      - ../pd/blocks/ibex_xbar_test/runs/RUN_2026-08-01_00-30-25/final/nl/ibex_xbar_test.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_xbar_test_lui_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir]
+    toplevel: ibex_xbar_test_lui_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

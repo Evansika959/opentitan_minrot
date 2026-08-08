@@ -1,0 +1,81 @@
+{
+  "DESIGN_NAME": "tlul_sram_if_macro_ocd_7bank",
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100,
+  "PDK": "gf180mcuD",
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    1500,
+    2050
+  ],
+  "CORE_AREA": [
+    50,
+    50,
+    1450,
+    2000
+  ],
+  "PL_TARGET_DENSITY_PCT": 15,
+  "STA_CORNERS": [
+    "nom_tt_025C_3v30"
+  ],
+  "MACROS": {
+    "gf180mcu_ocd_ip_sram__sram256x8m8wm1": {
+      "gds": [
+        "dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.gds"
+      ],
+      "lef": [
+        "dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.lef"
+      ],
+      "lib": {
+        "nom_tt_025C_3v30": [
+          "dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1__tt_025C_3v30.lib"
+        ]
+      },
+      "spice": [
+        "dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.spice"
+      ]
+    }
+  },
+  "//_no_instances_note": "Removed -- this block DOES use an explicit MACRO_PLACEMENT_CFG (see macro_placement.cfg), same as the 21-bank original despite that block's own stale comment claiming otherwise.",
+  "PDN_CORE_RING": true,
+  "FP_PDN_CORE_RING": true,
+  "FP_PDN_RING_OFFSET_X": 15,
+  "FP_PDN_RING_OFFSET_Y": 15,
+  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_MACRO_CONNECTIONS": [
+    ".*u_mem.* VDD VSS VDD VSS"
+  ],
+  "//_klayout_drc_note": "The system-wide /foss/pdks/gf180mcuD symlink's own librelane/config.tcl points KLAYOUT_DRC_TECH_SCRIPT (deprecated alias) at .../libs.tech/klayout/drc/gf180mcu.drc, which doesn't exist there -- but this project's OWN local PDK checkout (pd/pdk/gf180mcu/gf180mcuD/...) DOES have the real runset, just under libs.tech/klayout/tech/drc/gf180mcu.drc instead. Pointing KLAYOUT_DRC_RUNSET at that directly. Also enabling Magic DRC below since its tech file has real DRC rules too and is already proven working in this exact flow (same tech file powers the LVS extraction that's now passing) -- running both gives more thorough coverage.",
+  "KLAYOUT_DRC_RUNSET": "dir::../../pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "RUN_MAGIC_DRC": false,
+  "//_antenna_note": "Carried over from the 21-bank block (DRT_ANTENNA_REPAIR_ITERS=8) as a safe default -- a smaller macro count may not need this many iterations, but extra budget doesn't hurt.",
+  "DRT_ANTENNA_REPAIR_ITERS": 8,
+  "SYNTH_LATCH_MAP": "dir::latch_map.v",
+  "//_verilog_note": "VERILOG_FILES/VERILOG_INCLUDE_DIRS/USE_SLANG/SLANG_ARGUMENTS injected by harden_block.sh (same convention as the uart/tlul_sram_if_macro_ocd_2bank blocks) -- run harden_block.sh tlul_sram_if_macro_ocd_7bank to turn this config into a runnable config.resolved.json.",
+  "//_purpose": "NumBanks=7 (7 KiB) variant of tlul_sram_if_macro_ocd_21bank, for the naive-3-stage secure boot area experiment (IMEM shrunk from 21 banks; ESRAM/DMEM need to grow correspondingly via their own multibank macros). DIE_AREA/macro_placement.cfg are a first-pass estimate (1x7 grid reusing the original's column-0 geometry, scaled down from 3x7) -- UNVALIDATED, expect DRC/PDN iteration on the first real run, same as the 21-bank block needed originally.",
+  "SYNTH_CORNER": "nom_tt_025C_3v30",
+  "DEFAULT_CORNER": "nom_tt_025C_3v30",
+  "LIB": {
+    "nom_tt_025C_3v30": [
+      "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    ]
+  },
+  "LIB_SYNTH": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_SLOWEST": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_FASTEST": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "MACRO_PLACEMENT_CFG": "dir::macro_placement.cfg",
+  "CTS_APPLY_NDR": "none",
+  "//_cts_root_buffer_note": "PDK default CTS_ROOT_BUFFER (clkbuf_16, 28.000um wide per its LEF SIZE) is exactly as wide as this floorplan's narrowest inter-lane channel (28.56um, bounded by the 10um macro halo on each side of the 48.7um raw gap between adjacent byte-lane macros within a bank) -- confirmed via direct ODB query that DPL-0036 (detailed placement failure in CTS) was caused by exactly this: a clkbuf_16 instance landing with only ~0.56um margin, straddling into a macro's own footprint with no legal site nearby within max_displacement. Dropping to clkbuf_12 (21.280um wide) gives 7.28um of real margin in that same channel.",
+  "CTS_ROOT_BUFFER": "gf180mcu_fd_sc_mcu7t5v0__clkbuf_12",
+  "EXTRA_SPICE_MODELS": [
+    "dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.spice"
+  ]
+}

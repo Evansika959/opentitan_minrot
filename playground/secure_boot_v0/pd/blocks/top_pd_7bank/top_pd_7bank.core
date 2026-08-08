@@ -1,0 +1,56 @@
+CAPI=2:
+# Full-chip PD integration top, derived from top_pd_puf's .core: same mixed
+# flow (ibex_core+ibex_top, uart, xbar_tlul_2to5, PUF glue synthesized
+# directly from RTL -- no blackbox stub needed for them, harden_block.sh's
+# own FuseSoC resolution pulls their full dependency closure in
+# automatically) but with all three memory roles unified onto the single
+# tlul_sram_if_macro_ocd_7bank hard macro (see top_pd_7bank.sv), so only
+# ONE SRAM blackbox stub is needed here (reused 3x for u_imem/u_esram/
+# u_dmem) instead of two different ones. The PUF's own internal foundry
+# SRAM primitive (gf180mcu_fd_ip_sram__sram64x8m8wm1, inside sram_puf.v) is
+# still blackboxed via the PDK's own vendored stub, same as top_pd_puf.
+#
+# Carries over top_pd_puf.core's two notes verbatim (still apply, same
+# harden_block.sh):
+#  - harden_block.sh's VERILOG_FILES resolver only keeps ".sv" lines from
+#    the FuseSoC .vc file, so sram_puf.v/gf180mcu_fd_ip_sram blackbox stay
+#    on their .sv-renamed copies (sram_puf.sv, pdk_stubs/..._blackbox.sv).
+#  - Don't list tlul_adapter_reg.sv explicitly -- lowrisc:ip:tlul:0.1
+#    already provides it transitively; slang treats the duplicate as a
+#    hard error (Verilator only warns).
+name: xinting:pd:top_pd_7bank:0.1
+description: secure_boot_v0 full-chip PD top w/ PUF, all 3 memories unified on the 7KiB tlul_sram_if_macro_ocd_7bank macro (mixed flow -- xbar/ibex/uart synthesized, memories + PUF sram as hard macros)
+
+filesets:
+  rtl:
+    files:
+      - stubs/tlul_sram_if_macro_ocd_7bank__bb.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/pdk_stubs/gf180mcu_fd_ip_sram__sram64x8m8wm1__blackbox.sv
+      - ../../../rtl/ibex_to_tlul_host.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/sram_puf_regif.sv
+      - /foss/designs/sram_puf/sram_puf.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/tl_tlul_2to5_pkg.sv
+      - /foss/designs/sram_puf/ibex_demo/rtl/xbar_tlul_2to5.sv
+      - ../../../rtl/top_pd_7bank.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:darjeeling_constants:top_pkg
+      - lowrisc:ibex:ibex_pkg:0.1
+      - lowrisc:tlul:headers:0.1
+      - lowrisc:ip:tlul:0.1
+      - lowrisc:ip:uart:0.1
+      - lowrisc:ibex:ibex_core:0.1
+      - lowrisc:ibex:ibex_top:0.1
+      - lowrisc:prim:mubi_pkg:0.1
+      - lowrisc:prim_generic:ram_1p_pkg
+      - lowrisc:prim:alert
+      - lowrisc:prim_generic:all
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: top_pd_7bank
+    tools:
+      verilator:
+        mode: lint-only

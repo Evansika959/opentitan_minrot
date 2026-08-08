@@ -1,28 +1,20 @@
-
 module top #(
   // Address width; IMEM/DMEM default to 64 KiB to match link.ld (0x10000 bytes)
   parameter int unsigned IMEM_AW = 16,
   parameter int unsigned DMEM_AW = 16,
   // Default program image for instruction memory
-  // parameter string IMEM_INIT_HEX = "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
-  parameter string IMEM_INIT_HEX = "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
-  // parameter string DMEM_INIT_HEX = "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
-  parameter string DMEM_INIT_HEX = "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
-  // parameter string ESRAM_INIT_HEX = "/home/xinting/Desktop/opentitan_minrot/playground/secure_boot_v0/test_sw/hex/esram_bk.hex",
+  parameter string IMEM_INIT_HEX = "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/test_sw/hex/rom.imem.hex",
+  parameter string DMEM_INIT_HEX = "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/test_sw/hex/rom_with_image.dmem.hex",
   parameter int IMEM_BASE = 32'h0000_0000,
   parameter int UART_BASE = 32'h0003_0000
 ) (
   input  logic clk_i,
   input  logic rst_ni,
-
-  // expose UART TL-UL device port (for TB monitoring)
   output tlul_pkg::tl_h2d_t tl_to_uart_o,
   output tlul_pkg::tl_d2h_t tl_from_uart_o,
-
   input  logic uart_rx_i,
   output logic uart_tx_o,
   output logic uart_tx_en_o
-
 `ifdef RVFI
   ,output logic        rvfi_valid
   ,output logic [63:0] rvfi_order
@@ -65,41 +57,30 @@ module top #(
   import tlul_pkg::*;
   import ibex_pkg::*;
 
-  // TL wires
   tl_h2d_t tl_imem_h2d;
   tl_d2h_t tl_imem_d2h;
-
   tl_h2d_t tl_dmem_h2d;
   tl_d2h_t tl_dmem_d2h;
-
   tl_h2d_t tl_to_rom;
   tl_d2h_t tl_from_rom;
-
   tl_h2d_t tl_to_esram;
   tl_d2h_t tl_from_esram;
-
   tl_h2d_t tl_to_dmem_sram;
   tl_d2h_t tl_from_dmem_sram;
-
   tl_h2d_t tl_to_uart;
   tl_d2h_t tl_from_uart;
 
-  // Ibex instruction/data handshake wires
   logic instr_req, instr_gnt, instr_rvalid;
   logic [31:0] instr_addr, instr_rdata;
   logic instr_err;
-
   logic data_req, data_gnt, data_rvalid;
   logic data_we;
   logic [3:0]  data_be;
   logic [31:0] data_addr, data_wdata, data_rdata;
   logic data_err;
-
-  // Alert/ctrl wires (tied off for now)
   logic alert_minor, alert_major_int, alert_major_bus;
   logic core_sleep;
 
-  // Ibex core (upstream ibex_top)
   ibex_top u_ibex (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
@@ -109,10 +90,7 @@ module top #(
     .ram_cfg_icache_data_i(prim_ram_1p_pkg::RAM_1P_CFG_DEFAULT),
     .ram_cfg_rsp_icache_data_o(),
     .hart_id_i(32'h0),
-    // Ibex reset PC: skip the 0x00-0x7F padding we prepend in IMEM hex
     .boot_addr_i(IMEM_BASE + 32'h80),
-
-    // Instruction interface
     .instr_req_o(instr_req),
     .instr_gnt_i(instr_gnt),
     .instr_rvalid_i(instr_rvalid),
@@ -120,8 +98,6 @@ module top #(
     .instr_rdata_i(instr_rdata),
     .instr_rdata_intg_i('0),
     .instr_err_i(instr_err),
-
-    // Data interface
     .data_req_o(data_req),
     .data_gnt_i(data_gnt),
     .data_rvalid_i(data_rvalid),
@@ -133,25 +109,17 @@ module top #(
     .data_rdata_i(data_rdata),
     .data_rdata_intg_i('0),
     .data_err_i(data_err),
-
-    // Interrupts disabled
     .irq_software_i (1'b0),
     .irq_timer_i    (1'b0),
     .irq_external_i (1'b0),
     .irq_fast_i     ('0),
     .irq_nm_i       (1'b0),
-
-    // CPU control / alerts
     .fetch_enable_i(ibex_pkg::IbexMuBiOn),
     .alert_minor_o(alert_minor),
     .alert_major_internal_o(alert_major_int),
     .alert_major_bus_o(alert_major_bus),
     .core_sleep_o(core_sleep),
-
-    // DFT bypass
     .scan_rst_ni(1'b1),
-
-    // Scrambling/Debug unused
     .scramble_key_valid_i(1'b0),
     .scramble_key_i('0),
     .scramble_nonce_i('0),
@@ -159,7 +127,6 @@ module top #(
     .debug_req_i(1'b0),
     .crash_dump_o(),
     .double_fault_seen_o()
-
 `ifdef RVFI
     , .rvfi_valid(rvfi_valid), .rvfi_order(rvfi_order), .rvfi_insn(rvfi_insn),
       .rvfi_trap(rvfi_trap), .rvfi_halt(rvfi_halt), .rvfi_intr(rvfi_intr),
@@ -184,7 +151,6 @@ module top #(
 `endif
   );
 
-  // Adapters: Ibex mem -> TL-UL
   ibex_to_tlul_host #(.READ_ONLY(1)) u_instr2tl (
     .clk_i, .rst_ni,
     .req_i(instr_req), .we_i(1'b0), .be_i(4'hF), .addr_i(instr_addr), .wdata_i('0),
@@ -199,7 +165,6 @@ module top #(
     .tl_o(tl_dmem_h2d), .tl_i(tl_dmem_d2h)
   );
 
-  // IMEM ROM (Read only as in ROM)
   tlul_rom_if #(
     .RomAw(IMEM_AW),
     .INIT_HEX(IMEM_INIT_HEX)
@@ -209,7 +174,6 @@ module top #(
     .en_ifetch_i(prim_mubi_pkg::MuBi4True)
   );
 
-  // IMEM SRAM (Exec SRAM) 
   tlul_sram_if #(
     .SramAw(IMEM_AW),
     .INIT_HEX(),
@@ -220,7 +184,6 @@ module top #(
     .en_ifetch_i(prim_mubi_pkg::MuBi4True)
   );
 
-  // DMEM SRAM
   tlul_sram_if #(
     .SramAw(DMEM_AW),
     .INIT_HEX(DMEM_INIT_HEX),
@@ -231,40 +194,24 @@ module top #(
     .en_ifetch_i(prim_mubi_pkg::MuBi4False)
   );
 
-  // xbar instantiation
   xbar_tlul_2to4 u_xbar (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
-
-    // Hosts
-    // h_i: instruction bus
     .tl_h_i_i(tl_imem_h2d),
     .tl_h_i_o(tl_imem_d2h),
-    // h_d: data bus
     .tl_h_d_i(tl_dmem_h2d),
     .tl_h_d_o(tl_dmem_d2h),
-
-    // Devices
     .tl_d_rom_o(tl_to_rom),
     .tl_d_rom_i(tl_from_rom),
-
-    // Exec SRAM mapped at 0x1000
     .tl_d_esram_o(tl_to_esram),
     .tl_d_esram_i(tl_from_esram),
-
-    // Data SRAM mapped at 0x2000
     .tl_d_dmem_o(tl_to_dmem_sram),
     .tl_d_dmem_i(tl_from_dmem_sram),
-
     .tl_d_uart_o(tl_to_uart),
     .tl_d_uart_i(tl_from_uart),
-
     .scanmode_i(prim_mubi_pkg::MuBi4False)
   );
 
-
-
-  // UART device
   localparam int UART_NUM_ALERTS = 1;
   prim_alert_pkg::alert_rx_t [UART_NUM_ALERTS-1:0] uart_alert_rx;
   prim_alert_pkg::alert_tx_t [UART_NUM_ALERTS-1:0] uart_alert_tx;
@@ -290,11 +237,9 @@ module top #(
     .intr_rx_parity_err_o()
   );
 
-  // Expose UART TL for TB visibility
   assign tl_to_uart_o   = tl_to_uart;
   assign tl_from_uart_o = tl_from_uart;
 
-  // Expose exec SRAM dump to TB (called by top_tb)
   function automatic void dump_esram(input string path);
     begin
       u_esram.dump_mem(path);

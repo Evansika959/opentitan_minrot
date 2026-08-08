@@ -1,0 +1,69 @@
+CAPI=2:
+# Real-crypto secure-boot + PUF GLS test of the taped-out top_pd_min
+# netlist (right-sized memories: IMEM=10KiB/10bank, ESRAM/DMEM=2KiB/2bank
+# each, vs top_pd_7bank's uniform 7KiB everywhere). Forked from
+# secure_boot_v0_7bank_secboot_gls.core -- same structure, three
+# differences: two macro netlists instead of one (10bank + 2bank), the top
+# netlist points directly at the fasttest_columnswap run's own final/nl/
+# output (not pd/macros/ -- that directory's manifest is deliberately left
+# alone per current cleanup plans), and the tb.
+#
+# NOTE: fasttest_columnswap is a run-tag under pd/blocks/top_pd_min/runs/,
+# not a promoted/exported macro. If that run directory is ever deleted or
+# re-run under a different tag, update the nl path below to match.
+
+name: xinting:playground:secure_boot_v0_min_secboot_gls:0.1
+description: Real SHA256+ECDSA(secp160r1)+PUF-derived-key secure boot GLS test of the taped-out top_pd_min (right-sized memories) netlist
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.nl.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.nl.v
+      - ../pd/blocks/top_pd_min/runs/fasttest_columnswap/final/nl/top_pd_min.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - top_pd_min_secboot_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_dmem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir, gls_dmem_hexdir, gls_realdata_hex]
+    toplevel: top_pd_min_secboot_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

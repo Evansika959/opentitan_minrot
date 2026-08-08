@@ -1,0 +1,50 @@
+CAPI=2:
+# Isolates whether the LUI anomaly found by ibex_top_solo_gls_tb.sv is a
+# timing/hazard bug (some delay before use fixes it) or a pure logic
+# defect (wrong regardless of delay). See ibex_lui_timing_gls_tb.sv header.
+
+name: xinting:playground:ibex_lui_timing_gls:0.1
+description: LUI-then-store with 0..4 cycles of NOP delay, gate netlist, Verilator
+
+filesets:
+  gate_netlist:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../pd/macros/ibex_top/ibex_top.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_lui_timing_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlist, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_lui_timing_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

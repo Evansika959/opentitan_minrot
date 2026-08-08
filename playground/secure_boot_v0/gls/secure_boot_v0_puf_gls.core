@@ -1,0 +1,98 @@
+CAPI=2:
+# Gate-level simulation (GLS) of the taped-out top_pd_puf netlist.
+#
+# Sibling of ../gls/secure_boot_v0_gls.core (that one answers the same
+# question for the older, no-PUF top_pd). This one targets top_pd_puf: real
+# IMEM (tlul_sram_if_macro_ocd_21bank, 21 banks / 84 macro instances), real
+# ESRAM (tlul_sram_if_macro), and -- new ground relative to anything
+# previously confirmed end-to-end at RTL -- real DMEM (tlul_sram_if_macro,
+# second instance). The closest validated RTL reference is
+# sim_macro21/puf_secure_boot_macro21_tb.sv (xinting:puf:puf_secure_boot_top),
+# which keeps DMEM idealized via $readmemh into a behavioral array; making
+# DMEM a real macro too is exactly the piece that RTL test's own header
+# comment flags as "the 100-instance all-real combination... never confirmed
+# to complete." Treat sim_macro21's UART trace as the reference behavior to
+# match, not a byte-for-byte proven-identical golden run -- the real/
+# idealized DMEM swap should be functionally transparent (tlul_sram_if_macro
+# is itself already an independently-hardened, LVS/DRC-clean block) but has
+# not been simulated end-to-end before this.
+#
+# Unlike ../gls/secure_boot_v0_gls.core (which stitches in separate
+# ibex_top.nl.v/uart.nl.v/xbar_tlul_2to4.nl.v netlists), top_pd_puf uses
+# LibreLane's "mixed" flow -- ibex_core/ibex_top, uart, and xbar_tlul_2to5
+# are synthesized directly into top_pd_puf.nl.v itself, not hardened as
+# separate blocks -- so only the three real SRAM macros need their own
+# netlist/model files here.
+#
+# Reuses ../gls/gls_sram_preload.sv UNMODIFIED for ESRAM/DMEM: it already
+# binds into every tlul_sram_if_macro instance and self-selects via %m
+# path matching "u_esram"/"u_dmem" substrings, so no new preload code is
+# needed there -- just the +gls_dmem_hex= plusarg (ESRAM gets no plusarg on
+# purpose: it starts empty and is written by the ROM's own copy_payload() at
+# runtime, same as every prior real-ESRAM demo in this project). IMEM's 84
+# real macro instances need new preload logic (see top_pd_puf_gls_tb.sv)
+# since tlul_sram_if_macro_ocd_21bank has a different internal hierarchy
+# than tlul_sram_if_macro and gls_sram_preload.sv was never built for it.
+#
+# Does not modify top_pd_puf.core, top_pd_puf.sv, or anything under rtl/ --
+# an additional, independent target, same convention as secure_boot_v0_gls.core.
+
+name: xinting:playground:secure_boot_v0_puf_gls:0.1
+description: Gate-level simulation of the taped-out top_pd_puf netlist (Ibex + PUF + TL-UL SRAM x2 + 21-bank OCD IMEM + UART, all as hardened macros/synthesized logic), Verilator
+
+filesets:
+  gate_netlists:
+    files:
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v
+      - ../pd/macros/top_pd_puf/top_pd_puf.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - gls_sram_preload.sv
+      - top_pd_puf_gls_tb.sv
+    file_type: systemVerilogSource
+
+  tb_cpp:
+    files:
+      - main_gls.cpp
+    file_type: cppSource
+
+parameters:
+  gls_dmem_hex:
+    datatype: str
+    paramtype: plusarg
+  gls_imem_bankdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv, tb_cpp]
+    parameters: [gls_dmem_hex, gls_imem_bankdir, gls_realdata_hex]
+    toplevel: top_pd_puf_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

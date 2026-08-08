@@ -1,0 +1,64 @@
+CAPI=2:
+# Standalone gate-level simulation (GLS) of ONLY the already-independently-
+# hardened ibex_top netlist -- no TL-UL, no xbar, no uart, no real memory
+# macros. Drives ibex's raw OBI-style instr_*/data_* ports directly with a
+# trivial testbench-side memory model.
+#
+# Why: the top_pd_puf integration smoke test shows ~2 instruction fetches
+# then quiet (mcycle keeps counting -- not held in reset), and a follow-up
+# probe showed the data-side TL-UL adapter (u_data2tl.outstanding_q) never
+# launches a single transaction the whole run. This isolates whether that's
+# ibex_top itself or something downstream (xbar_tlul_2to5 / uart).
+#
+# Does not modify ibex_top.core, rtl/, or anything under pd/ -- an
+# additional, independent target, same convention as
+# tlul_sram_if_macro_solo_gls.core.
+
+name: xinting:playground:ibex_top_solo_gls:0.1
+description: Standalone gate-level simulation of just the ibex_top netlist (directed store/load/branch program on a trivial memory BFM), Verilator
+
+filesets:
+  gate_netlist:
+    files:
+      # async_dff_simpatch first, same reason as tlul_sram_if_macro_solo_gls.core:
+      # pre-defines the vendor file's own include-guards for the reset/set DFF
+      # cells so the (broken-under-Verilator) vendor versions get skipped.
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../pd/macros/ibex_top/ibex_top.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_top_solo_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_ibex_imem_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlist, tb_sv]
+    parameters: [gls_ibex_imem_hex]
+    toplevel: ibex_top_solo_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

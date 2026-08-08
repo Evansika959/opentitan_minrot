@@ -1,0 +1,53 @@
+CAPI=2:
+# Bisection stage 1.7: LUI/s0 diagnostic against ibex_glue_nomem_test.nl.v
+# (ibex_top + ibex_to_tlul_host x2, real IMEM macro, NO esram/dmem macro
+# at all -- data glue's tl_i tied to TL_D2H_DEFAULT). See
+# ibex_glue_nomem_test.sv / ibex_glue_nomem_test_tb.sv headers.
+
+name: xinting:playground:ibex_glue_nomem_test:0.1
+description: LUI/s0 test against ibex_top+glue synthesized together, no data-side memory at all
+
+filesets:
+  gate_netlists:
+    files:
+      - ../rtl/gf180mcu_fd_sc_mcu7t5v0__async_dff_simpatch.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v
+      - ../pd/blocks/ibex_glue_nomem_test/runs/RUN_2026-08-01_01-44-50/06-yosys-synthesis/ibex_glue_nomem_test.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - ibex_glue_nomem_test_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir]
+    toplevel: ibex_glue_nomem_test_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

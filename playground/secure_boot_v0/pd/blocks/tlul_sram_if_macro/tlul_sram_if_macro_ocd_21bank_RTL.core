@@ -1,0 +1,41 @@
+
+CAPI=2:
+
+name: xinting:pd:tlul_sram_if_macro_ocd_21bank:0.1
+
+description: 21 KiB (21-bank) TL-UL SRAM P&R using OCD macros
+
+filesets:
+
+  rtl:
+
+    files:
+
+      - ../../../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1__blackbox.v
+
+      - ../../../rtl/prim_ram_1p_macro_OCD.sv
+
+      - ../../../rtl/tlul_sram_if_macro_ocd_multibank.sv
+
+    file_type: systemVerilogSource
+
+    depend:
+
+      - lowrisc:tlul:adapter_sram:0.1
+
+      - lowrisc:tlul:common:0.1
+
+      - lowrisc:prim_generic:all
+
+      - lowrisc:darjeeling_constants:top_pkg
+
+targets:
+
+  default:
+
+    filesets: [rtl]
+
+    toplevel: tlul_sram_if_macro_ocd_multibank
+
+ 
+

@@ -1,0 +1,34 @@
+CAPI=2:
+# TL-UL SRAM block (OCD sram256x8 array) for the LibreLane PD flow.
+# Resolves the tlul_adapter_sram closure via FuseSoC so harden_block.sh can
+# harvest the file list for LibreLane (raw SV via USE_SLANG). The macro
+# blackbox.v is included so both Verilator lint and slang synthesis see the
+# sram256x8 module as a leaf cell. Setup/lint only -- never built from here.
+#
+# Sibling of tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.core
+# and tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.core (same
+# structure/deps), pointed at this block's own tlul_sram_if_macro_ocd_7bank.sv.
+name: xinting:pd:tlul_sram_if_macro_ocd_7bank:0.1
+description: TL-UL SRAM (OCD sram256x8) PD closure for LibreLane
+
+filesets:
+  rtl:
+    files:
+      - ../../../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1__blackbox.sv
+      - ../../../rtl/prim_ram_1p_macro_OCD.sv
+      - ../../../rtl/tlul_sram_if_macro_ocd_7bank.sv
+    file_type: systemVerilogSource
+    depend:
+      - lowrisc:tlul:adapter_sram:0.1
+      - lowrisc:tlul:common:0.1
+      - lowrisc:prim_generic:all
+      - lowrisc:darjeeling_constants:top_pkg
+
+targets:
+  lint:
+    default_tool: verilator
+    filesets: [rtl]
+    toplevel: tlul_sram_if_macro_ocd_7bank
+    tools:
+      verilator:
+        mode: lint-only

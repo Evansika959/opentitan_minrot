@@ -1,0 +1,82 @@
+CAPI=2:
+# Gate-level smoke test of the taped-out top_pd_puf netlist.
+#
+# Sibling of ../gls/secure_boot_v0_gls.core's own smoke variant
+# (run_gls_smoke.bash / top_pd_gls_tb.sv reused for a hand-written program),
+# adapted for top_pd_puf. Proves the mechanism -- netlist boots, real ESRAM
+# read/write works, the real PUF path (adapter -> regif -> foundry SRAM)
+# works, UART pins toggle correctly -- using smoke_puf_boot.S, a few dozen
+# hand-written instructions that fit in one IMEM bank and never touch DMEM.
+# This exists because the full secure-boot ROM+DMEM payload does not fit in
+# top_pd_puf's real, size-constrained DMEM macro (256-word capacity vs
+# ~309 words needed) -- see that discussion for the full numbers. This is
+# not a replacement for eventually running the real firmware; it is the
+# same kind of "prove the harness/hardware, independent of the firmware-
+# size question" step run_gls_smoke.bash already established for top_pd.
+#
+# Same "mixed flow" simplification as secure_boot_v0_puf_gls.core: no
+# separate ibex_top/uart/xbar netlists needed, they're already gates inside
+# top_pd_puf.nl.v.
+#
+# NOTE: unlike top_pd_gls_tb.sv (which is a plain module with clk/rst_n/
+# uart_rx PORTS driven externally by main_gls.cpp's own C++ clock/reset
+# loop), top_pd_puf_smoke_gls_tb.sv is a fully self-contained, PORT-LESS
+# testbench -- it generates its own clock (`always #30 clk = ~clk`), drives
+# its own reset sequence, and calls $finish itself. Reusing main_gls.cpp
+# here was wrong on two counts: it's hardcoded to `Vtop_pd_gls_tb` (a
+# different class), and it would also drive .clk/.rst_n/.uart_rx signals
+# that don't even exist as ports on this module. Use --binary instead (same
+# as sim_allreal/sim_macro21 elsewhere in this project) so Verilator
+# generates its own trivial main() and just calls eval() until $finish.
+
+name: xinting:playground:secure_boot_v0_puf_smoke_gls_bisect:0.1
+description: "Pipeline-stage bisection variant of the top_pd_puf GLS smoke test -- swaps in netlist_stages/top_pd_puf_bisect.nl.v (copied from whichever LibreLane stage is under test -- 06-yosys-synthesis / 19-openroad-tapendcapinsertion / 35-openroad-cts / final -- instead of the final signed-off netlist), to isolate which PD stage broke the synthesized ibex/xbar/uart interconnect (RTL works, every post-P&R netlist tested so far shows zero bus activity)."
+
+filesets:
+  gate_netlists:
+    files:
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v
+      - ../pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v
+      - /foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v
+      - ../rtl/gf180mcu_ocd_ip_sram__sram256x8m8wm1_simpatch.v
+      - ../pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v
+      - ../pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v
+      - netlist_stages/top_pd_puf_bisect.nl.v
+    file_type: verilogSource
+
+  tb_sv:
+    files:
+      - top_pd_puf_smoke_gls_tb.sv
+    file_type: systemVerilogSource
+
+parameters:
+  gls_imem_hexdir:
+    datatype: str
+    paramtype: plusarg
+  gls_realdata_hex:
+    datatype: str
+    paramtype: plusarg
+
+targets:
+  sim_gls:
+    default_tool: verilator
+    filesets: [gate_netlists, tb_sv]
+    parameters: [gls_imem_hexdir, gls_realdata_hex]
+    toplevel: top_pd_puf_smoke_gls_tb
+    tools:
+      verilator:
+        verilator_options:
+          - "--binary"
+          - "--trace-fst"
+          - "--bbox-unsup"
+          - "--timing"
+          - "-Wno-fatal"
+          - "-Wno-PINMISSING"
+          - "-Wno-UNOPTTHREADS"
+          - "-Wno-WIDTH"
+          - "-Wno-CASEINCOMPLETE"
+          - "-Wno-UNUSED"
+          - "-Wno-UNDRIVEN"
+          - "-Wno-MULTIDRIVEN"
+          - "-Wno-IMPLICIT"
+          - "-Wno-SPECIFYIGN"

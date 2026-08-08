@@ -1,4 +1,4 @@
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/gf180mcu_ocd_ip_sram__sram256x8m8wm1.sch
+** sch_path: xschem/gf180mcu_ocd_ip_sram__sram256x8m8wm1.sch
 .subckt gf180mcu_ocd_ip_sram__sram256x8m8wm1 VSS VDD A[7] A[6] A[5] A[4] A[3] A[2] A[1] A[0] CLK GWEN Q[7] Q[6] Q[5] Q[4] Q[3]
 + Q[2] Q[1] Q[0] WEN[7] WEN[6] WEN[5] WEN[4] WEN[3] WEN[2] WEN[1] WEN[0] D[7] D[6] D[5] D[4] D[3] D[2] D[1] D[0] CEN
 *.PININFO Q[7:0]:O WEN[7:0]:I D[7:0]:I A[7:0]:I CLK:I GWEN:I VDD:B VSS:B CEN:I
@@ -25,8 +25,8 @@ x4 VSS VDD VSS VSS A[7] A[6] A[5] A[4] A[3] A[2] A[1] A[0] xc[3] xc[2] xc[1] xc[
 .ends
 
 * expanding   symbol:  lcol4_256_3v256x8m81.sym # of pins=10
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/lcol4_256_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/lcol4_256_3v256x8m81.sch
+** sym_path: xschem/lcol4_256_3v256x8m81.sym
+** sch_path: xschem/lcol4_256_3v256x8m81.sch
 .subckt lcol4_256_3v256x8m81 vdd vss wr[31] wr[30] wr[29] wr[28] wr[27] wr[26] wr[25] wr[24] wr[23] wr[22] wr[21] wr[20] wr[19]
 + wr[18] wr[17] wr[16] wr[15] wr[14] wr[13] wr[12] wr[11] wr[10] wr[9] wr[8] wr[7] wr[6] wr[5] wr[4] wr[3] wr[2] wr[1] wr[0] ypass[7]
 + ypass[6] ypass[5] ypass[4] ypass[3] ypass[2] ypass[1] ypass[0] datain[3] datain[2] datain[1] datain[0] q[3] q[2] q[1] q[0] men GWE GWEN
@@ -78,8 +78,8 @@ x3[0] vdd vdd vss dcap_103_novia_3v256x8m81
 
 
 * expanding   symbol:  rcol4_256_3v256x8m81.sym # of pins=12
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/rcol4_256_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/rcol4_256_3v256x8m81.sch
+** sym_path: xschem/rcol4_256_3v256x8m81.sym
+** sch_path: xschem/rcol4_256_3v256x8m81.sch
 .subckt rcol4_256_3v256x8m81 vdd vss wr[31] wr[30] wr[29] wr[28] wr[27] wr[26] wr[25] wr[24] wr[23] wr[22] wr[21] wr[20] wr[19]
 + wr[18] wr[17] wr[16] wr[15] wr[14] wr[13] wr[12] wr[11] wr[10] wr[9] wr[8] wr[7] wr[6] wr[5] wr[4] wr[3] wr[2] wr[1] wr[0] ypass[7]
 + ypass[6] ypass[5] ypass[4] ypass[3] ypass[2] ypass[1] ypass[0] datain[3] datain[2] datain[1] datain[0] q[3] q[2] q[1] q[0] men GWE GWEN
@@ -130,8 +130,8 @@ x2 vss vdd vss vss vss DRWL pcb tblhl rdummy_3v256x4_3v256x8m81
 
 
 * expanding   symbol:  xdec64_3v256x8m81.sym # of pins=10
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec64_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec64_3v256x8m81.sch
+** sym_path: xschem/xdec64_3v256x8m81.sym
+** sch_path: xschem/xdec64_3v256x8m81.sch
 .subckt xdec64_3v256x8m81 vss vdd DLWL DRWL xa[7] xa[6] xa[5] xa[4] xa[3] xa[2] xa[1] xa[0] LWL[31] LWL[30] LWL[29] LWL[28]
 + LWL[27] LWL[26] LWL[25] LWL[24] LWL[23] LWL[22] LWL[21] LWL[20] LWL[19] LWL[18] LWL[17] LWL[16] LWL[15] LWL[14] LWL[13] LWL[12] LWL[11]
 + LWL[10] LWL[9] LWL[8] LWL[7] LWL[6] LWL[5] LWL[4] LWL[3] LWL[2] LWL[1] LWL[0] xb[3] xb[2] xb[1] xb[0] RWL[31] RWL[30] RWL[29] RWL[28]
@@ -182,8 +182,8 @@ x2 vdd DLWL vss men DRWL ddec_3v256x8m81
 
 
 * expanding   symbol:  control_3v256x8_3v256x8m81.sym # of pins=15
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/control_3v256x8_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/control_3v256x8_3v256x8m81.sch
+** sym_path: xschem/control_3v256x8_3v256x8m81.sym
+** sch_path: xschem/control_3v256x8_3v256x8m81.sch
 .subckt control_3v256x8_3v256x8m81 vss vdd A[9] A[8] A[7] A[6] A[5] A[4] A[3] A[2] A[1] A[0] xc[3] xc[2] xc[1] xc[0] xb[3] xb[2]
 + xb[1] xb[0] xa[7] xa[6] xa[5] xa[4] xa[3] xa[2] xa[1] xa[0] clk men IGWEN GWEN GWE RYS[7] RYS[6] RYS[5] RYS[4] RYS[3] RYS[2] RYS[1]
 + RYS[0] LYS[7] LYS[6] LYS[5] LYS[4] LYS[3] LYS[2] LYS[1] LYS[0] tblhl CEN
@@ -197,8 +197,8 @@ x3 vdd vss clk xc[3] xc[2] xc[1] xc[0] A[9] A[8] A[7] A[6] A[5] A[4] A[3] xb[3] 
 
 
 * expanding   symbol:  col_256a_3v256x8m81.sym # of pins=11
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/col_256a_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/col_256a_3v256x8m81.sch
+** sym_path: xschem/col_256a_3v256x8m81.sym
+** sch_path: xschem/col_256a_3v256x8m81.sch
 .subckt col_256a_3v256x8m81 vdd vss WL[31] WL[30] WL[29] WL[28] WL[27] WL[26] WL[25] WL[24] WL[23] WL[22] WL[21] WL[20] WL[19]
 + WL[18] WL[17] WL[16] WL[15] WL[14] WL[13] WL[12] WL[11] WL[10] WL[9] WL[8] WL[7] WL[6] WL[5] WL[4] WL[3] WL[2] WL[1] WL[0] WEN[3] WEN[2]
 + WEN[1] WEN[0] ypass[7] ypass[6] ypass[5] ypass[4] ypass[3] ypass[2] ypass[1] ypass[0] datain[3] datain[2] datain[1] datain[0] men GWE
@@ -225,8 +225,8 @@ x5 vdd vss bl[23] bl[22] bl[21] bl[20] bl[19] bl[18] bl[17] bl[16] br[23] br[22]
 
 
 * expanding   symbol:  ldummy_3v256x4_3v256x8m81.sym # of pins=3
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ldummy_3v256x4_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ldummy_3v256x4_3v256x8m81.sch
+** sym_path: xschem/ldummy_3v256x4_3v256x8m81.sym
+** sch_path: xschem/ldummy_3v256x4_3v256x8m81.sch
 .subckt ldummy_3v256x4_3v256x8m81 wrd vdd vss
 *.PININFO wrd:I vdd:B vss:B
 x1 dtr[31] dtr[30] dtr[29] dtr[28] dtr[27] dtr[26] dtr[25] dtr[24] dtr[23] dtr[22] dtr[21] dtr[20] dtr[19] dtr[18] dtr[17] dtr[16]
@@ -405,8 +405,8 @@ x3[0] vdd wrd net1 net2 vss x018SRAM_cell1_3v256x8m81
 
 
 * expanding   symbol:  dcap_103_novia_3v256x8m81.sym # of pins=3
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/dcap_103_novia_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/dcap_103_novia_3v256x8m81.sch
+** sym_path: xschem/dcap_103_novia_3v256x8m81.sym
+** sch_path: xschem/dcap_103_novia_3v256x8m81.sch
 .subckt dcap_103_novia_3v256x8m81 bottom bulk top
 *.PININFO top:I bottom:B bulk:B
 XM1 bottom top bottom bulk pfet_03v3 L=1.74u W=1.06u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -415,8 +415,8 @@ XM1 bottom top bottom bulk pfet_03v3 L=1.74u W=1.06u nf=1 ad='int((nf+1)/2) * W/
 
 
 * expanding   symbol:  rdummy_3v256x4_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/rdummy_3v256x4_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/rdummy_3v256x4_3v256x8m81.sch
+** sym_path: xschem/rdummy_3v256x4_3v256x8m81.sym
+** sch_path: xschem/rdummy_3v256x4_3v256x8m81.sch
 .subckt rdummy_3v256x4_3v256x8m81 wrdr vdd vss wrdl wrdb wrdt pcb tblhl
 *.PININFO wrdl:I vdd:B vss:B wrdb:I wrdt:I wrdr:I pcb:I tblhl:O
 x1 dtr[31] dtr[30] dtr[29] dtr[28] dtr[27] dtr[26] dtr[25] dtr[24] dtr[23] dtr[22] dtr[21] dtr[20] dtr[19] dtr[18] dtr[17] dtr[16]
@@ -654,8 +654,8 @@ XM13 tblhl net4 vss vss nfet_03v3 L=0.28u W=7.93u nf=2 ad='int((nf+1)/2) * W/nf 
 
 
 * expanding   symbol:  xdec32_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec32_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec32_3v256x8m81.sch
+** sym_path: xschem/xdec32_3v256x8m81.sym
+** sch_path: xschem/xdec32_3v256x8m81.sch
 .subckt xdec32_3v256x8m81 vdd vss xa[7] xa[6] xa[5] xa[4] xa[3] xa[2] xa[1] xa[0] xb[3] xb[2] xb[1] xb[0] xc men LWL[31] LWL[30]
 + LWL[29] LWL[28] LWL[27] LWL[26] LWL[25] LWL[24] LWL[23] LWL[22] LWL[21] LWL[20] LWL[19] LWL[18] LWL[17] LWL[16] LWL[15] LWL[14] LWL[13]
 + LWL[12] LWL[11] LWL[10] LWL[9] LWL[8] LWL[7] LWL[6] LWL[5] LWL[4] LWL[3] LWL[2] LWL[1] LWL[0] RWL[31] RWL[30] RWL[29] RWL[28] RWL[27]
@@ -698,8 +698,8 @@ x32 vdd LWL[31] xa[7] men xb[3] RWL[31] xc vss xdec_3v256x8m81
 
 
 * expanding   symbol:  pmoscap_R270_3v256x8m81.sym # of pins=3
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/pmoscap_R270_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/pmoscap_R270_3v256x8m81.sch
+** sym_path: xschem/pmoscap_R270_3v256x8m81.sym
+** sch_path: xschem/pmoscap_R270_3v256x8m81.sch
 .subckt pmoscap_R270_3v256x8m81 bottom bulk top
 *.PININFO top:I bottom:B bulk:B
 XM1 bottom top bottom bulk pfet_03v3 L=2.505u W=2.565u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -708,8 +708,8 @@ XM1 bottom top bottom bulk pfet_03v3 L=2.505u W=2.565u nf=1 ad='int((nf+1)/2) * 
 
 
 * expanding   symbol:  ddec_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ddec_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ddec_3v256x8m81.sch
+** sym_path: xschem/ddec_3v256x8m81.sym
+** sch_path: xschem/ddec_3v256x8m81.sch
 .subckt ddec_3v256x8m81 vdd DLWL vss men DRWL
 *.PININFO DLWL:O DRWL:O men:I vdd:B vss:B
 XM1 DLWL net1 vdd vdd pfet_03v3 L=0.28u W=11.78u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -736,8 +736,8 @@ XM10 men vdd net2 vss nfet_03v3 L=0.28u W=3.075u nf=1 ad='int((nf+1)/2) * W/nf *
 
 
 * expanding   symbol:  ypredec1_3v256x8m81.sym # of pins=7
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_3v256x8m81.sch
+** sym_path: xschem/ypredec1_3v256x8m81.sym
+** sch_path: xschem/ypredec1_3v256x8m81.sch
 .subckt ypredec1_3v256x8m81 ry[7] ry[6] ry[5] ry[4] ry[3] ry[2] ry[1] ry[0] ly[7] ly[6] ly[5] ly[4] ly[3] ly[2] ly[1] ly[0] vdd
 + clk men vss A[2] A[1] A[0]
 *.PININFO A[2:0]:I clk:I men:I ly[7:0]:O vdd:B vss:B ry[7:0]:O
@@ -812,8 +812,8 @@ x26 vdd x[0] net3 net10 vss net6 ypredec1_xa_3v256x8m81
 
 
 * expanding   symbol:  gen_3v256x8_3v256x8m81.sym # of pins=9
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/gen_3v256x8_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/gen_3v256x8_3v256x8m81.sch
+** sym_path: xschem/gen_3v256x8_3v256x8m81.sym
+** sch_path: xschem/gen_3v256x8_3v256x8m81.sch
 .subckt gen_3v256x8_3v256x8m81 tblhl men cen vdd clk vss WEN IGWEN GWE
 *.PININFO clk:I vdd:B vss:B WEN:I IGWEN:O GWE:O men:O tblhl:I cen:I
 XM1 net1 clk vss vss nfet_03v3 L=0.56u W=0.28u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -913,8 +913,8 @@ XM46 net11 net14 net20 vss nfet_03v3 L=0.28u W=8.465u nf=1 ad='int((nf+1)/2) * W
 
 
 * expanding   symbol:  prexdec_top_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/prexdec_top_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/prexdec_top_3v256x8m81.sch
+** sym_path: xschem/prexdec_top_3v256x8m81.sym
+** sch_path: xschem/prexdec_top_3v256x8m81.sch
 .subckt prexdec_top_3v256x8m81 vdd vss clk xc[3] xc[2] xc[1] xc[0] A[6] A[5] A[4] A[3] A[2] A[1] A[0] xb[3] xb[2] xb[1] xb[0] men
 + xa[7] xa[6] xa[5] xa[4] xa[3] xa[2] xa[1] xa[0]
 *.PININFO clk:I men:I A[6:0]:I vdd:B vss:B xc[3:0]:O xb[3:0]:O xa[7:0]:O
@@ -925,8 +925,8 @@ x3 vdd clk men vss xc[3] xc[2] xc[1] xc[0] A[6] A[5] xpredec0_3v256x8m81
 
 
 * expanding   symbol:  Cell_array8x8_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/Cell_array8x8_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/Cell_array8x8_3v256x8m81.sch
+** sym_path: xschem/Cell_array8x8_3v256x8m81.sym
+** sch_path: xschem/Cell_array8x8_3v256x8m81.sch
 .subckt Cell_array8x8_3v256x8m81 wl[31] wl[30] wl[29] wl[28] wl[27] wl[26] wl[25] wl[24] wl[23] wl[22] wl[21] wl[20] wl[19] wl[18]
 + wl[17] wl[16] wl[15] wl[14] wl[13] wl[12] wl[11] wl[10] wl[9] wl[8] wl[7] wl[6] wl[5] wl[4] wl[3] wl[2] wl[1] wl[0] bb[31] bb[30] bb[29]
 + bb[28] bb[27] bb[26] bb[25] bb[24] bb[23] bb[22] bb[21] bb[20] bb[19] bb[18] bb[17] bb[16] bb[15] bb[14] bb[13] bb[12] bb[11] bb[10]
@@ -1065,8 +1065,8 @@ x1[0] b[31] b[30] b[29] b[28] b[27] b[26] b[25] b[24] b[23] b[22] b[21] b[20] b[
 
 
 * expanding   symbol:  saout_m2_3v256x8m81.sym # of pins=12
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/saout_m2_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/saout_m2_3v256x8m81.sch
+** sym_path: xschem/saout_m2_3v256x8m81.sym
+** sch_path: xschem/saout_m2_3v256x8m81.sch
 .subckt saout_m2_3v256x8m81 vdd vss bb[7] bb[6] bb[5] bb[4] bb[3] bb[2] bb[1] bb[0] b[7] b[6] b[5] b[4] b[3] b[2] b[1] b[0]
 + ypass[7] ypass[6] ypass[5] ypass[4] ypass[3] ypass[2] ypass[1] ypass[0] men datain GWE q GWEN WEN pcb
 *.PININFO ypass[7:0]:I b[7:0]:B bb[7:0]:B vdd:B vss:B men:I datain:I GWE:I q:O GWEN:I WEN:I pcb:O
@@ -1081,8 +1081,8 @@ x6 vdd GWEN WEN vss net4 men wen_wm1_3v256x8m81
 
 
 * expanding   symbol:  Cell_array32x1_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/Cell_array32x1_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/Cell_array32x1_3v256x8m81.sch
+** sym_path: xschem/Cell_array32x1_3v256x8m81.sym
+** sch_path: xschem/Cell_array32x1_3v256x8m81.sch
 .subckt Cell_array32x1_3v256x8m81 br[31] br[30] br[29] br[28] br[27] br[26] br[25] br[24] br[23] br[22] br[21] br[20] br[19]
 + br[18] br[17] br[16] br[15] br[14] br[13] br[12] br[11] br[10] br[9] br[8] br[7] br[6] br[5] br[4] br[3] br[2] br[1] br[0] bl[31] bl[30]
 + bl[29] bl[28] bl[27] bl[26] bl[25] bl[24] bl[23] bl[22] bl[21] bl[20] bl[19] bl[18] bl[17] bl[16] bl[15] bl[14] bl[13] bl[12] bl[11]
@@ -1124,8 +1124,8 @@ x32 vdd wr bl[24] br[24] vss x018SRAM_cell1_3v256x8m81
 
 
 * expanding   symbol:  x018SRAM_cell1_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/x018SRAM_cell1_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/x018SRAM_cell1_3v256x8m81.sch
+** sym_path: xschem/x018SRAM_cell1_3v256x8m81.sym
+** sch_path: xschem/x018SRAM_cell1_3v256x8m81.sch
 .subckt x018SRAM_cell1_3v256x8m81 vdd wr bl br vss
 *.PININFO vdd:B vss:B wr:I bl:B br:B
 XM1 net1 net2 vdd vdd pfet_03v3 L=0.28u W=0.28u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1144,8 +1144,8 @@ XM6 net1 wr bl vss nfet_03v3 L=0.36u W=0.28u nf=1 ad='int((nf+1)/2) * W/nf * 0.1
 
 
 * expanding   symbol:  x018SRAM_cell1_dummy_R_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/x018SRAM_cell1_dummy_R_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/x018SRAM_cell1_dummy_R_3v256x8m81.sch
+** sym_path: xschem/x018SRAM_cell1_dummy_R_3v256x8m81.sym
+** sch_path: xschem/x018SRAM_cell1_dummy_R_3v256x8m81.sch
 .subckt x018SRAM_cell1_dummy_R_3v256x8m81 vdd wr bl br vss
 *.PININFO vdd:B vss:B wr:I bl:B br:B
 XM1 net1 vdd vdd vdd pfet_03v3 L=0.28u W=0.28u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1164,8 +1164,8 @@ XM6 net2 wr br vss nfet_03v3 L=0.36u W=0.28u nf=1 ad='int((nf+1)/2) * W/nf * 0.1
 
 
 * expanding   symbol:  xdec_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xdec_3v256x8m81.sch
+** sym_path: xschem/xdec_3v256x8m81.sym
+** sch_path: xschem/xdec_3v256x8m81.sch
 .subckt xdec_3v256x8m81 vdd LWL xa men xb RWL xc vss
 *.PININFO xc:I xb:I xa:I vdd:B vss:B men:I LWL:O RWL:O
 XM1 LWL net1 vdd vdd pfet_03v3 L=0.28u W=13.995u nf=3 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1210,8 +1210,8 @@ XM16 net4 xa net6 vss nfet_03v3 L=0.28u W=1.47u nf=1 ad='int((nf+1)/2) * W/nf * 
 
 
 * expanding   symbol:  ypredec1_ys_3v256x8m81.sym # of pins=4
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_ys_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_ys_3v256x8m81.sch
+** sym_path: xschem/ypredec1_ys_3v256x8m81.sym
+** sch_path: xschem/ypredec1_ys_3v256x8m81.sch
 .subckt ypredec1_ys_3v256x8m81 vdd a y vss
 *.PININFO vdd:B vss:B a:I y:O
 XM2 net1 a vdd vdd pfet_03v3 L=0.28u W=9.33u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1226,8 +1226,8 @@ XM6 y net1 vss vss nfet_03v3 L=0.28u W=12.705u nf=3 ad='int((nf+1)/2) * W/nf * 0
 
 
 * expanding   symbol:  alatch_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/alatch_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/alatch_3v256x8m81.sch
+** sym_path: xschem/alatch_3v256x8m81.sym
+** sch_path: xschem/alatch_3v256x8m81.sch
 .subckt alatch_3v256x8m81 en vdd a ab vss enb
 *.PININFO enb:I ab:O vdd:B vss:B en:I a:I
 XM1 net1 en a vss nfet_03v3 L=0.28u W=1.055u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1250,8 +1250,8 @@ XM8 vss net1 ab vss nfet_03v3 L=0.28u W=1.69u nf=2 ad='int((nf+1)/2) * W/nf * 0.
 
 
 * expanding   symbol:  ypredec1_xa_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_xa_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypredec1_xa_3v256x8m81.sch
+** sym_path: xschem/ypredec1_xa_3v256x8m81.sym
+** sch_path: xschem/ypredec1_xa_3v256x8m81.sch
 .subckt ypredec1_xa_3v256x8m81 vdd y a c vss b
 *.PININFO vdd:B vss:B a:I b:I y:O c:I
 XM2 net2 a vdd vdd pfet_03v3 L=0.28u W=2.645u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1274,8 +1274,8 @@ XM8 net2 c vdd vdd pfet_03v3 L=0.28u W=2.645u nf=1 ad='int((nf+1)/2) * W/nf * 0.
 
 
 * expanding   symbol:  wen_v2_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/wen_v2_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/wen_v2_3v256x8m81.sch
+** sym_path: xschem/wen_v2_3v256x8m81.sym
+** sch_path: xschem/wen_v2_3v256x8m81.sch
 .subckt wen_v2_3v256x8m81 wen IGWEN GWE vdd clk vss
 *.PININFO GWE:O wen:I IGWEN:O clk:I vdd:B vss:B
 XM28 net1 net2 vss vss nfet_03v3 L=0.28u W=2.905u nf=7 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1342,8 +1342,8 @@ XM20 net2 net6 net4 vss nfet_03v3 L=0.28u W=0.445u nf=1 ad='int((nf+1)/2) * W/nf
 
 
 * expanding   symbol:  xpredec0_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec0_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec0_3v256x8m81.sch
+** sym_path: xschem/xpredec0_3v256x8m81.sym
+** sch_path: xschem/xpredec0_3v256x8m81.sch
 .subckt xpredec0_3v256x8m81 vdd clk men vss x[3] x[2] x[1] x[0] A[1] A[0]
 *.PININFO A[1:0]:I clk:I men:I x[3:0]:O vdd:B vss:B
 x1 en vdd A[1] net1 vss enb alatch_3v256x8m81
@@ -1388,8 +1388,8 @@ XM16 net8 men vdd vdd pfet_03v3 L=0.28u W=0.8u nf=1 ad='int((nf+1)/2) * W/nf * 0
 
 
 * expanding   symbol:  xpredec1_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec1_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec1_3v256x8m81.sch
+** sym_path: xschem/xpredec1_3v256x8m81.sym
+** sch_path: xschem/xpredec1_3v256x8m81.sch
 .subckt xpredec1_3v256x8m81 vdd clk men x[7] x[6] x[5] x[4] x[3] x[2] x[1] x[0] vss A[2] A[1] A[0]
 *.PININFO A[2:0]:I clk:I men:I x[7:0]:O vdd:B vss:B
 x1 en vdd A[2] net1 vss enb alatch_3v256x8m81
@@ -1447,8 +1447,8 @@ XM20 net11 men vdd vdd pfet_03v3 L=0.28u W=1.06u nf=1 ad='int((nf+1)/2) * W/nf *
 
 
 * expanding   symbol:  mux821_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/mux821_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/mux821_3v256x8m81.sch
+** sym_path: xschem/mux821_3v256x8m81.sym
+** sch_path: xschem/mux821_3v256x8m81.sch
 .subckt mux821_3v256x8m81 bb[7] bb[6] bb[5] bb[4] bb[3] bb[2] bb[1] bb[0] b[7] b[6] b[5] b[4] b[3] b[2] b[1] b[0] db[3] db[2]
 + db[1] db[0] pcb ypass[7] ypass[6] ypass[5] ypass[4] ypass[3] ypass[2] ypass[1] ypass[0] vdd vss d[7] d[6] d[5] d[4] d[3] d[2] d[1] d[0]
 *.PININFO vdd:B vss:B bb[7:0]:B b[7:0]:B db[3:0]:B pcb:I ypass[7:0]:I d[7:0]:B
@@ -1464,8 +1464,8 @@ x8 vdd ypass[7] pcb bb[7] b[7] db[3] d[7] vss ypass_gate_3v256x8m81
 
 
 * expanding   symbol:  sa_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/sa_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/sa_3v256x8m81.sch
+** sym_path: xschem/sa_3v256x8m81.sym
+** sch_path: xschem/sa_3v256x8m81.sch
 .subckt sa_3v256x8m81 vdd d qp vss db qr pcb se
 *.PININFO pcb:I se:I vdd:B vss:B d:B db:B qp:B qr:B
 XM1 net1 se d vdd pfet_03v3 L=0.28u W=1.055u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1552,8 +1552,8 @@ XM39 qp net4 vss vss nfet_03v3 L=0.28u W=1.055u nf=1 ad='int((nf+1)/2) * W/nf * 
 
 
 * expanding   symbol:  din_3v256x8m81.sym # of pins=7
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/din_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/din_3v256x8m81.sch
+** sym_path: xschem/din_3v256x8m81.sym
+** sch_path: xschem/din_3v256x8m81.sch
 .subckt din_3v256x8m81 men d wep db datain vdd vss
 *.PININFO men:I wep:I datain:I d:O db:O vdd:B vss:B
 XM1 wepb wep vdd vdd pfet_03v3 L=0.28u W=1.39u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1608,8 +1608,8 @@ XM21 net4 men net5 vss nfet_03v3 L=0.28u W=0.445u nf=1 ad='int((nf+1)/2) * W/nf 
 
 
 * expanding   symbol:  outbuf_oe_3v256x8m81.sym # of pins=7
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/outbuf_oe_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/outbuf_oe_3v256x8m81.sch
+** sym_path: xschem/outbuf_oe_3v256x8m81.sym
+** sch_path: xschem/outbuf_oe_3v256x8m81.sch
 .subckt outbuf_oe_3v256x8m81 vdd se qp GWE q qn vss
 *.PININFO q:O vdd:B vss:B GWE:I qp:I qn:I se:I
 XM1 q net1 vss vss nfet_03v3 L=0.28u W=5.91u nf=6 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1652,8 +1652,8 @@ XM18 net6 net8 vdd vdd pfet_03v3 L=0.28u W=1.06u nf=2 ad='int((nf+1)/2) * W/nf *
 
 
 * expanding   symbol:  sacntl_2_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/sacntl_2_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/sacntl_2_3v256x8m81.sch
+** sym_path: xschem/sacntl_2_3v256x8m81.sym
+** sch_path: xschem/sacntl_2_3v256x8m81.sch
 .subckt sacntl_2_3v256x8m81 pcb vdd men se vss
 *.PININFO men:I vdd:B vss:B se:O pcb:O
 XM1 me men vss vss nfet_03v3 L=0.28u W=2.65u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1738,8 +1738,8 @@ XM30 net8 seb net13 vss nfet_03v3 L=0.28u W=1.33u nf=1 ad='int((nf+1)/2) * W/nf 
 
 
 * expanding   symbol:  wen_wm1_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/wen_wm1_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/wen_wm1_3v256x8m81.sch
+** sym_path: xschem/wen_wm1_3v256x8m81.sym
+** sch_path: xschem/wen_wm1_3v256x8m81.sch
 .subckt wen_wm1_3v256x8m81 vdd GWEN wen vss wep men
 *.PININFO wen:I men:I GWEN:I wep:O vdd:B vss:B
 XM1 net1 men vss vss nfet_03v3 L=0.28u W=0.635u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1808,8 +1808,8 @@ XM31 wep net13 vdd vdd pfet_03v3 L=0.28u W=2.79u nf=3 ad='int((nf+1)/2) * W/nf *
 
 
 * expanding   symbol:  xpredec0_xa_3v256x8m81.sym # of pins=5
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec0_xa_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec0_xa_3v256x8m81.sch
+** sym_path: xschem/xpredec0_xa_3v256x8m81.sym
+** sch_path: xschem/xpredec0_xa_3v256x8m81.sch
 .subckt xpredec0_xa_3v256x8m81 vdd y a b vss
 *.PININFO vdd:B vss:B a:I b:I y:O
 XM1 net2 a net1 vss nfet_03v3 L=0.28u W=5.72u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1828,8 +1828,8 @@ XM6 y net2 vss vss nfet_03v3 L=0.28u W=8.46u nf=4 ad='int((nf+1)/2) * W/nf * 0.1
 
 
 * expanding   symbol:  xpredec1_xa_3v256x8m81.sym # of pins=6
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec1_xa_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/xpredec1_xa_3v256x8m81.sch
+** sym_path: xschem/xpredec1_xa_3v256x8m81.sym
+** sch_path: xschem/xpredec1_xa_3v256x8m81.sch
 .subckt xpredec1_xa_3v256x8m81 vdd y a c vss b
 *.PININFO vdd:B vss:B a:I b:I y:O c:I
 XM1 net2 a net1 vss nfet_03v3 L=0.28u W=5.825u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -1852,8 +1852,8 @@ XM8 net2 c vdd vdd pfet_03v3 L=0.28u W=4.865u nf=1 ad='int((nf+1)/2) * W/nf * 0.
 
 
 * expanding   symbol:  ypass_gate_3v256x8m81.sym # of pins=8
-** sym_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypass_gate_3v256x8m81.sym
-** sch_path: /foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/xschem/ypass_gate_3v256x8m81.sch
+** sym_path: xschem/ypass_gate_3v256x8m81.sym
+** sch_path: xschem/ypass_gate_3v256x8m81.sch
 .subckt ypass_gate_3v256x8m81 vdd ypass pcb bb b db d vss
 *.PININFO vdd:B pcb:I bb:B b:B db:B d:B ypass:I vss:B
 XM1 db ypass bb vss nfet_03v3 L=0.28u W=3.175u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'

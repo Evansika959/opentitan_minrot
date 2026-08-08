@@ -20,21 +20,21 @@
   "MACROS": {
     "tlul_sram_if_macro_ocd_7bank": {
       "gds": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.gds"
+        "dir::../../macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.gds"
       ],
       "lef": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.lef"
+        "dir::../../macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.lef"
       ],
       "lib": {
         "nom_tt_025C_3v30": [
-          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank__nom_tt_025C_3v30.lib"
+          "dir::../../macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank__nom_tt_025C_3v30.lib"
         ]
       },
       "spice": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.spice"
+        "dir::../../macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.spice"
       ],
       "nl": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v"
+        "dir::../../macros/tlul_sram_if_macro_ocd_7bank/tlul_sram_if_macro_ocd_7bank.nl.v"
       ],
       "instances": {
         "u_imem": {
@@ -106,19 +106,19 @@
   "DEFAULT_CORNER": "nom_tt_025C_3v30",
   "LIB": {
     "nom_tt_025C_3v30": [
-      "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+      "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
     ]
   },
   "LIB_SYNTH": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
   "LIB_SLOWEST": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
   "LIB_FASTEST": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
-  "KLAYOUT_DRC_RUNSET": "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "KLAYOUT_DRC_RUNSET": "dir::../../pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
   "//": "Derived from top_pd_puf/config.json (same mixed-flow architecture, PUF included), swapping the memory plan to 3x tlul_sram_if_macro_ocd_7bank in an L-shape floorplan per the user's request: uniform 7KB memories, L-shaped tiling, ibex+PUF+glue packed into the remaining rectangle as tight as reasonably possible on a first attempt.",
   "CORE_AREA": [
     50,

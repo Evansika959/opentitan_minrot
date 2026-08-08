@@ -20,21 +20,21 @@
   "MACROS": {
     "tlul_sram_if_macro_ocd_10bank": {
       "gds": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.gds"
+        "dir::../../macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.gds"
       ],
       "lef": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.lef"
+        "dir::../../macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.lef"
       ],
       "lib": {
         "nom_tt_025C_3v30": [
-          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank__nom_tt_025C_3v30.lib"
+          "dir::../../macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank__nom_tt_025C_3v30.lib"
         ]
       },
       "spice": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.spice"
+        "dir::../../macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.spice"
       ],
       "nl": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.nl.v"
+        "dir::../../macros/tlul_sram_if_macro_ocd_10bank/tlul_sram_if_macro_ocd_10bank.nl.v"
       ],
       "instances": {
         "u_imem": {
@@ -48,21 +48,21 @@
     },
     "tlul_sram_if_macro_ocd_2bank": {
       "gds": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.gds"
+        "dir::../../macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.gds"
       ],
       "lef": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.lef"
+        "dir::../../macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.lef"
       ],
       "lib": {
         "nom_tt_025C_3v30": [
-          "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank__nom_tt_025C_3v30.lib"
+          "dir::../../macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank__nom_tt_025C_3v30.lib"
         ]
       },
       "spice": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.spice"
+        "dir::../../macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.spice"
       ],
       "nl": [
-        "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.nl.v"
+        "dir::../../macros/tlul_sram_if_macro_ocd_2bank/tlul_sram_if_macro_ocd_2bank.nl.v"
       ],
       "instances": {
         "u_dmem": {
@@ -127,19 +127,19 @@
   "DEFAULT_CORNER": "nom_tt_025C_3v30",
   "LIB": {
     "nom_tt_025C_3v30": [
-      "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+      "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
     ]
   },
   "LIB_SYNTH": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
   "LIB_SLOWEST": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
   "LIB_FASTEST": [
-    "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
   ],
-  "KLAYOUT_DRC_RUNSET": "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "KLAYOUT_DRC_RUNSET": "dir::../../pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
   "//": "Derived from top_pd_7bank/config.json (same mixed-flow architecture, PUF included), swapping the uniform 3x7bank memory plan for right-sized macros (10bank IMEM, 2x2bank ESRAM/DMEM) per the real minimum-footprint measurements from the secure-boot bring-up session.",
   "CORE_AREA": [
     50,

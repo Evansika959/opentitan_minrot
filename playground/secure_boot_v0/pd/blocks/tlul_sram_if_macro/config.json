@@ -18,17 +18,17 @@
   ],
   "MACROS": {
   "gf180mcu_ocd_ip_sram__sram256x8m8wm1": {
-    "gds": ["/foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.gds"],
-    "lef": ["/foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.lef"],
+    "gds": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.gds"],
+    "lef": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.lef"],
     "lib": {
-      "nom_tt_025C_5v00": ["/foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1__tt_025C_1v80.lib"]
+      "nom_tt_025C_5v00": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1__tt_025C_1v80.lib"]
     },
-    "spice": ["/foss/designs/opentitan_minrot_nix/gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.spice"],
+    "spice": ["dir::../../../../../gf180mcu_ocd_ip_sram/cells/gf180mcu_ocd_ip_sram__sram256x8m8wm1/gf180mcu_ocd_ip_sram__sram256x8m8wm1.spice"],
     "instances": {
-      "gen_macros[0].u_mem.gen_byte[0].u_macro": { "location": [88, 79], "orientation": "N" },
-      "gen_macros[0].u_mem.gen_byte[1].u_macro": { "location": [580, 79], "orientation": "N" },
-      "gen_macros[0].u_mem.gen_byte[2].u_macro": { "location": [88, 480], "orientation": "N" },
-      "gen_macros[0].u_mem.gen_byte[3].u_macro": { "location": [580, 480], "orientation": "N" }
+      "u_mem.gen_byte[0].u_macro": { "location": [88, 79], "orientation": "N" },
+      "u_mem.gen_byte[1].u_macro": { "location": [580, 79], "orientation": "N" },
+      "u_mem.gen_byte[2].u_macro": { "location": [88, 480], "orientation": "N" },
+      "u_mem.gen_byte[3].u_macro": { "location": [580, 480], "orientation": "N" }
     }
   }
 },

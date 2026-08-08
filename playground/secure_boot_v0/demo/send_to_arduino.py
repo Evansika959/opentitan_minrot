@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import os
 import sys, time, serial
-sys.path.insert(0, '/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/demo')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from puf_to_key import load_puf_bits, puf_to_key
 
 def main():

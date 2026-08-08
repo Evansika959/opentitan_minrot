@@ -1,6 +1,0 @@
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_dv_dv_fcov_macros_0
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_prim_util_get_scramble_params_0/rtl
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_prim_util_memload_0/rtl
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_prim_assert_0.1/rtl
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_prim_secded_0.1/rtl
-/foss/designs/opentitan_minrot_nix/build/xinting_pd_top_pd_puf_0.1/lint-verilator/src/lowrisc_prim_fifo_0/rtl

@@ -6,44 +6,103 @@
   "SIGNOFF_SDC_FILE": "dir::top.sdc",
   "PDK": "gf180mcuD",
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 6500, 4500],
+  "DIE_AREA": [
+    0,
+    0,
+    6500,
+    4500
+  ],
   "PL_TARGET_DENSITY_PCT": 40,
-  "STA_CORNERS": ["nom_tt_025C_3v30"],
+  "STA_CORNERS": [
+    "nom_tt_025C_3v30"
+  ],
   "MACROS": {
     "tlul_sram_if_macro_ocd_21bank": {
-      "gds": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.gds"],
-      "lef": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.lef"],
+      "gds": [
+        "dir::../../macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.gds"
+      ],
+      "lef": [
+        "dir::../../macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.lef"
+      ],
       "lib": {
-        "nom_tt_025C_3v30": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank__nom_tt_025C_3v30.lib"]
+        "nom_tt_025C_3v30": [
+          "dir::../../macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank__nom_tt_025C_3v30.lib"
+        ]
       },
-      "spice": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.spice"],
-      "nl": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v"],
+      "spice": [
+        "dir::../../macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.spice"
+      ],
+      "nl": [
+        "dir::../../macros/tlul_sram_if_macro_ocd_21bank/tlul_sram_if_macro_ocd_21bank.nl.v"
+      ],
       "instances": {
-        "u_imem": { "location": [200, 1500], "orientation": "N" }
+        "u_imem": {
+          "location": [
+            200,
+            1500
+          ],
+          "orientation": "N"
+        }
       }
     },
     "tlul_sram_if_macro": {
-      "gds": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.gds"],
-      "lef": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.lef"],
+      "gds": [
+        "dir::../../macros/tlul_sram_if_macro/tlul_sram_if_macro.gds"
+      ],
+      "lef": [
+        "dir::../../macros/tlul_sram_if_macro/tlul_sram_if_macro.lef"
+      ],
       "lib": {
-        "nom_tt_025C_3v30": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro__nom_tt_025C_3v30.lib"]
+        "nom_tt_025C_3v30": [
+          "dir::../../macros/tlul_sram_if_macro/tlul_sram_if_macro__nom_tt_025C_3v30.lib"
+        ]
       },
-      "spice": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.spice"],
-      "nl": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v"],
+      "spice": [
+        "dir::../../macros/tlul_sram_if_macro/tlul_sram_if_macro.spice"
+      ],
+      "nl": [
+        "dir::../../macros/tlul_sram_if_macro/tlul_sram_if_macro.nl.v"
+      ],
       "instances": {
-        "u_esram": { "location": [5500, 3200], "orientation": "N" },
-        "u_dmem": { "location": [5500, 2400], "orientation": "N" }
+        "u_esram": {
+          "location": [
+            5500,
+            3200
+          ],
+          "orientation": "N"
+        },
+        "u_dmem": {
+          "location": [
+            5500,
+            2400
+          ],
+          "orientation": "N"
+        }
       }
     },
     "gf180mcu_fd_ip_sram__sram64x8m8wm1": {
-      "gds": ["/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram64x8m8wm1.gds"],
-      "lef": ["/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram64x8m8wm1.lef"],
+      "gds": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram64x8m8wm1.gds"
+      ],
+      "lef": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram64x8m8wm1.lef"
+      ],
       "lib": {
-        "nom_tt_025C_3v30": ["/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram64x8m8wm1__tt_025C_3v30.lib"]
+        "nom_tt_025C_3v30": [
+          "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram64x8m8wm1__tt_025C_3v30.lib"
+        ]
       },
-      "spice": ["/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram64x8m8wm1.spice"],
+      "spice": [
+        "/foss/pdks/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram64x8m8wm1.spice"
+      ],
       "instances": {
-        "u_puf_regif.u_puf.u_sram": { "location": [5500, 1500], "orientation": "N" }
+        "u_puf_regif.u_puf.u_sram": {
+          "location": [
+            5500,
+            1500
+          ],
+          "orientation": "N"
+        }
       }
     }
   },
@@ -58,17 +117,27 @@
   "FP_PDN_CORE_RING": true,
   "FP_PDN_RING_OFFSET_X": 15,
   "FP_PDN_RING_OFFSET_Y": 15,
-  "CELL_PAD_LIBS_AND_CELLS": ["gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 10"],
+  "CELL_PAD_LIBS_AND_CELLS": [
+    "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 10"
+  ],
   "CTS_APPLY_NDR": "none",
   "SYNTH_LATCH_MAP": "dir::latch_map.v",
   "SYNTH_CORNER": "nom_tt_025C_3v30",
   "DEFAULT_CORNER": "nom_tt_025C_3v30",
   "LIB": {
-    "nom_tt_025C_3v30": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"]
+    "nom_tt_025C_3v30": [
+      "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+    ]
   },
-  "LIB_SYNTH": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"],
-  "LIB_SLOWEST": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"],
-  "LIB_FASTEST": ["/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"],
-  "KLAYOUT_DRC_RUNSET": "/foss/designs/opentitan_minrot_nix/playground/secure_boot_v0/pd/pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+  "LIB_SYNTH": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_SLOWEST": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "LIB_FASTEST": [
+    "dir::../../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+  ],
+  "KLAYOUT_DRC_RUNSET": "dir::../../pdk/gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
   "//": "First-pass config for the PUF secure-boot demo, adapted from top_pd/config_mixed_3.json's 'mixed' strategy (ibex_core+ibex_top, uart, xbar_tlul_2to5 synthesized directly from RTL; only the three real SRAMs -- 21-bank IMEM, 1KiB ESRAM/DMEM, and the PUF's own foundry SRAM primitive -- are hard macros). DIE_AREA (6500x4500 = 29.25mm^2) is a generous first guess: the 21-bank IMEM macro alone is 5000x2500um (12.5mm^2, dominates the floorplan), plus ~0.956mm^2 for ESRAM+DMEM, ~0.10mm^2 for the PUF SRAM, and roughly 1.7mm^2 of synthesized std-cell logic (ibex/uart/xbar/glue) -- about 14.9mm^2 of raw component area, so this budgets close to 2x margin for routing/PDN. Like config_mixed_3's own note when it went from hard-macro to synthesized ibex/uart/xbar, expect to iterate (shrink die and/or adjust density) once real placement/routing results come back. u_puf_regif.u_puf.u_sram's exact post-synthesis instance path should be double-checked against Yosys's actual hierarchy naming on the first run -- flattening behavior can rename nested paths."
 }

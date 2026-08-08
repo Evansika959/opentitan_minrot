@@ -37,13 +37,19 @@ RESOLVED="$BDIR/config.resolved.json"
 python3 - "$VC" "$VCDIR" "$BDIR/config.json" "$BLOCK" "$RESOLVED" <<'PY'
 import json, os, sys
 vc, vcdir, base, block, out = sys.argv[1:6]
+bdir = os.path.dirname(base)
+# dir:: is LibreLane's own "relative to this config file" prefix -- keeps
+# the resolved config portable across checkouts/machines instead of baking
+# in this machine's absolute path.
+def relpath(p):
+    return "dir::" + os.path.relpath(os.path.realpath(p), bdir)
 files, incs = [], []
 for ln in open(vc):
     ln = ln.strip()
     if ln.startswith("+incdir+"):
-        incs.append(os.path.realpath(os.path.join(vcdir, ln[len("+incdir+"):])))
+        incs.append(relpath(os.path.join(vcdir, ln[len("+incdir+"):])))
     elif ln.endswith(".sv"):
-        files.append(os.path.realpath(os.path.join(vcdir, ln)))
+        files.append(relpath(os.path.join(vcdir, ln)))
 cfg = json.load(open(base))
 # --keep-hierarchy: without it, slang's frontend tries to "inline" (flatten)
 # module instance boundaries during its own elaboration pass, before Yosys
